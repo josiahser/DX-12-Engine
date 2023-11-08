@@ -65,6 +65,11 @@ HWND                  InitInstance(HINSTANCE, uint32_t, uint32_t);
 LRESULT CALLBACK      WndProc(HWND, UINT, WPARAM, LPARAM);
 void                  ParseCommandLineArguments();
 ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp); //Query for a compatible adapter
+ComPtr<ID3D12Device2> CreateDevice(ComPtr<IDXGIAdapter4> adapter);
+ComPtr<ID3D12CommandQueue> CreateCommandQueue(ComPtr<ID3D12Device2> device, D3D12_COMMAND_LIST_TYPE type);
+bool CheckTearingSupport();
+ComPtr<IDXGISwapChain4> CreateSwapChain(HWND hWnd, ComPtr<ID3D12CommandQueue> commandQueue, uint32_t width, uint32_t height, uint32_t bufferCount);
+ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ComPtr<ID3D12Device2> device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -103,8 +108,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
-
-
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -287,4 +290,136 @@ ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp)
     }
 
     return dxgiAdapter4;
+}
+
+//Create device using the adapter that was previously queried using factories
+ComPtr<ID3D12Device2> CreateDevice(ComPtr<IDXGIAdapter4> adapter)
+{
+    ComPtr<ID3D12Device2> d3d12Device2{};
+    ThrowIfFailed(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&d3d12Device2)));
+    //Enable debug messages in debug mode
+#if defined(_DEBUG)
+    ComPtr<ID3D12InfoQueue> pInfoQueue{};
+    if (SUCCEEDED(d3d12Device2.As(&pInfoQueue)))
+    {
+        pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+        pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+        pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE);
+        //Suppress whole categories of messages
+        //D3D12_MESSAGE_CATEGORY categories[] = {};
+        
+        //Suppress messages based on their severity level
+        D3D12_MESSAGE_SEVERITY Severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+
+        //Supress individual messages by their ID
+        D3D12_MESSAGE_ID DenyIds[] = {
+            D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,   //Occurs when render target is cleared using a clear color that isn't the optimized one
+            D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,                         //Occurs when a frame is captured using the graphics debugger
+            D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE                        //Same as above
+        };
+
+        D3D12_INFO_QUEUE_FILTER NewFilter = {};
+        //NewFilter.DenyList.NumCategories = _countof(Categories);
+        //NewFilter.DenyList.pCategoryList = Categories;
+        NewFilter.DenyList.NumSeverities = _countof(Severities);
+        NewFilter.DenyList.pSeverityList = Severities;
+        NewFilter.DenyList.NumIDs = _countof(DenyIds);
+        NewFilter.DenyList.pIDList = DenyIds;
+
+        ThrowIfFailed(pInfoQueue->PushStorageFilter(&NewFilter));
+    }
+#endif
+
+    return d3d12Device2;
+}
+
+//Create a command queue of specific type (direct) using the device created earlier
+ComPtr<ID3D12CommandQueue> CreateCommandQueue(ComPtr<ID3D12Device2> device, D3D12_COMMAND_LIST_TYPE type)
+{
+    ComPtr<ID3D12CommandQueue> d3d12CommandQueue{};
+
+    D3D12_COMMAND_QUEUE_DESC desc = {};
+    desc.Type = type;
+    desc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
+    desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;             
+    desc.NodeMask = 0;                                      //Used for node structure if using multiple GPUs
+
+    ThrowIfFailed(device->CreateCommandQueue(&desc, IID_PPV_ARGS(&d3d12CommandQueue)));
+
+    return d3d12CommandQueue;
+}
+
+//Check to see if screen tearing is supported (for variable refresh rates)
+bool CheckTearingSupport()
+{
+    BOOL allowTearing = FALSE;
+
+    //instead of directly making the dxgi 1.5 factory needed to have access to the ::CheckFeatureSupport method,
+    //Create the DXGI 1.4 interface and query for 1.5.
+    ComPtr<IDXGIFactory4> factory4{};
+    if (SUCCEEDED(CreateDXGIFactory(IID_PPV_ARGS(&factory4))))
+    {
+        ComPtr<IDXGIFactory5> factory5{};
+        if (SUCCEEDED(factory4.As(&factory5)))
+        {
+            if (FAILED(factory5->CheckFeatureSupport(
+                DXGI_FEATURE_PRESENT_ALLOW_TEARING,
+                &allowTearing, sizeof(allowTearing))))
+            {
+                allowTearing = FALSE;
+            }
+        }
+    }
+    return allowTearing == TRUE;
+}
+
+//Create the swap chain used to present buffers and flip front buffers with back buffers. Associated with a specific Window handle (hWnd)
+ComPtr<IDXGISwapChain4> CreateSwapChain(HWND hWnd, ComPtr<ID3D12CommandQueue> commandQueue, uint32_t width, uint32_t height, uint32_t bufferCount)
+{
+    ComPtr<IDXGISwapChain4> dxgiSwapChain4{};
+    ComPtr<IDXGIFactory4> dxgiFactory4{};
+    UINT createFactoryFlags = 0;
+#if defined(_DEBUG)
+    createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
+#endif
+
+    ThrowIfFailed(CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&dxgiFactory4)));
+
+    DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+    swapChainDesc.Width = width;
+    swapChainDesc.Height = height;
+    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapChainDesc.Stereo = FALSE;
+    swapChainDesc.SampleDesc = { 1, 0 };
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.BufferCount = bufferCount;
+    swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+    // It is recommended to always allow tearing if it's supported
+    swapChainDesc.Flags = CheckTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+
+    ComPtr<IDXGISwapChain1> swapChain1{};
+    ThrowIfFailed(dxgiFactory4->CreateSwapChainForHwnd(commandQueue.Get(), hWnd, &swapChainDesc, nullptr, nullptr, &swapChain1));
+
+    //Disable the alt+enter fullscreen toggle feature, it'll be handled manually
+    ThrowIfFailed(dxgiFactory4->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
+    
+    ThrowIfFailed(swapChain1.As(&dxgiSwapChain4));
+
+    return dxgiSwapChain4;
+}
+
+//Create the descriptor heap that holds Render Target Views (in this case, it stores the RTV)
+ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ComPtr<ID3D12Device2> device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors)
+{
+    ComPtr<ID3D12DescriptorHeap> descriptorHeap{};
+
+    D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+    desc.NumDescriptors = numDescriptors;
+    desc.Type = type;  // Several different types, including one for RTV || One for Samplers || one for constant buffers, shader resource, or unordered access views || one for depth stencil views 
+    
+    ThrowIfFailed(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&descriptorHeap)));
+
+    return descriptorHeap;
 }
