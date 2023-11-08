@@ -70,6 +70,7 @@ ComPtr<ID3D12CommandQueue> CreateCommandQueue(ComPtr<ID3D12Device2> device, D3D1
 bool CheckTearingSupport();
 ComPtr<IDXGISwapChain4> CreateSwapChain(HWND hWnd, ComPtr<ID3D12CommandQueue> commandQueue, uint32_t width, uint32_t height, uint32_t bufferCount);
 ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ComPtr<ID3D12Device2> device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors);
+void UpdateRenderTargetViews(ComPtr<ID3D12Device2> device, ComPtr<IDXGISwapChain4> swapChain, ComPtr<ID3D12DescriptorHeap> descriptorHeap);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -423,3 +424,51 @@ ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ComPtr<ID3D12Device2> device, 
 
     return descriptorHeap;
 }
+
+//Update/Create the Render Target Views (RTV), describes a resource that can be attached to a bind slot of the output merger stage. Describes a resource that receives the final color from the pixel shader
+void UpdateRenderTargetViews(ComPtr<ID3D12Device2> device, ComPtr<IDXGISwapChain4> swapChain, ComPtr<ID3D12DescriptorHeap> descriptorHeap)
+{
+    auto rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(descriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+    for (int i = 0; i < g_NumFrames; ++i)
+    {
+        ComPtr<ID3D12Resource> backBuffer;
+        ThrowIfFailed(swapChain->GetBuffer(i, IID_PPV_ARGS(&backBuffer)));
+
+        device->CreateRenderTargetView(backBuffer.Get(), nullptr, rtvHandle);
+
+        g_BackBuffers[i] = backBuffer;
+
+        rtvHandle.Offset(rtvDescriptorSize);
+    }
+}
+
+//TODO: Command Allocator
+
+//TODO: Command List
+
+//TODO: Fence
+
+//TODO: Fence event
+
+//TODO: Signal 
+
+//TODO: Wait for fence value
+
+//TODO: Flush
+
+//TODO: Update
+
+//TODO: Render & Present
+
+//TODO: Resize
+
+//TODO: Fullscreen state
+
+//TODO: Fix up the window message procedure (wndProc)
+
+//TODO: Fix up the main entry point (wWinMain)
+
+//TODO: Put everything into classes
