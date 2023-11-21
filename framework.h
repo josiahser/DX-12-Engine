@@ -10,10 +10,11 @@
 #include <shellapi.h>
 #include <wrl.h>
 // C RunTime Header Files
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <tchar.h>
+//#include <stdlib.h>
+//#include <malloc.h>
+//#include <memory.h>
+//#include <tchar.h>
+
 //DirectX 12 headers
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -23,4 +24,6 @@
 #include <algorithm>
 #include <cassert>
 #include <chrono>
+#include <map>
+#include <memory>
 

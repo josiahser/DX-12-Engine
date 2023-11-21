@@ -79,7 +79,7 @@ ComPtr<ID3D12GraphicsCommandList>   CreateCommandList(ComPtr<ID3D12Device2> devi
 ComPtr<ID3D12Fence>                 CreateFence(ComPtr<ID3D12Device2> device);
 HANDLE                              CreateEventHandle();
 uint64_t                            Signal(ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue);
-void                                WaitForFenceValue(ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent, std::chrono::milliseconds duration);
+void                                WaitForFenceValue(ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent, std::chrono::milliseconds duration = std::chrono::milliseconds::max());
 void                                Flush(ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue, HANDLE fenceEvent);
 void                                Update();
 void                                Render();
@@ -606,7 +606,7 @@ uint64_t Signal(ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fen
 }
 
 //If CPU needs to stall to wait for the GPU to finish executing commands, tell it to wait until the fence is signaled with a specific value.
-void WaitForFenceValue(ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent, std::chrono::milliseconds duration = std::chrono::milliseconds::max())
+void WaitForFenceValue(ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent, std::chrono::milliseconds duration)
 {
     if (fence->GetCompletedValue() < fenceValue)
     {
