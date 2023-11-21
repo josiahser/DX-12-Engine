@@ -1,6 +1,10 @@
 #include "framework.h"
 #include "LearningAttempt2.h"
 
+#pragma comment (lib, "d3d12")
+#pragma comment (lib, "dxgi")
+#pragma comment (lib, "d3dcompiler")
+
 #if defined(min)
 #undef min
 #endif
@@ -22,7 +26,6 @@ void EnableDebugLayer();                        //Activate debug layer
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 const uint8_t g_NumFrames = 3;                  // The number of swap chain back buffers (CANNOT be less than 2)
 bool g_UseWarp = false;                         //Use WARP adapter (Software rasterizer, for old GPUs)
 
@@ -41,7 +44,7 @@ ComPtr<ID3D12Device2> g_Device{};               //The D3D12 Device Interface poi
 ComPtr<ID3D12CommandQueue> g_CommandQueue{};    //The D3D12 Command Queue Interface pointer (to execute command lists in the queue)
 ComPtr<IDXGISwapChain4> g_SwapChain{};          //The Swap chain interface pointer (To swap buffer execution chains, presents the rendered image to the window)
 ComPtr<ID3D12Resource> g_BackBuffers[g_NumFrames] = {}; //The Backbuffer resources interface pointer array (Holds the pointers to the backbuffer resources)
-ComPtr<ID3D12GraphicsCommandList2> g_CommandList{};  //The command list interface pointer (GPU commands go here first, then it places commands to execute in the queue, uses a single thread per list)
+ComPtr<ID3D12GraphicsCommandList> g_CommandList{};  //The command list interface pointer (GPU commands go here first, then it places commands to execute in the queue, uses a single thread per list)
 ComPtr<ID3D12CommandAllocator> g_CommandAllocators[g_NumFrames] = {}; //The backing memory for recording the GPU commands into a command list (Can't be reused w/out the queue finishing, at least one per render frame that is "in flight" so at least one per back buffer)
 ComPtr<ID3D12DescriptorHeap> g_RTVDescriptorHeap{}; //The back buffer textures of the swap chain. Describes location of texture resource in GPU mem, dimensions of texture, and format. Clears back buffers of the render target and render geometry to the screen)
 UINT g_RTVDescriptorSize{};                     //The RTVs are stored in a descriptor heap (an array of descriptors or views, or better put, a resource that resides in GPU memory)
@@ -49,7 +52,7 @@ UINT g_RTVDescriptorSize{};                     //The RTVs are stored in a descr
 UINT g_CurrentBackBufferIndex{};                //The index of the current back buffer might not be sequential
 
 //Syncronization objects
-ComPtr<ID3D12Fence1> g_Fence{};                 //Used to store the fence object for syncing the command queue
+ComPtr<ID3D12Fence> g_Fence{};                 //Used to store the fence object for syncing the command queue
 uint64_t g_FenceValue = 0;                      //Next fence value to signal the command queue next command
 uint64_t g_FrameFenceValues[g_NumFrames] = {};  //For each rendered frame that could be "in-flight" in the command Queue, this var holds the fence value used for that particular indexed frame
 HANDLE g_FenceEvent{};                          //a handle to an OS event object that will be used to receive the notification that the fence has reached a value (so it know when to stop delaying)
@@ -60,8 +63,8 @@ bool g_TearingSupoorted = false;                //by default tearing not support
 bool g_Fullscreen = false;                      //By default, use windowed mode, can be toggled with the Alt+Enter or F11 keys
 
 // Forward declarations of functions included in this code module:
-void                                MyRegisterClass(HINSTANCE hInstance);
-HWND                                InitInstance(HINSTANCE, uint32_t, uint32_t);
+void                                MyRegisterClass(HINSTANCE hInstance, const wchar_t* className);
+HWND                                InitInstance(const wchar_t* windowClassName, HINSTANCE hInstance, LPCWSTR title, uint32_t width, uint32_t height);
 LRESULT CALLBACK                    WndProc(HWND, UINT, WPARAM, LPARAM);
 void                                ParseCommandLineArguments();
 ComPtr<IDXGIAdapter4>               GetAdapter(bool useWarp); //Query for a compatible adapter
@@ -76,48 +79,105 @@ ComPtr<ID3D12GraphicsCommandList>   CreateCommandList(ComPtr<ID3D12Device2> devi
 ComPtr<ID3D12Fence>                 CreateFence(ComPtr<ID3D12Device2> device);
 HANDLE                              CreateEventHandle();
 uint64_t                            Signal(ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue);
-void                                WaitForFenceValue(ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent, std::chrono::milliseconds duration = std::chrono::milliseconds::max());
+void                                WaitForFenceValue(ComPtr<ID3D12Fence> fence, uint64_t fenceValue, HANDLE fenceEvent, std::chrono::milliseconds duration);
 void                                Flush(ComPtr<ID3D12CommandQueue> commandQueue, ComPtr<ID3D12Fence> fence, uint64_t& fenceValue, HANDLE fenceEvent);
 void                                Update();
 void                                Render();
 void                                Resize(uint32_t width, uint32_t height);
+void                                SetFullScreen(bool fullscreen);
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+//Main entry point for the application
+int CALLBACK wWinMain(HINSTANCE hInstance,
+                      HINSTANCE hPrevInstance,
+                      PWSTR     lpCmdLine,
+                      int       nCmdShow)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+    //If Windows 10 and above, per Monitor V2 DPI awareness context available
+    //This allows the client area of the window to achieve 100% scaling
+    //While still allowing non-client window content to be rendered in a DPI sensitive fashion
+    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
-    // TODO: Place code here.
+    //// Initialize global strings
+    //LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    //LoadStringW(hInstance, IDC_LEARNINGATTEMPT2, szWindowClass, MAX_LOADSTRING);
+    //MyRegisterClass(hInstance);
 
-    // Initialize global strings
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_LEARNINGATTEMPT2, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+    //// Perform application initialization:
+    //if (!InitInstance (hInstance, g_ClientWidth, g_ClientHeight))
+    //{
+    //    return FALSE;
+    //}
 
-    // Perform application initialization:
-    if (!InitInstance (hInstance, g_ClientWidth, g_ClientHeight))
-    {
-        return FALSE;
-    }
+    const wchar_t* windowClassName = L"DX12WindowClass";
+    ParseCommandLineArguments();
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_LEARNINGATTEMPT2));
+    EnableDebugLayer();
 
-    MSG msg;
+    g_TearingSupoorted = CheckTearingSupport();
+
+    MyRegisterClass(hInstance, windowClassName);
+    g_hWnd = InitInstance(windowClassName, hInst, L"Learning DirectX 12", g_ClientWidth, g_ClientHeight);
+
+    //Initialize the global window rect variable
+    ::GetWindowRect(g_hWnd, &g_WindowRect);
+
+    //Create the DX12 objects
+    //Start with the adapter
+    ComPtr<IDXGIAdapter4> dxgiAdapter4 = GetAdapter(g_UseWarp);
+
+    //Use that adapter to create a device
+    g_Device = CreateDevice(dxgiAdapter4);
+
+    //Use that device to create a direct command queue
+    g_CommandQueue = CreateCommandQueue(g_Device, D3D12_COMMAND_LIST_TYPE_DIRECT);
+
+    //Use the global window handle, window size and that new command queue to create a swap chain
+    g_SwapChain = CreateSwapChain(g_hWnd, g_CommandQueue, g_ClientWidth, g_ClientHeight, g_NumFrames);
+
+    //Make sure you query the swap chain for the current back buffer index and assign it to the global variable
+    g_CurrentBackBufferIndex = g_SwapChain->GetCurrentBackBufferIndex();
+
+    //Use the Device to create a Render Target View descriptor heap for the amount of resources in g_NumFrames
+    g_RTVDescriptorHeap = CreateDescriptorHeap(g_Device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, g_NumFrames);
+
+    //Get the size of each descriptor in the heap for incrementing using the device
+    g_RTVDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+    //Fill the descriptor heap with render target views
+    UpdateRenderTargetViews(g_Device, g_SwapChain, g_RTVDescriptorHeap);
+
+    //Create the command list and command alloctors for the list, a command allocator(memory allocated for command list) for each in-flight render frames (# of back-buffers)
+    for (int i = 0; i < g_NumFrames; ++i)
+        g_CommandAllocators[i] = CreateCommandAllocator(g_Device, D3D12_COMMAND_LIST_TYPE_DIRECT);
+    g_CommandList = CreateCommandList(g_Device, g_CommandAllocators[g_CurrentBackBufferIndex], D3D12_COMMAND_LIST_TYPE_DIRECT);
+
+    //Create the fence and fence event object, using the device
+    g_Fence = CreateFence(g_Device);
+    g_FenceEvent = CreateEventHandle();
+
+    g_IsInitialized = true;
+
+    ::ShowWindow(g_hWnd, SW_SHOW);
+
+    MSG msg = {};
+
+    //HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_LEARNINGATTEMPT2));
 
     // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
+    while (msg.message != WM_QUIT)
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
         }
     }
+    //Make sure the command queue has finished all commands before closing
+    Flush(g_CommandQueue, g_Fence, g_FenceValue, g_FenceEvent);
 
-    return (int) msg.wParam;
+    ::CloseHandle(g_FenceEvent);
+
+    return 0;
 }
 
 //
@@ -125,7 +185,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 //  PURPOSE: Registers the window class.
 //
-void MyRegisterClass(HINSTANCE hInstance)
+void MyRegisterClass(HINSTANCE hInstance, const wchar_t* className)
 {
     //Registers a window class for creating our render window with
     WNDCLASSEXW wcex = {};
@@ -136,12 +196,12 @@ void MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LEARNINGATTEMPT2));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hIcon          = ::LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LEARNINGATTEMPT2));
+    wcex.hCursor        = ::LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.lpszMenuName   = NULL;
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.lpszClassName  = className;
+    wcex.hIconSm        = ::LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     static ATOM atom = ::RegisterClassExW(&wcex);
     assert(atom > 0);
@@ -157,9 +217,9 @@ void MyRegisterClass(HINSTANCE hInstance)
 //        In this function, we save the instance handle in a global variable and
 //        create and display the main program window.
 //
-HWND InitInstance(HINSTANCE hInstance, uint32_t width, uint32_t height)
+HWND InitInstance(const wchar_t* windowClassName ,HINSTANCE hInstance, LPCWSTR title, uint32_t width, uint32_t height)
 {
-   hInst = hInstance; // Store instance handle in our global variable
+   //hInst = hInstance; // Store instance handle in our global variable
 
    int screenWidth = ::GetSystemMetrics(SM_CXSCREEN);
    int screenHeight = ::GetSystemMetrics(SM_CYSCREEN);
@@ -175,7 +235,7 @@ HWND InitInstance(HINSTANCE hInstance, uint32_t width, uint32_t height)
    int windowY = std::max<int>(0, (screenHeight - windowHeight) / 2);
    
    //Create window handle
-   HWND hWnd = ::CreateWindowExW(NULL, szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   HWND hWnd = ::CreateWindowExW(NULL, windowClassName, title, WS_OVERLAPPEDWINDOW,
       windowX, windowY, windowWidth, windowHeight, nullptr, nullptr, hInstance, nullptr);
 
    assert(hWnd && "Failed to create window");
@@ -195,35 +255,76 @@ HWND InitInstance(HINSTANCE hInstance, uint32_t width, uint32_t height)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
+    if (g_IsInitialized)
     {
-    //case WM_COMMAND:
-    //    {
-    //        int wmId = LOWORD(wParam);
-    //        // Parse the menu selections:
-    //        switch (wmId)
-    //        {
-    //        case IDM_EXIT:
-    //            DestroyWindow(hWnd);
-    //            break;
-    //        default:
-    //            return DefWindowProc(hWnd, message, wParam, lParam);
-    //        }
-    //    }
-    //    break;
-    case WM_PAINT:
+        switch (message)
         {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
+        //case WM_COMMAND:
+        //    {
+        //        int wmId = LOWORD(wParam);
+        //        // Parse the menu selections:
+        //        switch (wmId)
+        //        {
+        //        case IDM_EXIT:
+        //            DestroyWindow(hWnd);
+        //            break;
+        //        default:
+        //            return DefWindowProc(hWnd, message, wParam, lParam);
+        //        }
+        //    }
+        //    break;
+        case WM_PAINT:
+            Update();
+            Render();
+            break;
+        case WM_SYSKEYDOWN:
+        case WM_KEYDOWN:
+        {
+            bool alt = (::GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
+
+            switch (wParam)
+            {
+            case 'V':
+                g_VSync = !g_VSync;
+                break;
+            case VK_ESCAPE:
+                ::PostQuitMessage(0);
+                break;
+            case VK_RETURN:
+                if (alt)
+                {
+            case VK_F11:
+                SetFullScreen(!g_Fullscreen);
+                }
+                break;
+            }
         }
         break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
+        //The default window procedure will play a sys notification when alt+enter combo is pressed
+        //Unless we handle this message below
+        case WM_SYSCHAR:
+            break;
+        case WM_SIZE:
+        {
+            RECT clientRect = {};
+            ::GetClientRect(g_hWnd, &clientRect);
+
+            int width = clientRect.right - clientRect.left;
+            int height = clientRect.bottom - clientRect.top;
+
+            Resize(width, height);
+        }
         break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
+        default:
+            return ::DefWindowProcW(hWnd, message, wParam, lParam);
+        }
+    }
+    else
+    {
+        return ::DefWindowProcW(hWnd, message, wParam, lParam);
     }
     return 0;
 }
@@ -655,12 +756,29 @@ void SetFullScreen(bool fullscreen)
             MONITORINFOEX monitorInfo = {};
             monitorInfo.cbSize = sizeof(MONITORINFOEX);
             ::GetMonitorInfo(hMonitor, &monitorInfo);
+
+            ::SetWindowPos(g_hWnd, HWND_TOP, monitorInfo.rcMonitor.left, monitorInfo.rcMonitor.top,
+                monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
+                monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top,
+                SWP_FRAMECHANGED | SWP_NOACTIVATE);
+
+            ::ShowWindow(g_hWnd, SW_MAXIMIZE);
+        }
+        else
+        {
+            //Restore all the window decorators
+            ::SetWindowLong(g_hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+
+            ::SetWindowPos(g_hWnd, HWND_NOTOPMOST,
+                g_WindowRect.left, g_WindowRect.top,
+                g_WindowRect.right - g_WindowRect.left,
+                g_WindowRect.bottom - g_WindowRect.top,
+                SWP_FRAMECHANGED | SWP_NOACTIVATE);
+
+            ::ShowWindow(g_hWnd, SW_NORMAL);
         }
     }
 }
 
-//TODO: Fix up the window message procedure (wndProc)
-
-//TODO: Fix up the main entry point (wWinMain)
 
 //TODO: Put everything into classes
