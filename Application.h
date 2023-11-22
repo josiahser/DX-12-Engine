@@ -69,7 +69,6 @@ private:
 	Application& operator=(const Application& other) = delete;
 
 	HINSTANCE m_hInstance{};
-	const uint8_t m_NumFrames = 3;
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> m_Adapter{};
 	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device{};
 	std::shared_ptr<CommandQueue> m_DirectCommandQueue{};

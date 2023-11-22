@@ -15,6 +15,18 @@
 //#include <memory.h>
 //#include <tchar.h>
 
+#if defined(min)
+#undef min
+#endif
+
+#if defined(max)
+#undef max
+#endif
+
+#if defined(CreateWindow)
+#undef CreateWindow
+#endif
+
 //DirectX 12 headers
 #include <d3d12.h>
 #include <dxgi1_6.h>

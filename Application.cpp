@@ -348,3 +348,223 @@ static void RemoveWindow(HWND hWnd)
         gs_Windows.erase(windowIter);
     }
 }
+
+//Convert message ID into a mousebutton ID
+MouseButtonEventArgs::MouseButton DecodeMouseButton(UINT messageID)
+{
+    MouseButtonEventArgs::MouseButton mouseButton = MouseButtonEventArgs::None;
+    switch (messageID)
+    {
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_LBUTTONDBLCLK:
+    {
+        mouseButton = MouseButtonEventArgs::Left;
+    }
+    break;
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
+    case WM_RBUTTONDBLCLK:
+    {
+        mouseButton = MouseButtonEventArgs::Right;
+    }
+    break;
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_MBUTTONDBLCLK:
+    {
+        mouseButton = MouseButtonEventArgs::Middle;
+    }
+    break;
+    }
+
+    return mouseButton;
+}
+
+static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    WindowPtr pWindow;
+    {
+        WindowMap::iterator iter = gs_Windows.find(hWnd);
+        if (iter != gs_Windows.end())
+            pWindow = iter->second;
+    }
+
+    if (pWindow)
+    {
+        switch (message)
+        {
+            //case WM_COMMAND:
+            //    {
+            //        int wmId = LOWORD(wParam);
+            //        // Parse the menu selections:
+            //        switch (wmId)
+            //        {
+            //        case IDM_EXIT:
+            //            DestroyWindow(hWnd);
+            //            break;
+            //        default:
+            //            return DefWindowProc(hWnd, message, wParam, lParam);
+            //        }
+            //    }
+            //    break;
+        case WM_PAINT:
+        {
+            //Delta time will be filled by the Window
+            UpdateEventArgs updateEventArgs(0.0f, 0.0f);
+            pWindow->OnUpdate(updateEventArgs);
+            RenderEventArgs renderEventArgs(0.0f, 0.0f);
+            pWindow->OnRender(renderEventArgs);
+        }
+        break;
+        case WM_SYSKEYDOWN:
+        case WM_KEYDOWN:
+        {
+            MSG charMsg{};
+            //Get the unicode charater (UTF-16)
+            unsigned int c = 0;
+            
+            //For printable characters, the next message will be WM_CHAR
+            //this message contains the character code we need to send the key pressed event
+            if (PeekMessage(&charMsg, hWnd, 0, 0, PM_NOREMOVE) && charMsg.message == WM_CHAR)
+            {
+                GetMessage(&charMsg, hWnd, 0, 0);
+                c = static_cast<unsigned int>(charMsg.wParam);
+            }
+            bool shift = (GetAsyncKeyState(VK_SHIFT) & 0x800) != 0;
+            bool control = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+            bool alt = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
+            KeyCode::Key key = (KeyCode::Key)wParam;
+            unsigned int scanCode = (lParam & 0x00FF0000) >> 16;
+            KeyEventArgs keyEventArgs(key, c, KeyEventArgs::Pressed, shift, control, alt);
+            pWindow->OnKeyPressed(keyEventArgs);
+        }
+        break;
+        case WM_SYSKEYUP:
+        case WM_KEYUP:
+        {
+            bool shift = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
+            bool control = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+            bool alt = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
+            KeyCode::Key key = (KeyCode::Key)wParam;
+            unsigned int c = 0;
+            unsigned int scanCode = (lParam & 0x00FF0000) >> 16;
+
+            //Determine which key was released by converting key code and scan code to a character
+            unsigned char keyboardState[256] = {};
+            GetKeyboardState(keyboardState);
+            wchar_t translatedCharacters[4] = {};
+            if (int result = ToUnicodeEx(static_cast<UINT>(wParam), scanCode, keyboardState, translatedCharacters, 4, 0, NULL) > 0)
+                c = translatedCharacters[0];
+
+            KeyEventArgs keyEventArgs(key, c, KeyEventArgs::Released, shift, control, alt);
+            pWindow->OnKeyReleased(keyEventArgs);
+        }
+        break;
+        //The default window procedure will play a sys notification when alt+enter combo is pressed
+        //Unless we handle this message below
+        case WM_SYSCHAR:
+            break;
+        case WM_MOUSEMOVE:
+        {
+            bool lButton = (wParam & MK_LBUTTON) != 0;
+            bool rButton = (wParam & MK_RBUTTON) != 0;
+            bool mButton = (wParam & MK_MBUTTON) != 0;
+            bool shift = (wParam & MK_SHIFT) != 0;
+            bool control = (wParam & MK_CONTROL) != 0;
+
+            int x = ((int)(short)LOWORD(lParam));
+            int y = ((int)(short)HIWORD(lParam));
+
+            MouseMotionEventArgs mouseMotionEventArgs(lButton, mButton, rButton, control, shift, x, y);
+            pWindow->OnMouseMoved(mouseMotionEventArgs);
+        }
+        break;
+        case WM_LBUTTONDOWN:
+        case WM_RBUTTONDOWN:
+        case WM_MBUTTONDOWN:
+        {
+            bool lButton = (wParam & MK_LBUTTON) != 0;
+            bool rButton = (wParam & MK_RBUTTON) != 0;
+            bool mButton = (wParam & MK_MBUTTON) != 0;
+            bool shift = (wParam & MK_SHIFT) != 0;
+            bool control = (wParam & MK_CONTROL) != 0;
+
+            int x = ((int)(short)LOWORD(lParam));
+            int y = ((int)(short)HIWORD(lParam));
+
+            MouseButtonEventArgs mouseButtonEventArgs(DecodeMouseButton(message), MouseButtonEventArgs::Pressed, lButton, mButton, rButton, control, shift, x, y);
+            pWindow->OnMouseButtonPressed(mouseButtonEventArgs);
+        }
+        break;
+        case WM_LBUTTONUP:
+        case WM_RBUTTONUP:
+        case WM_MBUTTONUP:
+        {
+            bool lButton = (wParam & MK_LBUTTON) != 0;
+            bool rButton = (wParam & MK_RBUTTON) != 0;
+            bool mButton = (wParam & MK_MBUTTON) != 0;
+            bool shift = (wParam & MK_SHIFT) != 0;
+            bool control = (wParam & MK_CONTROL) != 0;
+
+            int x = ((int)(short)LOWORD(lParam));
+            int y = ((int)(short)HIWORD(lParam));
+
+            MouseButtonEventArgs mouseButtonEventArgs(DecodeMouseButton(message), MouseButtonEventArgs::Released, lButton, mButton, rButton, control, shift, x, y);
+            pWindow->OnMouseButtonReleased(mouseButtonEventArgs);
+        }
+        break;
+        case WM_MOUSEWHEEL:
+        {
+            // The distance the mouse wheel is rotated.
+            // A positive value indicates the wheel was rotated to the right.
+            // A negative value indicates the wheel was rotated to the left.
+            float zDelta = ((int)(short)HIWORD(wParam)) / (float)WHEEL_DELTA;
+            short keyStates = (short)LOWORD(wParam);
+
+            bool lButton = (keyStates & MK_LBUTTON) != 0;
+            bool rButton = (keyStates & MK_RBUTTON) != 0;
+            bool mButton = (keyStates & MK_MBUTTON) != 0;
+            bool shift = (keyStates & MK_SHIFT) != 0;
+            bool control = (keyStates & MK_CONTROL) != 0;
+
+            int x = ((int)(short)LOWORD(lParam));
+            int y = ((int)(short)HIWORD(lParam));
+
+            // Convert the screen coordinates to client coordinates.
+            POINT clientToScreenPoint{};
+            clientToScreenPoint.x = x;
+            clientToScreenPoint.y = y;
+            ScreenToClient(hWnd, &clientToScreenPoint);
+
+            MouseWheelEventArgs mouseWheelEventArgs(zDelta, lButton, mButton, rButton, control, shift, (int)clientToScreenPoint.x, (int)clientToScreenPoint.y);
+            pWindow->OnMouseWheel(mouseWheelEventArgs);
+        }
+        break;
+        case WM_SIZE:
+        {
+            int width = ((int)(short)LOWORD(lParam));
+            int height = ((int)(short)HIWORD(lParam));
+
+            ResizeEventArgs resizeEventArgs(width, height);
+            pWindow->OnResize(resizeEventArgs);
+        }
+        break;
+        case WM_DESTROY:
+        {
+            //If a window is being destroyed, remove it from the window maps
+            RemoveWindow(hWnd);
+            if (gs_Windows.empty()) //If there are no more windows, quit the app
+                PostQuitMessage(0);
+        }
+        break;
+        default:
+            return ::DefWindowProcW(hWnd, message, wParam, lParam);
+        }
+    }
+    else
+    {
+        return ::DefWindowProcW(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}

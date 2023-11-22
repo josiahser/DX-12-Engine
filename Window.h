@@ -1,6 +1,8 @@
 #pragma once
 
 #include "framework.h"
+#include "Events.h"
+#include "HighResolutionClock.h"
 
 class Game;
 
@@ -16,7 +18,7 @@ public:
 	//Destroy this window
 	void Destroy();
 
-	const std::wstring& GetWindowName();
+	const std::wstring& GetWindowName() const;
 
 	int GetClientHeight() const;
 	int GetClientWidth() const;
@@ -68,9 +70,26 @@ protected:
 	//Register a game with this window. this allows the window to callback functions in the game class
 	void RegisterCallbacks(std::shared_ptr<Game> pGame);
 
-	//
-	//Here's where all the event arguments and keys go
-	//
+	//Update and Draw can only be called by the application
+	virtual void OnUpdate(UpdateEventArgs& e);
+	virtual void OnRender(RenderEventArgs& e);
+
+	//A keyboard key was pressed
+	virtual void OnKeyPressed(KeyEventArgs& e);
+	//Keyboard key was released
+	virtual void OnKeyReleased(KeyEventArgs& e);
+
+	//Mouse was moved
+	virtual void OnMouseMoved(MouseMotionEventArgs& e);
+	//Mouse button was pressed
+	virtual void OnMouseButtonPressed(MouseButtonEventArgs& e);
+	//Mouse button was released
+	virtual void OnMouseButtonReleased(MouseButtonEventArgs& e);
+	//Mouse wheel was moved
+	virtual void OnMouseWheel(MouseWheelEventArgs& e);
+
+	//The window was resized
+	virtual void OnResize(ResizeEventArgs& e);
 
 	//Create the swapchain
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> CreateSwapChain();
@@ -86,8 +105,8 @@ private:
 	HWND m_hWnd{};
 
 	std::wstring m_windowName{};
-	bool g_VSync{};
-	bool g_Fullscreen{};
+	bool m_VSync{};
+	bool m_Fullscreen{};
 	int m_ClientWidth{};
 	int m_ClientHeight{};
 
@@ -95,8 +114,8 @@ private:
 	//High resolution clock goes here, render and update clock
 	//
 	
-	std::chrono::high_resolution_clock m_UpdateClock;
-	std::chrono::high_resolution_clock m_RenderClock;
+	HighResolutionClock m_UpdateClock{};
+	HighResolutionClock m_RenderClock{};
 	uint64_t m_FrameCounter{};
 
 	//Associated game
