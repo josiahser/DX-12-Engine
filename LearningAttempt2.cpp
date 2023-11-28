@@ -779,6 +779,3 @@ void SetFullScreen(bool fullscreen)
         }
     }
 }
-
-
-//TODO: Put everything into classes
