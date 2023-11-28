@@ -56,30 +56,28 @@ private:
 	//Resize the depth buffer to match the size of the client area
 	void ResizeDepthBuffer(int width, int height);
 
-	/// **
-	/// Member variables from here below
-	/// **
+	//Member variables here below
 
 	uint64_t m_FenceValues[Window::bufferCount] = {};
 
 	//Vertex buffer for the cube
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_VertexBuffer{};
-	D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView{};
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_VertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
 
 	//Index buffer for the cube
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_IndexBuffer{};
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_IndexBuffer;
 	D3D12_INDEX_BUFFER_VIEW m_IndexBufferView{};
 
 	//Depth Buffer
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthBuffer{};
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthBuffer;
 	//Descriptor Heap for depth buffer
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DSVHeap{};
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
 
 	//Root signature
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature{};
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
 	
 	//Pipeline state object
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState{};
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
 
 	D3D12_VIEWPORT m_Viewport{};
 	D3D12_RECT m_ScissorRect{};

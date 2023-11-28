@@ -260,8 +260,8 @@ Microsoft::WRL::ComPtr<IDXGISwapChain4> Window::CreateSwapChain()
 {
 	Application& app = Application::Get();
 
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> dxgiSwapChain4{};
-	Microsoft::WRL::ComPtr<IDXGIFactory4> dxgiFactory4{};
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> dxgiSwapChain4;
+	Microsoft::WRL::ComPtr<IDXGIFactory4> dxgiFactory4;
 	UINT createFactoryFlags = 0;
 #if defined(_DEBUG)
 	createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
@@ -284,7 +284,7 @@ Microsoft::WRL::ComPtr<IDXGISwapChain4> Window::CreateSwapChain()
 	swapChainDesc.Flags = m_IsTearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 	ID3D12CommandQueue* pCommandQueue = app.GetCommandQueue()->GetD3D12CommandQueue().Get();
 
-	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain1{};
+	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain1;
 	ThrowIfFailed(dxgiFactory4->CreateSwapChainForHwnd(pCommandQueue, m_hWnd, &swapChainDesc, nullptr, nullptr, &swapChain1));
 
 	//Handling fullscreen toggle manually, so disable the alt+enter feature

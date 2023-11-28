@@ -22,9 +22,9 @@ CommandQueue::~CommandQueue()
 
 }
 
-Microsoft::WRL::ComPtr<ID3D12CommandAllocator>CommandQueue::CreateCommandAllocator()
+Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CommandQueue::CreateCommandAllocator()
 {
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator{};
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator;
 	ThrowIfFailed(m_Device->CreateCommandAllocator(m_CommandListType, IID_PPV_ARGS(&commandAllocator)));
 
 	return commandAllocator;
@@ -32,7 +32,7 @@ Microsoft::WRL::ComPtr<ID3D12CommandAllocator>CommandQueue::CreateCommandAllocat
 
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2>CommandQueue::CreateCommandList(Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator)
 {
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList{};
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList;
 	ThrowIfFailed(m_Device->CreateCommandList(0, m_CommandListType, commandAllocator.Get(), nullptr, IID_PPV_ARGS(&commandList)));
 
 	return commandList;
@@ -42,8 +42,8 @@ Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2>CommandQueue::CreateCommandLis
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2>CommandQueue::GetCommandList()
 {
 	//Temp variables to store the command allocator and list
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator{};
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList{};
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator;
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList;
 
 	//Checking to see if the allocator queue isn't empty, and whether there's any unused or reusable allocators (not in flight)
 	if (!m_CommandAllocatorQueue.empty() && IsFenceComplete(m_CommandAllocatorQueue.front().fenceValue))
@@ -83,7 +83,7 @@ uint64_t CommandQueue::ExecuteCommandList(Microsoft::WRL::ComPtr<ID3D12GraphicsC
 	commandList->Close();
 
 	//Retrieve the associated command allocator to the commandlist
-	ID3D12CommandAllocator* commandAllocator{};
+	ID3D12CommandAllocator* commandAllocator;
 	UINT dataSize = sizeof(commandAllocator);
 	ThrowIfFailed(commandList->GetPrivateData(__uuidof(ID3D12CommandAllocator), &dataSize, &commandAllocator));
 
@@ -109,18 +109,17 @@ uint64_t CommandQueue::ExecuteCommandList(Microsoft::WRL::ComPtr<ID3D12GraphicsC
 uint64_t CommandQueue::Signal()
 {
 	uint64_t fenceValueForSignal = ++m_FenceValue;
-	ThrowIfFailed(m_CommandQueue->Signal(m_Fence.Get(), fenceValueForSignal));
+	m_CommandQueue->Signal(m_Fence.Get(), fenceValueForSignal);
 
 	return fenceValueForSignal;
 }
 
-void CommandQueue::WaitForFenceEvent(uint64_t fenceValue)
+void CommandQueue::WaitForFenceValue(uint64_t fenceValue)
 {
-	std::chrono::milliseconds duration = std::chrono::milliseconds::max();
-	if (m_Fence->GetCompletedValue() < fenceValue)
+	if (!IsFenceComplete(fenceValue))
 	{
-		ThrowIfFailed(m_Fence->SetEventOnCompletion(fenceValue, m_FenceEvent));
-		::WaitForSingleObject(m_FenceEvent, static_cast<DWORD>(duration.count()));
+		m_Fence->SetEventOnCompletion(fenceValue, m_FenceEvent);
+		::WaitForSingleObject(m_FenceEvent, DWORD_MAX);
 	}
 }
 
@@ -131,7 +130,7 @@ bool CommandQueue::IsFenceComplete(uint64_t fenceValue)
 
 void CommandQueue::Flush()
 {
-	WaitForFenceEvent(Signal());
+	WaitForFenceValue(Signal());
 }
 
 Microsoft::WRL::ComPtr<ID3D12CommandQueue> CommandQueue::GetD3D12CommandQueue() const

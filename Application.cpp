@@ -11,8 +11,8 @@ using WindowMap = std::map<HWND, WindowPtr>;
 using WindowNameMap = std::map<std::wstring, WindowPtr>;
 
 static Application* gs_pSingleton = nullptr;
-static WindowMap gs_Windows{};
-static WindowNameMap gs_WindowByName{};
+static WindowMap gs_Windows;
+static WindowNameMap gs_WindowByName;
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -33,7 +33,7 @@ Application::Application(HINSTANCE hInstance)
 
 #if defined(_DEBUG)
 	//Always enable the debug layer before doing anything DX12 related
-	Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface{};
+	Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
 	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
 	debugInterface->EnableDebugLayer();
 #endif
@@ -292,7 +292,7 @@ Microsoft::WRL::ComPtr<ID3D12Device2> Application::GetDevice() const
 
 std::shared_ptr<CommandQueue> Application::GetCommandQueue(D3D12_COMMAND_LIST_TYPE type) const
 {
-    std::shared_ptr<CommandQueue> commandQueue{};
+    std::shared_ptr<CommandQueue> commandQueue;
     switch (type)
     {
     case D3D12_COMMAND_LIST_TYPE_DIRECT:
@@ -451,9 +451,9 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
             unsigned int scanCode = (lParam & 0x00FF0000) >> 16;
 
             //Determine which key was released by converting key code and scan code to a character
-            unsigned char keyboardState[256] = {};
+            unsigned char keyboardState[256];
             GetKeyboardState(keyboardState);
-            wchar_t translatedCharacters[4] = {};
+            wchar_t translatedCharacters[4];
             if (int result = ToUnicodeEx(static_cast<UINT>(wParam), scanCode, keyboardState, translatedCharacters, 4, 0, NULL) > 0)
                 c = translatedCharacters[0];
 

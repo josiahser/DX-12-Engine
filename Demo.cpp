@@ -6,8 +6,6 @@
 
 #include "framework.h"
 
-#pragma comment(lib, "D3Dcompiler_47")
-
 using namespace DirectX;
 
 //Vertex data for a colored cube
@@ -89,7 +87,7 @@ bool Demo::LoadContent()
     auto commandList = commandQueue->GetCommandList();
 
     //Upload vertex buffer data
-    Microsoft::WRL::ComPtr<ID3D12Resource> intermediateVertexBuffer{};
+    Microsoft::WRL::ComPtr<ID3D12Resource> intermediateVertexBuffer;
     UpdateBufferResource(commandList.Get(), &m_VertexBuffer, &intermediateVertexBuffer,
         _countof(g_Vertices), sizeof(VertexPosColor), g_Vertices);
 
@@ -99,7 +97,7 @@ bool Demo::LoadContent()
     m_VertexBufferView.StrideInBytes = sizeof(VertexPosColor);
 
     //Upload index buffer data
-    Microsoft::WRL::ComPtr<ID3D12Resource> intermediateIndexBuffer{};
+    Microsoft::WRL::ComPtr<ID3D12Resource> intermediateIndexBuffer;
     UpdateBufferResource(commandList.Get(), &m_IndexBuffer, &intermediateIndexBuffer, _countof(g_Indices), sizeof(WORD), g_Indices);
 
     //Create the index buffer view, describes the index buffer to the input assembler stage
@@ -115,11 +113,11 @@ bool Demo::LoadContent()
     ThrowIfFailed(device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 
     //Load the vertex shader
-    Microsoft::WRL::ComPtr<ID3DBlob> vertexShaderBlob{};
+    Microsoft::WRL::ComPtr<ID3DBlob> vertexShaderBlob;
     ThrowIfFailed(D3DReadFileToBlob(L"VertexShader.cso", &vertexShaderBlob));
 
     //Load the pixel shader
-    Microsoft::WRL::ComPtr<ID3DBlob> pixelShaderBlob{};
+    Microsoft::WRL::ComPtr<ID3DBlob> pixelShaderBlob;
     ThrowIfFailed(D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBlob));
 
     //Create the vertex input layout
@@ -153,8 +151,8 @@ bool Demo::LoadContent()
     rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
 
     //Serialize the root signature description into a binary object that can be used to create the actual root signature
-    Microsoft::WRL::ComPtr<ID3DBlob> rootSignatureBlob{};
-    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob{};
+    Microsoft::WRL::ComPtr<ID3DBlob> rootSignatureBlob;
+    Microsoft::WRL::ComPtr<ID3DBlob> errorBlob;
     ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDescription, featureData.HighestVersion, &rootSignatureBlob, &errorBlob));
     
     //Now we can create the root signature
@@ -194,7 +192,7 @@ bool Demo::LoadContent()
 
     //Before finishing up here, the command list must be executed on the Command queue so the buffers are uploaded to the GPU resources before rendering
     auto fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceEvent(fenceValue);
+    commandQueue->WaitForFenceValue(fenceValue);
 
     m_ContentLoaded = true;
 
@@ -202,6 +200,12 @@ bool Demo::LoadContent()
     //Resize/Create the depth buffer
     ResizeDepthBuffer(GetClientWidth(), GetClientHeight());
     return true;
+}
+
+//Unloads all the content
+void Demo::UnloadContent()
+{
+    m_ContentLoaded = false;
 }
 
 void Demo::ResizeDepthBuffer(int width, int height)
@@ -372,7 +376,7 @@ void Demo::OnRender(RenderEventArgs& e)
 
         currentBackBufferIndex = m_pWindow->Present();
 
-        commandQueue->WaitForFenceEvent(m_FenceValues[currentBackBufferIndex]);
+        commandQueue->WaitForFenceValue(m_FenceValues[currentBackBufferIndex]);
     }
 }
 
@@ -388,10 +392,12 @@ void Demo::OnKeyPressed(KeyEventArgs& e)
     case KeyCode::Enter:
         if (e.Alt)
         {
+        [[fallthrough]];
     case KeyCode::F11:
         m_pWindow->ToggleFullscreen();
         break;
         }
+        [[fallthrough]];
     case KeyCode::V:
         m_pWindow->ToggleVSync();
         break;

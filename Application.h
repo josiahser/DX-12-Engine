@@ -68,13 +68,13 @@ private:
 	Application(const Application& copy) = delete;
 	Application& operator=(const Application& other) = delete;
 
-	HINSTANCE m_hInstance{};
-	Microsoft::WRL::ComPtr<IDXGIAdapter4> m_Adapter{};
-	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device{};
-	std::shared_ptr<CommandQueue> m_DirectCommandQueue{};
-	std::shared_ptr<CommandQueue> m_CopyCommandQueue{};
-	std::shared_ptr<CommandQueue> m_ComputeCommandQueue{};
+	HINSTANCE m_hInstance;
+	Microsoft::WRL::ComPtr<IDXGIAdapter4> m_Adapter;
+	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device;
+	std::shared_ptr<CommandQueue> m_DirectCommandQueue;
+	std::shared_ptr<CommandQueue> m_CopyCommandQueue;
+	std::shared_ptr<CommandQueue> m_ComputeCommandQueue;
 
-	bool m_TearingSupported{};
+	bool m_TearingSupported;
 
 };
