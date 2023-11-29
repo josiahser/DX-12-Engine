@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Window.h"
 #include "CommandQueue.h"
+#include "DescriptorAllocator.h"
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
 

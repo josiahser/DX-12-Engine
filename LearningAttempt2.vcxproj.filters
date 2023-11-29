@@ -60,6 +60,27 @@
     <ClInclude Include="KeyCodes.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UploadBuffer.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorAllocator.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorAllocation.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorAllocatorPage.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicDescriptorHeap.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="RootSignature.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -81,6 +102,21 @@
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
     <ClCompile Include="HighResolutionClock.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="UploadBuffer.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorAllocator.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorAllocatorPage.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorAllocation.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="RootSignature.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
   </ItemGroup>

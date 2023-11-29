@@ -54,6 +54,11 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type);
 	UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type) const;
 
+	static uint64_t GetFrameCount()
+	{
+		return ms_FrameCount;
+	}
+
 protected:
 	Application(HINSTANCE hInstance);
 
@@ -77,4 +82,5 @@ private:
 
 	bool m_TearingSupported;
 
+	static uint64_t ms_FrameCount;
 };
