@@ -81,6 +81,12 @@
     <ClInclude Include="RootSignature.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
+    <ClInclude Include="CommandList.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceStateTracker.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -117,6 +123,12 @@
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
     <ClCompile Include="RootSignature.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicDescriptorHeap.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceStateTracker.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
   </ItemGroup>

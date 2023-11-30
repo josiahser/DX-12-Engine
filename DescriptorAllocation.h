@@ -24,8 +24,8 @@ public:
 	DescriptorAllocation& operator=(const DescriptorAllocation&) = delete;
 
 	//Move is allowed
-	DescriptorAllocation(DescriptorAllocation&& allocation);
-	DescriptorAllocation& operator=(DescriptorAllocation&& other);
+	DescriptorAllocation (DescriptorAllocation&& allocation) noexcept;
+	DescriptorAllocation& operator=(DescriptorAllocation&& other) noexcept;
 
 	//Check if this is a valid descriptor
 	bool IsNull() const;
