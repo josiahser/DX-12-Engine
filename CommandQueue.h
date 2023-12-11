@@ -7,26 +7,36 @@
 #include <d3d12.h>
 #include <wrl.h>
 
+#include <atomic>
 #include <cstdint>
 #include <queue>
+#include <condition_variable>
+
+#include "ThreadSafeQueue.h"
+
+class CommandList;
 
 class CommandQueue
 {
 public:
-	CommandQueue(Microsoft::WRL::ComPtr<ID3D12Device2> device, D3D12_COMMAND_LIST_TYPE type);
+	CommandQueue(D3D12_COMMAND_LIST_TYPE type);
 	virtual ~CommandQueue();
 
 	//Get an available command list from the command queue
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> GetCommandList();
+	std::shared_ptr<CommandList> GetCommandList();
 
 	//Execute a commandlist on the queue
 	//Returns the fence value to wait for for this command list
-	uint64_t ExecuteCommandList(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList);
+	uint64_t ExecuteCommandList(std::shared_ptr<CommandList> commandList);
+	uint64_t ExecuteCommandLists(const std::vector<std::shared_ptr<CommandList>>& commandLists);
 
 	uint64_t Signal();
 	bool IsFenceComplete(uint64_t fenceValue);
 	void WaitForFenceValue(uint64_t fenceValue);
 	void Flush();
+
+	//Wait for another command queue to finish
+	void Wait(const CommandQueue& other);
 
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetD3D12CommandQueue() const;
 
@@ -36,23 +46,23 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> CreateCommandList(Microsoft::WRL::ComPtr<ID3D12CommandAllocator> allocator);
 
 private:
-	//Keep track of command allocators that are "in-flight" (being used currently)
-	struct CommandAllocatorEntry
-	{
-		uint64_t fenceValue{};
-		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator;
-	};
-
-	using CommandAllocatorQueue = std::queue<CommandAllocatorEntry>;
-	using CommandListQueue = std::queue<Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> >;
+	//Free any command lists that are finished processing on the command queue
+	void ProcessInFlightCommandLists();
+	
+	//Keep track of command allocators that are "in-flight" (being used currently) (first member is the fence value to wait for, second is a shared pointer to the inflight command list.
+	using CommandListEntry = std::tuple<uint64_t, std::shared_ptr<CommandList>>;
 
 	D3D12_COMMAND_LIST_TYPE						m_CommandListType;
-	Microsoft::WRL::ComPtr<ID3D12Device2>		m_Device;
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue>	m_CommandQueue;
 	Microsoft::WRL::ComPtr<ID3D12Fence>			m_Fence;
-	HANDLE										m_FenceEvent;
-	uint64_t									m_FenceValue;
+	std::atomic_uint64_t						m_FenceValue;
 
-	CommandAllocatorQueue						m_CommandAllocatorQueue;
-	CommandListQueue							m_CommandListQueue;
+	ThreadSafeQueue<CommandListEntry>			m_InFlightCommandLists;
+	ThreadSafeQueue<std::shared_ptr<CommandList>>m_AvailableCommandLists;
+
+	//A thread to process in-flight command lists
+	std::thread m_ProcessInFlightCommandListsThread;
+	std::atomic_bool m_bProcessInFlightCommandLists;
+	std::mutex m_ProcessInFlightCommandListsThreadMutex;
+	std::condition_variable m_ProcessInFlightCommandListsThreadCV;
 };

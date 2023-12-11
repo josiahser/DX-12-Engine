@@ -1,30 +1,65 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by LearningAttempt2.rc
+#pragma once
 
-#define IDS_APP_TITLE			103
+#include <d3d12.h>
+#include <wrl.h>
 
-#define IDR_MAINFRAME			128
-#define IDD_LEARNINGATTEMPT2_DIALOG	102
-#define IDD_ABOUTBOX			103
-#define IDM_ABOUT				104
-#define IDM_EXIT				105
-#define IDI_LEARNINGATTEMPT2			107
-#define IDI_SMALL				108
-#define IDC_LEARNINGATTEMPT2			109
-#define IDC_MYICON				2
-#ifndef IDC_STATIC
-#define IDC_STATIC				-1
-#endif
-// Next default values for new objects
-//
-#ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
+#include <string>
 
-#define _APS_NO_MFC					130
-#define _APS_NEXT_RESOURCE_VALUE	129
-#define _APS_NEXT_COMMAND_VALUE		32771
-#define _APS_NEXT_CONTROL_VALUE		1000
-#define _APS_NEXT_SYMED_VALUE		110
-#endif
-#endif
+class Resource
+{
+public:
+	//Constructors and operator overloads
+	Resource(const std::wstring& name = L"");
+	Resource(const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_CLEAR_VALUE* clearValue = nullptr, const std::wstring& name = L"");
+	Resource(Microsoft::WRL::ComPtr<ID3D12Resource> resource, const std::wstring& name = L"");
+	Resource(const Resource& copy);
+	Resource(Resource&& copy) noexcept;
+
+	Resource& operator=(const Resource& other);
+	Resource& operator=(Resource&& other) noexcept;
+
+	virtual ~Resource();
+
+	//Check to see if underlying resource is valid
+	bool IsValid() const
+	{
+		return (m_d3d12Resource != nullptr);
+	}
+
+	//Get access to the underlying D3D12 resource
+	Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Resource() const
+	{
+		return m_d3d12Resource;
+	}
+
+	D3D12_RESOURCE_DESC GetD3D12ResourceDesc() const
+	{
+		D3D12_RESOURCE_DESC resDesc = {};
+		if (m_d3d12Resource)
+		{
+			resDesc = m_d3d12Resource->GetDesc();
+		}
+
+		return resDesc;
+	}
+
+	//Replace the D3D12 resource, only called by command list
+	virtual void SetD3D12Resource(Microsoft::WRL::ComPtr<ID3D12Resource> d3d12Resource, const D3D12_CLEAR_VALUE* clearValue = nullptr);
+
+	//Get the SRV for a resource, @param srvDesc is the description of SRV to return, default is nullptr
+	virtual D3D12_CPU_DESCRIPTOR_HANDLE GetShaderResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC* srvDesc = nullptr) const = 0;
+
+	//Get the UAV for a resource or subresource @param uavDesc is the description of the UAV to return
+	virtual D3D12_CPU_DESCRIPTOR_HANDLE GetUnorderedAccessView(const D3D12_UNORDERED_ACCESS_VIEW_DESC* uavDesc = nullptr) const = 0;
+
+	//Set the name of the resource. Useful for debugging. Name of resource will persist if the underlying D3D12 resource is replaced with SetD3d12Resource
+	void SetName(const std::wstring& name);
+
+	//Release the underlying resource, most useful for swap chain resizing
+	virtual void Reset();
+
+protected:
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_d3d12Resource;
+	std::unique_ptr <D3D12_CLEAR_VALUE> m_d3d12ClearValue;
+	std::wstring m_ResourceName;
+};

@@ -11,6 +11,16 @@ bool ResourceStateTracker::ms_IsLocked = false;
 ResourceStateTracker::ResourceStateMap ResourceStateTracker::ms_GlobalResourceState;
 
 //Method definitions
+ResourceStateTracker::ResourceStateTracker()
+{
+
+}
+
+ResourceStateTracker::~ResourceStateTracker()
+{
+
+}
+
 void ResourceStateTracker::ResourceBarrier(const D3D12_RESOURCE_BARRIER& barrier)
 {
 	if (barrier.Type == D3D12_RESOURCE_BARRIER_TYPE_TRANSITION)
@@ -163,4 +173,57 @@ uint32_t ResourceStateTracker::FlushPendingResourceBarriers(CommandList& command
 	}
 
 	m_PendingResourceBarriers.clear();
+
+	return numBarriers;
+}
+
+void ResourceStateTracker::CommitFinalResourceStates()
+{
+	assert(ms_IsLocked);
+
+	//Commit final resource states to the global resource state array (map)
+	for (const auto& resourceState : m_FinalResourceState)
+	{
+		ms_GlobalResourceState[resourceState.first] = resourceState.second;
+	}
+
+	m_FinalResourceState.clear();
+}
+
+void ResourceStateTracker::Reset()
+{
+	//Reset the pending, current, and final resource states
+	m_PendingResourceBarriers.clear();
+	m_ResourceBarriers.clear();
+	m_FinalResourceState.clear();
+}
+
+void ResourceStateTracker::Lock()
+{
+	ms_GlobalMutex.lock();
+	ms_IsLocked = true;
+}
+
+void ResourceStateTracker::Unlock()
+{
+	ms_IsLocked = false;
+	ms_GlobalMutex.unlock();
+}
+
+void ResourceStateTracker::AddGlobalResourceState(ID3D12Resource* resource, D3D12_RESOURCE_STATES state)
+{
+	if (resource != nullptr)
+	{
+		std::lock_guard<std::mutex> lock(ms_GlobalMutex);
+		ms_GlobalResourceState[resource].SetSubresourceState(D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, state);
+	}
+}
+
+void ResourceStateTracker::RemoveGlobalResourceState(ID3D12Resource* resource)
+{
+	if (resource != nullptr)
+	{
+		std::lock_guard<std::mutex> lock(ms_GlobalMutex);
+		ms_GlobalResourceState.erase(resource);
+	}
 }

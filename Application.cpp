@@ -15,9 +15,12 @@ static Application* gs_pSingleton = nullptr;
 static WindowMap gs_Windows;
 static WindowNameMap gs_WindowByName;
 
-static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+uint64_t Application::ms_FrameCount = 0;
 
-//Wrapper struct to allow shared pointers for the window class
+static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+//Wrapper struct to allow shared pointers for the window class (the constructor and destructor for the Window class are protected, and not accessible by std::make_shared
 struct MakeWindow : public Window
 {
 	MakeWindow(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync)
@@ -26,18 +29,11 @@ struct MakeWindow : public Window
 };
 
 Application::Application(HINSTANCE hInstance)
-	: m_hInstance(hInstance),
-	m_TearingSupported(false)
+    : m_hInstance(hInstance),
+    m_TearingSupported(false)
 {
-	// Per monitor V2 DPI awareness context, added in Windows 10
-	SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-
-#if defined(_DEBUG)
-	//Always enable the debug layer before doing anything DX12 related
-	Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
-	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
-	debugInterface->EnableDebugLayer();
-#endif
+    // Per monitor V2 DPI awareness context, added in Windows 10
+    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     WNDCLASSEXW wndClass = { 0 };
 
@@ -56,25 +52,72 @@ Application::Application(HINSTANCE hInstance)
     {
         MessageBoxA(NULL, "unable to register the window class", "Error", MB_OK | MB_ICONERROR);
     }
+    //
+    //    m_Adapter = GetAdapter(false);
+    //    if (m_Adapter)
+    //        m_Device = CreateDevice(m_Adapter);
+    //
+    //    if (m_Device)
+    //    {
+    //        m_DirectCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_DIRECT);
+    //        m_ComputeCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+    //        m_CopyCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_COPY);
+    //
+    //        m_TearingSupported = CheckTearingSupport();
+    //    }
+    //
+}
 
-    m_Adapter = GetAdapter(false);
-    if (m_Adapter)
-        m_Device = CreateDevice(m_Adapter);
-
-    if (m_Device)
+void Application::Initialize()
+{
+#if defined(_DEBUG)
+    //Always enable the debug layer before doing anything DX12 related
+    Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
+    ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
+    debugInterface->EnableDebugLayer();
+    //Enable the following if you want full validation (will slow down rendering a lot though)
+    //debugInterface->SetEnableGPUBasedValidation(TRUE);
+    //debugInterface->SetEnableSynchronizedCommandQueueValidation(TRUE);
+#endif
+    auto dxgiAdapter = GetAdapter(false);
+    if (!dxgiAdapter)
     {
-        m_DirectCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_DIRECT);
-        m_ComputeCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_COMPUTE);
-        m_CopyCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_COPY);
-
-        m_TearingSupported = CheckTearingSupport();
+        //if no supporting DX12 adapters exist, fall back to WARP
+        dxgiAdapter = GetAdapter(true);
     }
+
+    if (dxgiAdapter)
+    {
+        m_Device = CreateDevice(dxgiAdapter);
+    }
+    else
+    {
+        throw std::exception("DXGI adapter enumeration failed");
+    }
+
+    m_DirectCommandQueue = std::make_shared<CommandQueue>(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    m_ComputeCommandQueue = std::make_shared<CommandQueue>(D3D12_COMMAND_LIST_TYPE_COMPUTE);
+    m_CopyCommandQueue = std::make_shared<CommandQueue>(D3D12_COMMAND_LIST_TYPE_COPY);
+
+    m_TearingSupported = CheckTearingSupport();
+
+    //Create Descriptor Allocators
+    for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+    {
+        m_DescriptorAllocators[i] = std::make_unique<DescriptorAllocator>(static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
+    }
+
+    //Initialize frame counter
+    ms_FrameCount = 0;
 }
 
 void Application::Create(HINSTANCE hInstance)
 {
     if (!gs_pSingleton)
+    {
         gs_pSingleton = new Application(hInstance);
+        gs_pSingleton->Initialize();
+    }
 }
 
 Application& Application::Get()
@@ -101,7 +144,7 @@ Application::~Application()
 
 Microsoft::WRL::ComPtr<IDXGIAdapter4> Application::GetAdapter(bool useWarp)
 {
-    Microsoft::WRL::ComPtr<IDXGIFactory4> dxgiFactory{};    //Create factory, which is used to query available adapters (video card, interfaces with the hardware)
+    Microsoft::WRL::ComPtr<IDXGIFactory4> dxgiFactory;    //Create factory, which is used to query available adapters (video card, interfaces with the hardware)
     UINT createFactoryFlags = 0;
 #if defined(_DEBUG)
     createFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
@@ -186,18 +229,15 @@ bool Application::CheckTearingSupport()
 
     //instead of directly making the dxgi 1.5 factory needed to have access to the ::CheckFeatureSupport method,
     //Create the DXGI 1.4 interface and query for 1.5.
-    Microsoft::WRL::ComPtr<IDXGIFactory4> factory4{};
-    if (SUCCEEDED(CreateDXGIFactory(IID_PPV_ARGS(&factory4))))
+    Microsoft::WRL::ComPtr<IDXGIFactory4> factory4;
+    if (SUCCEEDED(CreateDXGIFactory1(IID_PPV_ARGS(&factory4))))
     {
-        Microsoft::WRL::ComPtr<IDXGIFactory5> factory5{};
+        Microsoft::WRL::ComPtr<IDXGIFactory5> factory5;
         if (SUCCEEDED(factory4.As(&factory5)))
         {
-            if (FAILED(factory5->CheckFeatureSupport(
+            factory5->CheckFeatureSupport(
                 DXGI_FEATURE_PRESENT_ALLOW_TEARING,
-                &allowTearing, sizeof(allowTearing))))
-            {
-                allowTearing = FALSE;
-            }
+                &allowTearing, sizeof(allowTearing));
         }
     }
     return allowTearing == TRUE;
@@ -206,6 +246,27 @@ bool Application::CheckTearingSupport()
 bool Application::IsTearingSupported() const
 {
     return m_TearingSupported;
+}
+
+DXGI_SAMPLE_DESC Application::GetMultisampleQualityLevels(DXGI_FORMAT format, UINT numSamples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) const
+{
+    DXGI_SAMPLE_DESC sampleDesc = { 1, 0 };
+
+    D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS qualityLevels;
+    qualityLevels.Format = format;
+    qualityLevels.SampleCount = 1;
+    qualityLevels.Flags = flags;
+    qualityLevels.NumQualityLevels = 0;
+
+    while (qualityLevels.SampleCount <= numSamples && SUCCEEDED(m_Device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &qualityLevels, sizeof(D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS))) && qualityLevels.NumQualityLevels > 0)
+    {
+        sampleDesc.Count = qualityLevels.SampleCount;
+        sampleDesc.Quality = qualityLevels.NumQualityLevels - 1;
+
+        qualityLevels.SampleCount *= 2;
+    }
+
+    return sampleDesc;
 }
 
 std::shared_ptr<Window> Application::CreateRenderWindow(const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync)
@@ -229,6 +290,7 @@ std::shared_ptr<Window> Application::CreateRenderWindow(const std::wstring& wind
     }
 
     WindowPtr pWindow = std::make_shared<MakeWindow>(hWnd, windowName, clientWidth, clientHeight, vSync);
+    pWindow->Initialize();
 
     gs_Windows.insert(WindowMap::value_type(hWnd, pWindow));
     gs_WindowByName.insert(WindowNameMap::value_type(windowName, pWindow));
@@ -251,7 +313,7 @@ void Application::DestroyWindow(const std::wstring& windowName)
 
 std::shared_ptr<Window> Application::GetWindowByName(const std::wstring& windowName)
 {
-    std::shared_ptr<Window> window{};
+    std::shared_ptr<Window> window;
     WindowNameMap::iterator iter = gs_WindowByName.find(windowName);
     if (iter != gs_WindowByName.end())
         window = iter->second;
@@ -319,6 +381,19 @@ void Application::Flush()
     m_CopyCommandQueue->Flush();
 }
 
+DescriptorAllocation Application::AllocateDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors)
+{
+    return m_DescriptorAllocators[type]->Allocate(numDescriptors);
+}
+
+void Application::ReleaseStaleDescriptors(uint64_t finishedFrame)
+{
+    for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+    {
+        m_DescriptorAllocators[i]->ReleaseStaleDescriptors(finishedFrame);
+    }
+}
+
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> Application::CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type)
 {
     D3D12_DESCRIPTOR_HEAP_DESC desc{};
@@ -384,6 +459,11 @@ MouseButtonEventArgs::MouseButton DecodeMouseButton(UINT messageID)
 
 static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+    {
+        return true;
+    }
+
     WindowPtr pWindow;
     {
         WindowMap::iterator iter = gs_Windows.find(hWnd);
@@ -411,17 +491,18 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
             //    break;
         case WM_PAINT:
         {
+            ++Application::ms_FrameCount;
             //Delta time will be filled by the Window
-            UpdateEventArgs updateEventArgs(0.0f, 0.0f);
+            UpdateEventArgs updateEventArgs(0.0f, 0.0f, Application::ms_FrameCount);
             pWindow->OnUpdate(updateEventArgs);
-            RenderEventArgs renderEventArgs(0.0f, 0.0f);
+            RenderEventArgs renderEventArgs(0.0f, 0.0f, Application::ms_FrameCount);
             pWindow->OnRender(renderEventArgs);
         }
         break;
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
         {
-            MSG charMsg{};
+            MSG charMsg;
             //Get the unicode charater (UTF-16)
             unsigned int c = 0;
             
@@ -431,6 +512,9 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
             {
                 GetMessage(&charMsg, hWnd, 0, 0);
                 c = static_cast<unsigned int>(charMsg.wParam);
+
+                /*if (charMsg.wParam > 0 && charMsg.wParam < 0x10000)
+                    ImGui::GetIO().AddInputCharacter((unsigned short)charMsg.wParam);*/
             }
             bool shift = (GetAsyncKeyState(VK_SHIFT) & 0x800) != 0;
             bool control = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;

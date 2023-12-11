@@ -18,13 +18,41 @@ enum class TextureUsage
     RenderTarget,           // Texture is used as a render target.
 };
 
+class Buffer;
+class ByteAddressBuffer;
+class ConstantBuffer;
+class DynamicDescriptorHeap;
+class GenerateMipsPSO;
+class IndexBuffer;
+class PanoToCubemapPSO;
+class RenderTarget;
+class Resource;
+class ResourceStateTracker;
+class StructuredBuffer;
+class RootSignature;
+class Texture;
+class UploadBuffer;
+class VertexBuffer;
+
 class CommandList
 {
 public:
-    CommandList();
+    CommandList(D3D12_COMMAND_LIST_TYPE type);
     virtual ~CommandList();
 
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>GetGraphicsCommandList();
+    D3D12_COMMAND_LIST_TYPE GetCommandListType() const
+    {
+        return m_d3d12CommandListType;
+    }
+
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2>GetGraphicsCommandList() const
+    {
+        return m_d3d12CommandList;
+    }
 
     void SetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> heap);
+
+private:
+    D3D12_COMMAND_LIST_TYPE m_d3d12CommandListType;
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> m_d3d12CommandList;
 };
