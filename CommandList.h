@@ -224,14 +224,91 @@ public:
     //Dispatch a compute shader
     void Dispatch(uint32_t numGroupsX, uint32_t numGroupsY = 1, uint32_t numGroupsZ = 1);
 
-    void SetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> heap);
+    /// <summary>
+    /// The following methods are only meant to be used by internal classes
+    /// </summary>
 
-    void TrackResource(const Resource& resource);
+    //Close the command list, used by the command queue
+    //The param is the command list that is used to execute pending resource barriers(if any) for this command list
+    //returns true if there's any pending resource barriers that need to be processed
+    bool Close(CommandList& pendingCommandList);
+    //Just close the command list, useful for pending command lists
+    void Close();
+
+    //Reset the command list, should only be called by the CommandQueue before the list is returned from GetCommandList
+    void Reset();
+
+    //Release tracked objects, useful if the swap chain needs to be resized
+    void ReleaseTrackedObjects();
+
+    //Set the currently bound descriptor heap
+    //Should only be called by the DynamicDescriptorHeap class
+    void SetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12DescriptorHeap* heap);
+
+    std::shared_ptr<CommandList> GetGenerateMipsCommandList() const
+    {
+        return m_ComputeCommandList;
+    }
+
+protected:
 
 private:
+    void TrackObject(Microsoft::WRL::ComPtr<ID3D12Object> object);
+    void TrackResource(const Resource& res);
+
+    //Generate mips for UAV compatible textures
+    void GenerateMips_UAV(Texture& texture);
+    //Generate mips for BGR textures
+    void GenerateMips_BGR(Texture& texture);
+    //Generate mips for sRGB textures
+    void GenerateMips_sRGB(Texture& texture);
+
+    //Copy the contents of a CPU buffer to a GPU buffer (possibly replacing the previous buffer contents)
+    void CopyBuffer(Buffer& buffer, size_t numElements, size_t elementSize, const void* bufferData, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);
+
+    //Binds the current descriptor heaps to the command list
+    void BindDescriptorHeaps();
+
+    using TrackedObjects = std::vector <Microsoft::WRL::ComPtr<ID3D12Object> >;
+
     D3D12_COMMAND_LIST_TYPE m_d3d12CommandListType;
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> m_d3d12CommandList;
-    ResourceStateTracker m_ResourceStateTracker;
+    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_d3d12CommandAllocator;
+
+    //For copy queues, it may be necessary to generate mips while loading textures
+    //Mips can't be generated on copy queues but must be generated on compute or direct queues
+    //In this case, a Compute command list is generated and executed after the copy queue is finished uploading the first subresource
+    std::shared_ptr<CommandList> m_ComputeCommandList;
+
+    //Keep track of the currently bound root signatures to minimize root signature changes
+    ID3D12RootSignature* m_RootSignature;
+
+    //Resource Created in an upload heap. useful for drawing dynamic geometry
+    //or for uploading constant buffer data that changes every draw call
     std::unique_ptr<UploadBuffer> m_UploadBuffer;
-    std::unique_ptr<DynamicDescriptorHeap> m_DynamicDescriptorHeap;
+
+    //Resource state tracker used by the command list to track(per list) the current state of a resource
+    //Also tracks the global state of a resource in order to minimize resource state transitions
+    std::unique_ptr<ResourceStateTracker> m_ResourceStateTracker;
+
+    //Dynamic descriptor heap allows for descriptors to be staged before being committed to the command list.
+    //Dynamic descriptors need to be committed before a Draw or Dispatch
+    std::unique_ptr<DynamicDescriptorHeap> m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+
+    //Keep track of the currently bound descriptor heaps. Only change descriptor heaps if they are different than the currently bound descriptor heaps
+    ID3D12DescriptorHeap* m_DescriptorHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+
+    //Pipeline state object for Mipmap generation
+    std::unique_ptr<GenerateMipsPSO> m_GenerateMipsPSO;
+    //Pipeline state object for converting panorama(equirectangular) to cubemaps
+    std::unique_ptr<PanoToCubemapPSO> m_PanoToCubemapPSO;
+
+    //Objects that are being tracked by a command list that is "in-flight" on the command queue and cannot be deleted
+    //To ensure objects are not deleted until the command list is finished executing, a reference to the object is stored.
+    //The referenced objects are released when the command list is reset
+    TrackedObjects m_TrackedObjects;
+
+    //Keep track of loaded textures to avoid loading the same texture multiple times
+    static std::map<std::wstring, ID3D12Resource*> ms_TextureCache;
+    static std::mutex ms_TextureCacheMutex;
 };

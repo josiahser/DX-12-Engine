@@ -38,6 +38,7 @@ using namespace Microsoft::WRL;
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include "DirectXTex-main/DirectXTex/DirectXTex.h"
 
 //STL Headers
 #include <algorithm>
@@ -54,3 +55,5 @@ using namespace Microsoft::WRL;
 #include <unordered_map>
 #include <thread>
 #include <vector>
+
+namespace fs = std::filesystem;
