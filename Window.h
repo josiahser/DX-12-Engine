@@ -1,12 +1,23 @@
 #pragma once
 
-#include "framework.h"
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+#include <wrl.h>
+#include <d3d12.h>
+#include <dxgi1_5.h>
+
 #include "Events.h"
 #include "HighResolutionClock.h"
+#include "RenderTarget.h"
+#include "Texture.h"
+
+#include <memory>
 
 class Game;
+class Texture;
 
-class Window
+class Window : public std::enable_shared_from_this<Window>
 {
 public:
 	//Number of swapchain back buffers
@@ -14,6 +25,9 @@ public:
 
 	//Get a handle to this windows instance, or nullptr if it's not a valid window
 	HWND GetWindowHandle() const;
+
+	//initialize the window
+	void Initialize();
 
 	//Destroy this window
 	void Destroy();
@@ -41,11 +55,14 @@ public:
 	//Hide the window
 	void Hide();
 
+	//Get the render target of the window. This method should be called every frame since the color attachment point changes depending on the window's current back buffer
+	const RenderTarget& GetRenderTarget() const;
+
 	//Return the current back buffer index
 	UINT GetCurrentBackBufferIndex() const;
 
 	//Present the swapchain's back buffer to the screen, returns the current index after presenting
-	UINT Present();
+	UINT Present(const Texture& texture = Texture());
 
 	//Get the RTV for the current back buffer
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRenderTargetView() const;
@@ -55,7 +72,7 @@ public:
 
 protected:
 	//The window proc needs to call protected methods of this class
-	friend LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+	friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	//Only the application can create a window
 	friend class Application;
@@ -102,33 +119,44 @@ private:
 	Window(const Window& copy) = delete;
 	Window& operator=(const Window& other) = delete;
 
-	HWND m_hWnd{};
+	HWND m_hWnd;
 
-	std::wstring m_windowName{};
-	bool m_VSync{};
-	bool m_Fullscreen{};
-	int m_ClientWidth{};
-	int m_ClientHeight{};
+	std::wstring m_windowName;
+	bool m_VSync;
+	bool m_Fullscreen;
+	int m_ClientWidth;
+	int m_ClientHeight;
 
 	//
 	//High resolution clock goes here, render and update clock
 	//
 	
-	HighResolutionClock m_UpdateClock{};
-	HighResolutionClock m_RenderClock{};
-	uint64_t m_FrameCounter{};
+	HighResolutionClock m_UpdateClock;
+	HighResolutionClock m_RenderClock;
+	//uint64_t m_FrameCounter;
+
+	UINT64 m_FenceValues[bufferCount];
+	uint64_t m_FrameValues[bufferCount];
 
 	//Associated game
-	std::weak_ptr<Game> m_pGame{};
+	std::weak_ptr<Game> m_pGame;
 
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_SwapChain{};
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_RTVDescriptorHeap{}; //The back buffer textures of the swap chain. Describes location of texture resource in GPU mem, dimensions of texture, and format. Clears back buffers of the render target and render geometry to the screen)
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_BackBuffers[bufferCount] = {};
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_SwapChain;
+	Texture m_BackBufferTextures[bufferCount];
+	//Marked mutable to allow modification in a const function
+	mutable RenderTarget m_RenderTarget;
 
-	UINT m_RTVDescriptorSize{};
-	UINT m_CurrentBackBufferIndex{};
+	UINT m_CurrentBackBufferIndex;
+	//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_RTVDescriptorHeap; //The back buffer textures of the swap chain. Describes location of texture resource in GPU mem, dimensions of texture, and format. Clears back buffers of the render target and render geometry to the screen)
+	//Microsoft::WRL::ComPtr<ID3D12Resource> m_BackBuffers[bufferCount] = {};
 
-	RECT m_WindowRect{};
+	//UINT m_RTVDescriptorSize;
+	//UINT m_CurrentBackBufferIndex;
 
-	bool m_IsTearingSupported{};
+	RECT m_WindowRect;
+
+	bool m_IsTearingSupported;
+
+	int m_PreviousMouseX;
+	int m_PreviousMouseY;
 };

@@ -1,3 +1,4 @@
+#pragma once
 /**
 * A wrapper class for a ID3D12DescriptorHeap
 * That implements a free list allocator
@@ -22,8 +23,6 @@ public:
 	DescriptorAllocatorPage(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors);
 
 	D3D12_DESCRIPTOR_HEAP_TYPE GetHeapType() const;
-
-	virtual ~DescriptorAllocatorPage();
 
 	//Check to see if the descriptor page has a contiguous block of descriptors large enough
 	bool HasSpace(uint32_t numDescriptors) const;

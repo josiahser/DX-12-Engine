@@ -1,3 +1,4 @@
+#pragma once
 /*
 Descriptor Allocator is used to allocate descriptors from a CPU visible descriptor heap.
 Useful for staging resource descriptors in CPU memory and later copied to a GPU visible descriptor heap

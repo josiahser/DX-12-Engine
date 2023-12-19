@@ -5,11 +5,15 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <comdef.h>
 
 inline void ThrowIfFailed(HRESULT hr)
 {
     if (FAILED(hr))
     {
+        _com_error err(hr);
+        OutputDebugString(err.ErrorMessage());
+
         throw std::exception();
     }
 }

@@ -1,6 +1,8 @@
 #include "framework.h"
 
 #include "GenerateMipsPSO.h"
+#include "GenerateMips_CS.h"
+
 #include "Application.h"
 #include "Helpers.h"
 
@@ -38,7 +40,7 @@ GenerateMipsPSO::GenerateMipsPSO()
 	struct PipelineStateStream
 	{
 		CD3DX12_PIPELINE_STATE_STREAM_ROOT_SIGNATURE pRootSignature;
-		CD3DX12_PIPELINE_STATE_STREAM_CS cs;
+		CD3DX12_PIPELINE_STATE_STREAM_CS cs; //Wrapper for the D3D12_SHADER_BYTECODE structure
 	} pipelineStateStream;
 
 	pipelineStateStream.pRootSignature = m_RootSignature.GetRootSignature().Get();

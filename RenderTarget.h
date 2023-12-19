@@ -1,5 +1,6 @@
 #pragma once
 
+#include <DirectXMath.h>
 #include <cstdint>
 #include <vector>
 
@@ -37,7 +38,15 @@ public:
 	const Texture& GetTexture(AttachmentPoint attachmentPoint) const;
 
 	//Resize all the textures associated with the render target
+	void Resize(DirectX::XMUINT2 size);
 	void Resize(uint32_t width, uint32_t height);
+	DirectX::XMUINT2 GetSize() const;
+	uint32_t GetWidth() const;
+	uint32_t GetHeight() const;
+	
+	//Get a viewport for this render target. The scale and bias parameters can be used to specific a splitscreen
+	//(the bias parameter is normalized in the range [0...1]) by default, a fullscreen viewport is returned
+	D3D12_VIEWPORT GetViewport(DirectX::XMFLOAT2 scale = { 1.0f, 1.0f }, DirectX::XMFLOAT2 bias = { 0.0f, 0.0f }, float minDepth = 0.0f, float maxDepth = 1.0f) const;
 
 	//Get a list of textures attached to the render target
 	//Primarily used by the commandlist when binding render target to the Output merger stage
@@ -54,4 +63,5 @@ protected:
 
 private:
 	std::vector<Texture> m_Textures;
+	DirectX::XMUINT2 m_Size;
 };

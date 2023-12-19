@@ -319,10 +319,12 @@ void CommandList::GenerateMips(Texture& texture)
 
 	//If the texture only has a single mip level (level 0), do nothing
 	if (d3d12ResourceDesc.MipLevels == 1) return;
-	//Currently, only 2D textures are supported
-	if (d3d12ResourceDesc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D || d3d12ResourceDesc.DepthOrArraySize != 1)
+	//Currently, only non-multi-sampled 2D textures are supported
+	if (d3d12ResourceDesc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D || 
+		d3d12ResourceDesc.DepthOrArraySize != 1 ||
+		d3d12ResourceDesc.SampleDesc.Count > 1)
 	{
-		throw std::exception("Generate Mips only supports 2D textures");
+		throw std::exception("Generate Mips only supports non-multi-sampled 2D textures");
 	}
 
 	if (Texture::IsUAVCompatibleFormat(d3d12ResourceDesc.Format))
@@ -736,6 +738,141 @@ void CommandList::SetGraphics32BitConstants(uint32_t rootParameterIndex, uint32_
 	m_d3d12CommandList->SetGraphicsRoot32BitConstants(rootParameterIndex, numConstants, constants, 0);
 }
 
+void CommandList::SetCompute32BitConstants(uint32_t rootParameterIndex, uint32_t numConstants, const void* constants)
+{
+	m_d3d12CommandList->SetComputeRoot32BitConstants(rootParameterIndex, numConstants, constants, 0);
+}
+
+void CommandList::SetVertexBuffer(uint32_t slot, const VertexBuffer& vertexBuffer)
+{
+	TransitionBarrier(vertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+	auto vertexBufferView = vertexBuffer.GetVertexBufferView();
+
+	m_d3d12CommandList->IASetVertexBuffers(slot, 1, &vertexBufferView);
+
+	TrackResource(vertexBuffer);
+}
+
+void CommandList::SetDynamicVertexBuffer(uint32_t slot, size_t numVertices, size_t vertexSize, const void* vertexBufferData)
+{
+	size_t bufferSize = numVertices * vertexSize;
+
+	auto heapAllocation = m_UploadBuffer->Allocate(bufferSize, vertexSize);
+	memcpy(heapAllocation.CPU, vertexBufferData, bufferSize);
+
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView = {};
+	vertexBufferView.BufferLocation = heapAllocation.GPU;
+	vertexBufferView.SizeInBytes = static_cast<UINT> (bufferSize);
+	vertexBufferView.StrideInBytes = static_cast<UINT> (vertexSize);
+
+	m_d3d12CommandList->IASetVertexBuffers(slot, 1, &vertexBufferView);
+}
+
+void CommandList::SetIndexBuffer(const IndexBuffer& indexBuffer)
+{
+	TransitionBarrier(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+
+	auto indexBufferView = indexBuffer.GetIndexBufferView();
+
+	m_d3d12CommandList->IASetIndexBuffer(&indexBufferView);
+
+	TrackResource(indexBuffer);
+}
+
+void CommandList::SetDynamicIndexBuffer(size_t numIndices, DXGI_FORMAT indexFormat, const void* indexBufferData)
+{
+	size_t indexSizeInBytes = indexFormat == DXGI_FORMAT_R16_UINT ? 2 : 4;
+	size_t bufferSize = numIndices * indexSizeInBytes;
+
+	auto heapAllocation = m_UploadBuffer->Allocate(bufferSize, indexSizeInBytes);
+	memcpy(heapAllocation.CPU, indexBufferData, bufferSize);
+
+	D3D12_INDEX_BUFFER_VIEW indexBufferView = {};
+	indexBufferView.BufferLocation = heapAllocation.GPU;
+	indexBufferView.SizeInBytes = static_cast<UINT> (bufferSize);
+	indexBufferView.Format = indexFormat;
+
+	m_d3d12CommandList->IASetIndexBuffer(&indexBufferView);
+}
+
+void CommandList::SetGraphicsDynamicStructuredBuffer(uint32_t slot, size_t numElements, size_t elementSize, const void* bufferData)
+{
+	size_t bufferSize = numElements * elementSize;
+
+	auto heapAllocation = m_UploadBuffer->Allocate(bufferSize, elementSize);
+
+	memcpy(heapAllocation.CPU, bufferData, bufferSize);
+
+	m_d3d12CommandList->SetGraphicsRootShaderResourceView(slot, heapAllocation.GPU);
+}
+
+void CommandList::SetViewport(const D3D12_VIEWPORT& viewport)
+{
+	SetViewports({ viewport });
+}
+
+void CommandList::SetViewports(const std::vector<D3D12_VIEWPORT>& viewports)
+{
+	assert(viewports.size() < D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE);
+	m_d3d12CommandList->RSSetViewports(static_cast<UINT>(viewports.size()), viewports.data());
+}
+
+void CommandList::SetScissorRect(const D3D12_RECT& scissorRect)
+{
+	SetScissorRects({ scissorRect });
+}
+
+void CommandList::SetScissorRects(const std::vector<D3D12_RECT>& scissorRects)
+{
+	assert(scissorRects.size() < D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE);
+	m_d3d12CommandList->RSSetScissorRects(static_cast<UINT>(scissorRects.size()), scissorRects.data());
+}
+
+void CommandList::SetPipelineState(Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState)
+{
+	m_d3d12CommandList->SetPipelineState(pipelineState.Get());
+
+	TrackObject(pipelineState);
+}
+
+void CommandList::SetGraphicsRootSignature(const RootSignature& rootSignature)
+{
+	auto d3d12RootSignature = rootSignature.GetRootSignature().Get();
+	if (m_RootSignature != d3d12RootSignature)
+	{
+		m_RootSignature = d3d12RootSignature;
+
+		for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+		{
+			m_DynamicDescriptorHeap[i]->ParseRootSignature(rootSignature);
+		}
+
+		m_d3d12CommandList->SetGraphicsRootSignature(m_RootSignature);
+
+		TrackObject(m_RootSignature);
+	}
+}
+
+void CommandList::SetComputeRootSignature(const RootSignature& rootSignature)
+{
+	auto d3d12RootSignature = rootSignature.GetRootSignature().Get();
+
+	if (m_RootSignature != d3d12RootSignature)
+	{
+		m_RootSignature = d3d12RootSignature;
+
+		for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+		{
+			m_DynamicDescriptorHeap[i]->ParseRootSignature(rootSignature);
+		}
+
+		m_d3d12CommandList->SetComputeRootSignature(m_RootSignature);
+
+		TrackObject(m_RootSignature);
+	}
+}
+
 void CommandList::SetShaderResourceView(uint32_t rootParameterIndex,
 	uint32_t descriptorOffset,
 	const Resource& resource,
@@ -761,6 +898,68 @@ void CommandList::SetShaderResourceView(uint32_t rootParameterIndex,
 	TrackResource(resource);
 }
 
+void CommandList::SetUnorderedAccessView(uint32_t rootParameterIndex,
+	uint32_t descriptorOffset,
+	const Resource& resource,
+	D3D12_RESOURCE_STATES stateAfter,
+	UINT firstSubresource,
+	UINT numSubresources,
+	const D3D12_UNORDERED_ACCESS_VIEW_DESC* uav)
+{
+	if (numSubresources < D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES)
+	{
+		for (uint32_t i = 0; i < numSubresources; ++i)
+		{
+			TransitionBarrier(resource, stateAfter, firstSubresource + i);
+		}
+	}
+	else
+	{
+		TransitionBarrier(resource, stateAfter);
+	}
+
+	m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageDescriptors(rootParameterIndex, descriptorOffset, 1, resource.GetUnorderedAccessView(uav));
+
+	TrackResource(resource);
+}
+
+void CommandList::SetRenderTarget(const RenderTarget& renderTarget)
+{
+	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> renderTargetDescriptors;
+	renderTargetDescriptors.reserve(AttachmentPoint::NumAttachmentPoints);
+
+	const auto& textures = renderTarget.GetTextures();
+
+	//Bind color targets (max of 8 render targets can be bound to the rendering pipeline
+	for (int i = 0; i < 8; ++i)
+	{
+		auto& texture = textures[i];
+
+		if (texture.IsValid())
+		{
+			TransitionBarrier(texture, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			renderTargetDescriptors.push_back(texture.GetRenderTargetView());
+
+			TrackResource(texture);
+		}
+	}
+
+	const auto& depthTexture = renderTarget.GetTexture(AttachmentPoint::DepthStencil);
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE depthStencilDescriptor(D3D12_DEFAULT);
+	if (depthTexture.GetD3D12Resource())
+	{
+		TransitionBarrier(depthTexture, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+		depthStencilDescriptor = depthTexture.GetDepthStencilView();
+
+		TrackResource(depthTexture);
+	}
+
+	D3D12_CPU_DESCRIPTOR_HANDLE* pDSV = depthStencilDescriptor.ptr != 0 ? &depthStencilDescriptor : nullptr;
+
+	m_d3d12CommandList->OMSetRenderTargets(static_cast<UINT>(renderTargetDescriptors.size()), renderTargetDescriptors.data(), FALSE, pDSV);
+}
+
 void CommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance)
 {
 	FlushResourceBarriers();
@@ -771,4 +970,112 @@ void CommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t st
 	}
 
 	m_d3d12CommandList->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
+}
+
+void CommandList::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t startIndex, int32_t baseVertex, uint32_t startInstance)
+{
+	FlushResourceBarriers();
+
+	for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+	{
+		m_DynamicDescriptorHeap[i]->CommitStagedDescriptorsForDraw(*this);
+	}
+
+	m_d3d12CommandList->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstance);
+}
+
+void CommandList::Dispatch(uint32_t numGroupsX, uint32_t numGroupsY, uint32_t numGroupsZ)
+{
+	FlushResourceBarriers();
+
+	for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+	{
+		m_DynamicDescriptorHeap[i]->CommitStagedDescriptorsForDispatch(*this);
+	}
+
+	m_d3d12CommandList->Dispatch(numGroupsX, numGroupsY, numGroupsZ);
+
+}
+
+bool CommandList::Close(CommandList& pendingCommandList)
+{
+	//Flush any remaining barriers
+	FlushResourceBarriers();
+
+	m_d3d12CommandList->Close();
+
+	//Flush pending resource barriers
+	uint32_t numPendingBarriers = m_ResourceStateTracker->FlushPendingResourceBarriers(pendingCommandList);
+
+	//Commit the final resource state to the global state
+	m_ResourceStateTracker->CommitFinalResourceStates();
+
+	return numPendingBarriers > 0;
+}
+
+void CommandList::Close()
+{
+	FlushResourceBarriers();
+	m_d3d12CommandList->Close();
+}
+
+void CommandList::Reset()
+{
+	ThrowIfFailed(m_d3d12CommandAllocator->Reset());
+	ThrowIfFailed(m_d3d12CommandList->Reset(m_d3d12CommandAllocator.Get(), nullptr));
+
+	m_ResourceStateTracker->Reset();
+	m_UploadBuffer->Reset();
+
+	ReleaseTrackedObjects();
+
+	for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+	{
+		m_DynamicDescriptorHeap[i]->Reset();
+		m_DescriptorHeaps[i] = nullptr;
+	}
+
+	m_RootSignature = nullptr;
+	m_ComputeCommandList = nullptr;
+}
+
+void CommandList::TrackObject(Microsoft::WRL::ComPtr<ID3D12Object> object)
+{
+	m_TrackedObjects.push_back(object);
+}
+
+void CommandList::TrackResource(const Resource& res)
+{
+	TrackObject(res.GetD3D12Resource());
+}
+
+void CommandList::ReleaseTrackedObjects()
+{
+	m_TrackedObjects.clear();
+}
+
+void CommandList::SetDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, ID3D12DescriptorHeap* heap)
+{
+	if (m_DescriptorHeaps[heapType] != heap)
+	{
+		m_DescriptorHeaps[heapType] = heap;
+		BindDescriptorHeaps();
+	}
+}
+
+void CommandList::BindDescriptorHeaps()
+{
+	UINT numDescriptorHeaps = 0;
+	ID3D12DescriptorHeap* descriptorHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES] = {};
+
+	for (uint32_t i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+	{
+		ID3D12DescriptorHeap* descriptorHeap = m_DescriptorHeaps[i];
+		if (descriptorHeap)
+		{
+			descriptorHeaps[numDescriptorHeaps++] = descriptorHeap;
+		}
+	}
+
+	m_d3d12CommandList->SetDescriptorHeaps(numDescriptorHeaps, descriptorHeaps);
 }

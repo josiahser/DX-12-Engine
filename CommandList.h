@@ -47,19 +47,23 @@ public:
     //Transition a resource to a particular state. The state before is handled by the resource state tracker
     //subresource is defaulted to all subresources (all subresources transition to the same state)
     //Flush barriers is whether to force flush any barriers, since they need to be flushed before a command that expects the resource to be in a particular state can run
-    void TransitionBarrier(const Resource& resource, D3D12_RESOURCE_STATES stateAfter, UINT subResource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, bool flushBarriers);
+    void TransitionBarrier(const Resource& resource, D3D12_RESOURCE_STATES stateAfter, UINT subResource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, bool flushBarriers = false);
+    void TransitionBarrier(Microsoft::WRL::ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES stateAfter, UINT subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, bool flushBarriers = false);
 
     //Add a UAV barrier to ensure that any writes to a resource have completed before reading from the resource
     //Resource is the resource to add the barrier for, and flushbarriers is whether to force flush
     void UAVBarrier(const Resource& resource, bool flushBarriers = false);
+    void UAVBarrier(Microsoft::WRL::ComPtr<ID3D12Resource> resource, bool flushBarriers = false);
 
     //Add an aliasing barrier to indicate a transition btwn usages of two different resources that occupy the same space in a heap
     void AliasingBarrier(const Resource& beforeResource, const Resource& afterResource, bool flushBarriers = false);
+    void AliasingBarrier(Microsoft::WRL::ComPtr<ID3D12Resource> beforeResource, Microsoft::WRL::ComPtr<ID3D12Resource> afterResource, bool flushBarriers = false);
     
     //Flush any barriers that have been pushed to the command list
     void FlushResourceBarriers();
 
     void CopyResource(Resource& dstRes, const Resource& srcRes);
+    void CopyResource(Microsoft::WRL::ComPtr<ID3D12Resource> dstRes, Microsoft::WRL::ComPtr<ID3D12Resource> srcRes);
 
     //Resolve a multisampled resource into a non-multisampled resource
     void ResolveSubResource(Resource& dstRes, const Resource& srcRes, uint32_t dstSubresource = 0, uint32_t srcSubresource = 0);
@@ -219,7 +223,7 @@ public:
 
     //Draw geometry
     void Draw(uint32_t vertexCount, uint32_t instanceCount = 1, uint32_t startVertex = 0, uint32_t startInstance = 0);
-    void DrawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t startIndex = 0, uint32_t baseVertex = 0, uint32_t startInstance = 0);
+    void DrawIndexed(uint32_t indexCount, uint32_t instanceCount = 1, uint32_t startIndex = 0, int32_t baseVertex = 0, uint32_t startInstance = 0);
 
     //Dispatch a compute shader
     void Dispatch(uint32_t numGroupsX, uint32_t numGroupsY = 1, uint32_t numGroupsZ = 1);
@@ -253,7 +257,7 @@ public:
 protected:
 
 private:
-    void TrackObject(Microsoft::WRL::ComPtr<ID3D12Object> object);
+    void TrackResource(Microsoft::WRL::ComPtr<ID3D12Object> object);
     void TrackResource(const Resource& res);
 
     //Generate mips for UAV compatible textures

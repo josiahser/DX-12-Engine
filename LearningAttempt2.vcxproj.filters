@@ -57,9 +57,6 @@
     <ClInclude Include="KeyCodes.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="Defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UploadBuffer.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
@@ -121,6 +118,12 @@
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
     <ClInclude Include="VertexBuffer.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -225,6 +228,9 @@
       <Filter>Source Files</Filter>
     </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
+    <FxCompile Include="GenerateMips_CS.hlsl">
       <Filter>Source Files</Filter>
     </FxCompile>
   </ItemGroup>

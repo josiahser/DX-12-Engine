@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Events.h"
-#include "framework.h"
+
+#include <memory>
+#include <string>
 
 class Window;
 
@@ -70,7 +72,7 @@ protected:
 
 private:
 	std::wstring m_Name{};
-	int m_Width{};
-	int m_Height{};
-	bool m_vSync{};
+	int m_Width;
+	int m_Height;
+	bool m_vSync;
 };

@@ -42,8 +42,8 @@ public:
 
 protected:
 	//Used if no command list or command allocator are available
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CreateCommandAllocator();
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> CreateCommandList(Microsoft::WRL::ComPtr<ID3D12CommandAllocator> allocator);
+	/*Microsoft::WRL::ComPtr<ID3D12CommandAllocator> CreateCommandAllocator();
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> CreateCommandList(Microsoft::WRL::ComPtr<ID3D12CommandAllocator> allocator);*/
 
 private:
 	//Free any command lists that are finished processing on the command queue
