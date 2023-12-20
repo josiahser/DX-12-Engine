@@ -34,7 +34,7 @@ Texture::Texture(const Texture& copy)
 	CreateViews();
 }
 
-Texture::Texture(Texture&& copy)
+Texture::Texture(Texture&& copy) noexcept
 	: Resource(copy)
 {
 	CreateViews();
@@ -49,7 +49,7 @@ Texture& Texture::operator=(const Texture& other)
 	return *this;
 }
 
-Texture& Texture::operator=(Texture&& other)
+Texture& Texture::operator=(Texture&& other) noexcept
 {
 	Resource::operator=(other);
 
@@ -257,7 +257,6 @@ bool Texture::IsUAVCompatibleFormat(DXGI_FORMAT format)
 	case DXGI_FORMAT_R32G32B32A32_UINT:
 	case DXGI_FORMAT_R32G32B32A32_SINT:
 	case DXGI_FORMAT_R16G16B16A16_FLOAT:
-		//    case DXGI_FORMAT_R16G16B16A16_UNORM:
 	case DXGI_FORMAT_R16G16B16A16_UINT:
 	case DXGI_FORMAT_R16G16B16A16_SINT:
 	case DXGI_FORMAT_R8G8B8A8_UNORM:
@@ -283,8 +282,12 @@ bool Texture::ISSRGBFormat(DXGI_FORMAT format)
 	switch (format)
 	{
 	case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+	case DXGI_FORMAT_BC1_UNORM_SRGB:
+	case DXGI_FORMAT_BC2_UNORM_SRGB:
+	case DXGI_FORMAT_BC3_UNORM_SRGB:
 	case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
 	case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
+	case DXGI_FORMAT_BC7_UNORM_SRGB:
 		return true;
 	default:
 		return false;
@@ -297,7 +300,9 @@ bool Texture::IsBGRFormat(DXGI_FORMAT format)
 	{
 	case DXGI_FORMAT_B8G8R8A8_UNORM:
 	case DXGI_FORMAT_B8G8R8X8_UNORM:
+	case DXGI_FORMAT_B8G8R8A8_TYPELESS:
 	case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+	case DXGI_FORMAT_B8G8R8X8_TYPELESS:
 	case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
 		return true;
 	default:
@@ -429,4 +434,28 @@ DXGI_FORMAT Texture::GetTypelessFormat(DXGI_FORMAT format)
 		break;
 	}
 	return typelessFormat;
+}
+
+DXGI_FORMAT Texture::GetUAVCompatibleFormat(DXGI_FORMAT format)
+{
+	DXGI_FORMAT uavFormat = format;
+
+	switch (format)
+	{
+	case DXGI_FORMAT_R8G8B8A8_TYPELESS:
+	case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+	case DXGI_FORMAT_B8G8R8A8_UNORM:
+	case DXGI_FORMAT_B8G8R8X8_UNORM:
+	case DXGI_FORMAT_B8G8R8A8_TYPELESS:
+	case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+	case DXGI_FORMAT_B8G8R8X8_TYPELESS:
+	case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
+		uavFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+		break;
+	case DXGI_FORMAT_R32_TYPELESS:
+	case DXGI_FORMAT_D32_FLOAT:
+		uavFormat = DXGI_FORMAT_R32_FLOAT;
+		break;
+	}
+	return uavFormat;
 }

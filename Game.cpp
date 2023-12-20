@@ -1,3 +1,5 @@
+#include "framework.h"
+
 #include "Game.h"
 #include "Application.h"
 #include "CommandQueue.h"

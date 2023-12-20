@@ -126,6 +126,12 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -206,6 +212,9 @@
     <ClCompile Include="VertexBuffer.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LearningAttempt2.rc">
@@ -231,6 +240,9 @@
       <Filter>Source Files</Filter>
     </FxCompile>
     <FxCompile Include="GenerateMips_CS.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
+    <FxCompile Include="PanoToCubemap_CS.hlsl">
       <Filter>Source Files</Filter>
     </FxCompile>
   </ItemGroup>

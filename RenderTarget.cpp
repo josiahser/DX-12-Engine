@@ -4,12 +4,20 @@
 
 RenderTarget::RenderTarget()
 	: m_Textures(AttachmentPoint::NumAttachmentPoints)
+	, m_Size(0,0)
 {}
 
 //Attach a texture to the render target, the texture will be copiede into the texture array
 void RenderTarget::AttachTexture(AttachmentPoint attachmentPoint, const Texture& texture)
 {
 	m_Textures[attachmentPoint] = texture;
+
+	if (texture.GetD3D12Resource())
+	{
+		auto desc = texture.GetD3D12Resource()->GetDesc();
+		m_Size.x = static_cast<uint32_t>(desc.Width);
+		m_Size.y = static_cast<uint32_t>(desc.Height);
+	}
 }
 
 const Texture& RenderTarget::GetTexture(AttachmentPoint attachmentPoint) const
@@ -18,12 +26,61 @@ const Texture& RenderTarget::GetTexture(AttachmentPoint attachmentPoint) const
 }
 
 //Resize all of the textures associated with the render target
-void RenderTarget::Resize(uint32_t width, uint32_t height)
+void RenderTarget::Resize(DirectX::XMUINT2 size)
 {
+	m_Size = size;
 	for (auto& texture : m_Textures)
 	{
-		texture.Resize(width, height);
+		texture.Resize(m_Size.x, m_Size.y);
 	}
+}
+
+void RenderTarget::Resize(uint32_t width, uint32_t height)
+{
+	Resize(DirectX::XMUINT2(width, height));
+}
+
+DirectX::XMUINT2 RenderTarget::GetSize() const
+{
+	return m_Size;
+}
+
+uint32_t RenderTarget::GetWidth() const
+{
+	return m_Size.x;
+}
+
+uint32_t RenderTarget::GetHeight() const
+{
+	return m_Size.y;
+}
+
+D3D12_VIEWPORT RenderTarget::GetViewport(DirectX::XMFLOAT2 scale, DirectX::XMFLOAT2 bias, float minDepth, float maxDepth) const
+{
+	UINT64 width = 0;
+	UINT height = 0;
+
+	for (int i = AttachmentPoint::Color0; i <= AttachmentPoint::Color7; ++i)
+	{
+		const Texture& texture = m_Textures[i];
+		if (texture.IsValid())
+		{
+			auto desc = texture.GetD3D12ResourceDesc();
+			width = std::max(width, desc.Width);
+			height = std::max(height, desc.Height);
+		}
+	}
+
+	D3D12_VIEWPORT viewport = {
+		(width * bias.x), //TopLeftX
+		(height * bias.y), //TopLeftY
+		(width * scale.x), //Width
+		(height * scale.y), //Height
+		minDepth,			//MinDepth
+		maxDepth			//MaxDepth
+	};
+
+	return viewport;
 }
 
 //Get a list of the textures attached to the render target

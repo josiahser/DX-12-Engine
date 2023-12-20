@@ -3,7 +3,7 @@
 #include "PanoToCubemapPSO.h"
 
 //Compiled
-//"PanoToCubemap_CS.h"
+#include "PanoToCubemap_CS.h"
 
 #include "Application.h"
 
@@ -46,7 +46,7 @@ PanoToCubemapPSO::PanoToCubemapPSO()
 	} pipelineStateStream;
 
 	pipelineStateStream.pRootSignature = m_RootSignature.GetRootSignature().Get();
-	pipelineStateStream.CS = { g_PanoToCubeMap_CS, sizeof(g_PanoToCubeMap_CS) };
+	pipelineStateStream.CS = { g_PanoToCubemap_CS, sizeof(g_PanoToCubemap_CS) };
 
 	D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc = { sizeof(PipelineStateStream), &pipelineStateStream };
 

@@ -11,6 +11,7 @@
 #include "HighResolutionClock.h"
 #include "RenderTarget.h"
 #include "Texture.h"
+//#include "GUI.h"
 
 #include <memory>
 
@@ -58,17 +59,8 @@ public:
 	//Get the render target of the window. This method should be called every frame since the color attachment point changes depending on the window's current back buffer
 	const RenderTarget& GetRenderTarget() const;
 
-	//Return the current back buffer index
-	UINT GetCurrentBackBufferIndex() const;
-
 	//Present the swapchain's back buffer to the screen, returns the current index after presenting
 	UINT Present(const Texture& texture = Texture());
-
-	//Get the RTV for the current back buffer
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRenderTargetView() const;
-
-	//Get the back buffer resource for the current back buffer
-	Microsoft::WRL::ComPtr<ID3D12Resource> GetCurrentBackBuffer() const;
 
 protected:
 	//The window proc needs to call protected methods of this class
@@ -159,4 +151,6 @@ private:
 
 	int m_PreviousMouseX;
 	int m_PreviousMouseY;
+
+	//GUI m_GUI;
 };

@@ -23,6 +23,9 @@ DynamicDescriptorHeap::DynamicDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType
 
 }
 
+DynamicDescriptorHeap::~DynamicDescriptorHeap()
+{}
+
 void DynamicDescriptorHeap::ParseRootSignature(const RootSignature& rootSignature)
 {
 	//If the root signature changes, all descriptors must be rebound to the command list
