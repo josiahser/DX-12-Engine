@@ -34,7 +34,7 @@
 using namespace Microsoft::WRL;
 
 //DirectX 12 headers
-#include <d3d12.h>
+#include "DirectX-Headers/include/directx/d3d12.h"
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>

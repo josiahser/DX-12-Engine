@@ -7,7 +7,7 @@
 #include "Defines.h"
 
 #include <wrl.h>
-#include <d3d12.h>
+#include "DirectX-Headers/include/directx/d3d12.h"
 
 #include <memory>
 #include <deque>

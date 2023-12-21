@@ -3,7 +3,7 @@
 #include "RootSignature.h"
 #include "DescriptorAllocation.h"
 
-#include <d3d12.h>
+#include "DirectX-Headers/include/directx/d3d12.h"
 #include <DirectXMath.h>
 #include <wrl.h>
 

@@ -4,7 +4,7 @@
 #include <Windows.h>
 
 #include <wrl.h>
-#include <d3d12.h>
+#include "DirectX-Headers/include/directx/d3d12.h"
 #include <dxgi1_5.h>
 
 #include "Events.h"

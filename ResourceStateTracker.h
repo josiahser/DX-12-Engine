@@ -1,6 +1,6 @@
 #pragma once
 
-#include <d3d12.h>
+#include "DirectX-Headers/include/directx/d3d12.h"
 
 #include <mutex>
 #include <map>
