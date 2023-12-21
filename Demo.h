@@ -1,8 +1,17 @@
 #pragma once
 
+#include "Camera.h"
 #include "Game.h"
+#include "IndexBuffer.h"
+#include "Light.h"
 #include "Window.h"
-#include "framework.h"
+#include "Mesh.h"
+#include "RenderTarget.h"
+#include "RootSignature.h"
+#include "Texture.h"
+#include "VertexBuffer.h"
+
+#include <DirectXMath.h>
 
 class Demo : public Game
 {
@@ -10,6 +19,7 @@ public:
 	using super = Game;
 
 	Demo(const std::wstring& name, int width, int height, bool vSync = false);
+	virtual ~Demo();
 
 	//Load content for the demo
 	virtual bool LoadContent() override;
@@ -27,66 +37,71 @@ protected:
 	//Invoked by the window when a key is pressed while it has focus
 	virtual void OnKeyPressed(KeyEventArgs& e) override;
 
+	//Invoked when said key is released
+	virtual void OnKeyReleased(KeyEventArgs& e);
+
+	//Invoked when mouse is moved over the window
+	virtual void OnMouseMoved(MouseMotionEventArgs& e);
+
 	//Invoked when mouse wheel is scrolled
 	virtual void OnMouseWheel(MouseWheelEventArgs& e) override;
 
 	virtual void OnResize(ResizeEventArgs& e) override;
 
 private:
-	//Helper functions
-	//Transition a resource
-	void TransitionResource(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
-		Microsoft::WRL::ComPtr<ID3D12Resource> resource,
-		D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
-
-	//Clear a render target view
-	void ClearRTV(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
-		D3D12_CPU_DESCRIPTOR_HANDLE rtv, FLOAT* clearColor);
-
-	//Clear the depth of a depth-stencil view
-	void ClearDepth(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
-		D3D12_CPU_DESCRIPTOR_HANDLE dsv, FLOAT depth = 1.0f);
-
-	//Create a GPU buffer
-	void UpdateBufferResource(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
-		ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource,
-		size_t numElements, size_t elementSize, const void* bufferData,
-		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);
-
-	//Resize the depth buffer to match the size of the client area
-	void ResizeDepthBuffer(int width, int height);
-
 	//Member variables here below
+	//Some geometry to render
+	std::unique_ptr<Mesh> m_CubeMesh;
+	std::unique_ptr<Mesh> m_SphereMesh;
+	std::unique_ptr<Mesh> m_ConeMesh;
+	std::unique_ptr<Mesh> m_TorusMesh;
+	std::unique_ptr<Mesh> m_PlaneMesh;
 
-	uint64_t m_FenceValues[Window::bufferCount] = {};
+	Texture m_DefaultTexture;
+	Texture m_DirectXTexture;
+	Texture m_EarthTexture;
+	Texture m_MonaLisaTexture;
 
-	//Vertex buffer for the cube
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_VertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
-
-	//Index buffer for the cube
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_IndexBuffer;
-	D3D12_INDEX_BUFFER_VIEW m_IndexBufferView{};
-
-	//Depth Buffer
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthBuffer;
-	//Descriptor Heap for depth buffer
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
+	//Render target
+	RenderTarget m_RenderTarget;
 
 	//Root signature
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
-	
+	RootSignature m_RootSignature;
+
 	//Pipeline state object
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
 
-	D3D12_VIEWPORT m_Viewport{};
-	D3D12_RECT m_ScissorRect{};
+	D3D12_VIEWPORT m_Viewport;
+	D3D12_RECT m_ScissorRect;
 
-	float m_FoV{};
+	Camera m_Camera;
+	struct alignas(16) CameraData
+	{
+		DirectX::XMVECTOR m_InitialCamPos;
+		DirectX::XMVECTOR m_InitialCamRot;
+	};
+	CameraData* m_pAlignedCameraData;
 
-	DirectX::XMMATRIX m_ModelMatrix{};
-	DirectX::XMMATRIX m_ViewMatrix{};
-	DirectX::XMMATRIX m_ProjectionMatrix{};
+	//Camera controller
+	float m_Forward;
+	float m_Backward;
+	float m_Left;
+	float m_Right;
+	float m_Up;
+	float m_Down;
 
-	bool m_ContentLoaded{};
+	float m_Pitch;
+	float m_Yaw;
+
+	//Rotate the lights in a circle
+	bool m_AnimateLights;
+	//Set to true if the shift key is pressed
+	bool m_Shift;
+
+	int m_Height;
+	int m_Width;
+
+	//Define some lights
+	std::vector<PointLight> m_PointLights;
+	std::vector<SpotLight> m_SpotLights;
 };

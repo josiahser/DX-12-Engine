@@ -48,7 +48,7 @@ protected:
 	virtual void OnKeyPressed(KeyEventArgs& e);
 
 	//When key is released
-	virtual void OnKeyRelease(KeyEventArgs& e);
+	virtual void OnKeyReleased(KeyEventArgs& e);
 
 	//When mouse is moved over the window
 	virtual void OnMouseMoved(MouseMotionEventArgs& e);

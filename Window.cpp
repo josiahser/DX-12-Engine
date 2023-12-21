@@ -199,7 +199,7 @@ void Window::OnKeyReleased(KeyEventArgs& e)
 {
 	if (auto pGame = m_pGame.lock())
 	{
-		pGame->OnKeyRelease(e);
+		pGame->OnKeyReleased(e);
 	}
 }
 

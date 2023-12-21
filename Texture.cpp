@@ -28,7 +28,7 @@ Texture::Texture(Microsoft::WRL::ComPtr<ID3D12Resource> resource, TextureUsage t
 	CreateViews();
 }
 
-Texture::Texture(const Texture& copy)
+Texture::Texture(const Texture& copy) noexcept
 	: Resource(copy)
 {
 	CreateViews();
@@ -40,7 +40,7 @@ Texture::Texture(Texture&& copy) noexcept
 	CreateViews();
 }
 
-Texture& Texture::operator=(const Texture& other)
+Texture& Texture::operator=(const Texture& other) noexcept
 {
 	Resource::operator=(other);
 

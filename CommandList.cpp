@@ -164,9 +164,9 @@ void CommandList::CopyBuffer(Buffer& buffer, size_t numElements, size_t elementS
 			UpdateSubresources(m_d3d12CommandList.Get(), d3d12Resource.Get(), uploadResource.Get(), 0, 0, 1, &subresourceData);
 
 			//Add references to resource so they stay in scope until the command list is reset
-			TrackObject(uploadResource);
+			TrackResource(uploadResource);
 		}
-		TrackObject(d3d12Resource);
+		TrackResource(d3d12Resource);
 	}
 	buffer.SetD3D12Resource(d3d12Resource);
 	buffer.CreateViews(numElements, elementSize);
@@ -514,7 +514,7 @@ void CommandList::GenerateMips_BGR(Texture& texture)
 	CopyResource(texture, aliasTexture);
 
 	//Track resource to ensure the lifetime
-	TrackObject(heap);
+	TrackResource(heap);
 	TrackResource(copyTexture);
 	TrackResource(aliasTexture);
 	TrackResource(texture);
@@ -579,7 +579,7 @@ void CommandList::GenerateMips_sRGB(Texture& texture)
 	CopyResource(texture, aliasTexture);
 
 	//Track resource to ensure the lifetime
-	TrackObject(heap);
+	TrackResource(heap);
 	TrackResource(copyTexture);
 	TrackResource(aliasTexture);
 	TrackResource(texture);
@@ -719,8 +719,8 @@ void CommandList::CopyTextureSubresource(Texture& texture, uint32_t firstSubreso
 
 		UpdateSubresources(m_d3d12CommandList.Get(), destinationResource.Get(), intermediateResource.Get(), 0, firstSubresource, numSubresources, subresourceData);
 
-		TrackObject(intermediateResource);
-		TrackObject(destinationResource);
+		TrackResource(intermediateResource);
+		TrackResource(destinationResource);
 	}
 }
 
@@ -833,7 +833,7 @@ void CommandList::SetPipelineState(Microsoft::WRL::ComPtr<ID3D12PipelineState> p
 {
 	m_d3d12CommandList->SetPipelineState(pipelineState.Get());
 
-	TrackObject(pipelineState);
+	TrackResource(pipelineState);
 }
 
 void CommandList::SetGraphicsRootSignature(const RootSignature& rootSignature)
@@ -850,7 +850,7 @@ void CommandList::SetGraphicsRootSignature(const RootSignature& rootSignature)
 
 		m_d3d12CommandList->SetGraphicsRootSignature(m_RootSignature);
 
-		TrackObject(m_RootSignature);
+		TrackResource(m_RootSignature);
 	}
 }
 
@@ -869,7 +869,7 @@ void CommandList::SetComputeRootSignature(const RootSignature& rootSignature)
 
 		m_d3d12CommandList->SetComputeRootSignature(m_RootSignature);
 
-		TrackObject(m_RootSignature);
+		TrackResource(m_RootSignature);
 	}
 }
 
@@ -1039,14 +1039,14 @@ void CommandList::Reset()
 	m_ComputeCommandList = nullptr;
 }
 
-void CommandList::TrackObject(Microsoft::WRL::ComPtr<ID3D12Object> object)
+void CommandList::TrackResource(Microsoft::WRL::ComPtr<ID3D12Object> object)
 {
 	m_TrackedObjects.push_back(object);
 }
 
 void CommandList::TrackResource(const Resource& res)
 {
-	TrackObject(res.GetD3D12Resource());
+	TrackResource(res.GetD3D12Resource());
 }
 
 void CommandList::ReleaseTrackedObjects()
