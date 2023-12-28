@@ -8,6 +8,11 @@ UploadBuffer::UploadBuffer(size_t pageSize)
 	: m_PageSize(pageSize)
 {}
 
+UploadBuffer::~UploadBuffer()
+{
+
+}
+
 UploadBuffer::Allocation UploadBuffer::Allocate(size_t sizeInbytes, size_t alignment)
 {
 	if (sizeInbytes > m_PageSize)

@@ -6,6 +6,9 @@
 #include "Application.h"
 #include "Demo.h"
 
+#pragma comment(lib, "dxgi")
+#pragma comment(lib, "DXGUID")
+
 #include <dxgidebug.h>
 
 void ReportLiveObjects()

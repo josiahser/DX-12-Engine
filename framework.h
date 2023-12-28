@@ -1,18 +1,33 @@
 #pragma once
 
-//D3D12 Extension lib
-#include <initguid.h>
-#include "DirectX-Headers/include/directx/d3dx12.h"
-#include "Helpers.h"
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files
 #include <Windows.h>
 #include <shellapi.h>
-#include <wrl.h>
+
+#if defined(CreateWindow)
+#undef CreateWindow
+#endif
+
+#include <wrl/client.h>
+using namespace Microsoft::WRL;
+
+//D3D12 Extension lib
+#include "DirectX-Headers/include/directx/d3dx12.h"
+#include <DirectXMath.h>
+#include "DirectXTex-main/DirectXTex/DirectXTex.h"
+
+//DirectX 12 headers
+#include <d3dcompiler.h>
+#include <dxgi1_6.h>
+#include <dxgidebug.h>
+
+using namespace DirectX;
 
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3dcompiler")
+// 
 // C RunTime Header Files
 //#include <stdlib.h>
 //#include <malloc.h>
@@ -27,19 +42,6 @@
 #undef max
 #endif
 
-#if defined(CreateWindow)
-#undef CreateWindow
-#endif
-
-using namespace Microsoft::WRL;
-
-//DirectX 12 headers
-#include "DirectX-Headers/include/directx/d3d12.h"
-#include <dxgi1_6.h>
-#include <d3dcompiler.h>
-#include <DirectXMath.h>
-#include "DirectXTex-main/DirectXTex/DirectXTex.h"
-
 //STL Headers
 #include <algorithm>
 #include <atomic>
@@ -47,13 +49,17 @@ using namespace Microsoft::WRL;
 #include <chrono>
 #include <condition_variable>
 #include <filesystem>
+#include <functional>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <new>
+#include <sstream>
 #include <string>
-#include <unordered_map>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 namespace fs = std::filesystem;
+
+#include "Helpers.h"

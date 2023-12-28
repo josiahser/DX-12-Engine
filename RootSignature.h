@@ -5,22 +5,15 @@
 #include <wrl.h>
 #include <vector>
 
+class Device;
+
 class RootSignature
 {
 public:
-	RootSignature();
-	RootSignature(const D3D12_ROOT_SIGNATURE_DESC1& rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION rootSignatureVersion);
-
-	virtual ~RootSignature();
-
-	void Destroy();
-
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> GetRootSignature() const
 	{
 		return m_RootSignature;
 	}
-
-	void SetRootSignatureDesc(const D3D12_ROOT_SIGNATURE_DESC1& rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION rootSignatureVersion);
 
 	const D3D12_ROOT_SIGNATURE_DESC1& GetRootSignatureDesc() const
 	{
@@ -30,7 +23,19 @@ public:
 	uint32_t GetDescriptorTableBitMask(D3D12_DESCRIPTOR_HEAP_TYPE descriptorHeapType) const;
 	uint32_t GetNumDescriptors(uint32_t rootIndex) const;
 
+protected:
+	friend class std::default_delete<RootSignature>;
+
+	RootSignature(Device& device, const D3D12_ROOT_SIGNATURE_DESC1& rootSignatureDesc);
+
+	virtual ~RootSignature();
+
 private:
+	void Destroy();
+
+	void SetRootSignatureDesc(const D3D12_ROOT_SIGNATURE_DESC1& rootSignatureDesc);
+
+	Device& m_Device;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
 	D3D12_ROOT_SIGNATURE_DESC1 m_RootSignatureDesc;
 

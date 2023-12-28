@@ -2,6 +2,10 @@
 
 #include "CommandList.h"
 
+#pragma comment(lib, "d3d12")
+#pragma comment(lib, "dxgi")
+#pragma comment(lib, "d3dcompiler")
+
 #include "Application.h"
 #include "ByteAddressBuffer.h"
 #include "ConstantBuffer.h"
@@ -52,6 +56,20 @@ void CommandList::TransitionBarrier(const Resource& resource, D3D12_RESOURCE_STA
 	{
 		//The before state isn't important, itll be solved by the resource state tracker
 		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12Resource.Get(), D3D12_RESOURCE_STATE_COMMON, stateAfter, subResource);
+		m_ResourceStateTracker->ResourceBarrier(barrier);
+	}
+	if (flushBarriers)
+	{
+		FlushResourceBarriers();
+	}
+}
+
+void CommandList::TransitionBarrier(Microsoft::WRL::ComPtr<ID3D12Resource> resource, D3D12_RESOURCE_STATES stateAfter, UINT subresource, bool flushBarriers)
+{
+	if (resource)
+	{
+		//The before state isn't important, itll be solved by the resource state tracker
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(), D3D12_RESOURCE_STATE_COMMON, stateAfter, subresource);
 		m_ResourceStateTracker->ResourceBarrier(barrier);
 	}
 	if (flushBarriers)
@@ -217,8 +235,8 @@ void CommandList::LoadTextureFromFile(Texture& texture, const std::wstring& file
 	}
 	else
 	{
-		DirectX::TexMetadata metadata;
-		DirectX::ScratchImage scratchImage;
+		TexMetadata metadata;
+		ScratchImage scratchImage;
 		
 		if (filePath.extension() == ".dds")
 		{
@@ -239,7 +257,7 @@ void CommandList::LoadTextureFromFile(Texture& texture, const std::wstring& file
 
 		if (textureUsage == TextureUsage::Albedo)
 		{
-			metadata.format = DirectX::MakeSRGB(metadata.format);
+			metadata.format = MakeSRGB(metadata.format);
 		}
 
 		D3D12_RESOURCE_DESC textureDesc = {};

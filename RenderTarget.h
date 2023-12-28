@@ -1,11 +1,13 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "DirectX-Headers/include/directx/d3d12.h"
+
 #include <cstdint>
+#include <memory>
 #include <vector>
 
-#include "Texture.h"
-
+class Texture;
 //Don't use scoped enums in order to avoid the explicit cast required to use them as array indices
 enum AttachmentPoint
 {
@@ -26,6 +28,7 @@ class RenderTarget
 public:
 	//Create an empty render target
 	RenderTarget();
+
 	RenderTarget(const RenderTarget& copy) = default;
 	RenderTarget(RenderTarget&& copy) = default;
 
@@ -34,8 +37,8 @@ public:
 
 	//Attach a texture to the render target
 	//The texture will be copied into the texture array
-	void AttachTexture(AttachmentPoint attachmentPoint, const Texture& texture);
-	const Texture& GetTexture(AttachmentPoint attachmentPoint) const;
+	void AttachTexture(AttachmentPoint attachmentPoint, std::shared_ptr<Texture> texture);
+	std::shared_ptr<Texture> GetTexture(AttachmentPoint attachmentPoint) const;
 
 	//Resize all the textures associated with the render target
 	void Resize(DirectX::XMUINT2 size);
@@ -50,7 +53,7 @@ public:
 
 	//Get a list of textures attached to the render target
 	//Primarily used by the commandlist when binding render target to the Output merger stage
-	const std::vector<Texture>& GetTextures() const;
+	const std::vector<std::shared_ptr<Texture>>& GetTextures() const;
 
 	//Get the Render Target Formats of the textures currently attached to this render target object
 	//Needed to configure the Pipeline State Object (PSO)
@@ -59,9 +62,19 @@ public:
 	//Get the format of the attached depth/stencil buffer
 	DXGI_FORMAT GetDepthStencilFormat() const;
 
+	//Get the sample description of the render target
+	DXGI_SAMPLE_DESC GetSampleDesc() const;
+
+	//Reset all textures
+	void Reset()
+	{
+		m_Textures = RenderTargetList(AttachmentPoint::NumAttachmentPoints);
+	}
+
 protected:
 
 private:
-	std::vector<Texture> m_Textures;
+	using RenderTargetList = std::vector<std::shared_ptr<Texture>>;
+	RenderTargetList m_Textures;
 	DirectX::XMUINT2 m_Size;
 };

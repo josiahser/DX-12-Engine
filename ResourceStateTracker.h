@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DirectX-Headers/include/directx/d3d12.h"
+#include <wrl/client.h>
 
 #include <mutex>
 #include <map>
@@ -55,10 +56,10 @@ public:
 	///	Flush any pending resource barriers to the command list
 	/// @return The number of resource barriers that were flushed to the command list
 	/// 
-	uint32_t FlushPendingResourceBarriers(CommandList& commandList);
+	uint32_t FlushPendingResourceBarriers(const std::shared_ptr<CommandList>& commandList);
 
 	//Flush any (non-pending) resource barriers that have been pushed to the resource state tracker
-	void FlushResourceBarriers(CommandList& commandList); //Flushed to the command list
+	void FlushResourceBarriers(const std::shared_ptr<CommandList>& commandList); //Flushed to the command list
 
 	//Commit final resource states to the global resource state map
 	//This must be called when the command list is closed
@@ -145,7 +146,7 @@ private:
 		D3D12_RESOURCE_STATES State;
 		std::map<UINT, D3D12_RESOURCE_STATES> SubresourceState;
 	};
-
+	using ResourceList = std::vector<ID3D12Resource*>;
 	using ResourceStateMap = std::unordered_map<ID3D12Resource*, ResourceState>;
 
 	//The final (last known state) of the resources within a command list

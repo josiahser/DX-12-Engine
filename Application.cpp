@@ -52,20 +52,20 @@ Application::Application(HINSTANCE hInstance)
     {
         MessageBoxA(NULL, "unable to register the window class", "Error", MB_OK | MB_ICONERROR);
     }
-    //
-    //    m_Adapter = GetAdapter(false);
-    //    if (m_Adapter)
-    //        m_Device = CreateDevice(m_Adapter);
-    //
-    //    if (m_Device)
-    //    {
-    //        m_DirectCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_DIRECT);
-    //        m_ComputeCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_COMPUTE);
-    //        m_CopyCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_COPY);
-    //
-    //        m_TearingSupported = CheckTearingSupport();
-    //    }
-    //
+        
+    Microsoft::WRL::ComPtr<IDXGIAdapter4> adapter = GetAdapter(false);
+        if (adapter)
+            m_Device = CreateDevice(adapter);
+    
+        if (m_Device)
+        {
+            m_DirectCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_DIRECT);
+            m_ComputeCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+            m_CopyCommandQueue = std::make_shared<CommandQueue>(m_Device, D3D12_COMMAND_LIST_TYPE_COPY);
+    
+            m_TearingSupported = CheckTearingSupport();
+        }
+    
 }
 
 void Application::Initialize()
@@ -276,12 +276,14 @@ std::shared_ptr<Window> Application::CreateRenderWindow(const std::wstring& wind
     if (windowIter != gs_WindowByName.end())
         return windowIter->second;
 
-    RECT windowRect = { 0, 0, clientWidth, clientHeight };
+    RECT windowRect = { 0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight) };
     AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
-    HWND hWnd = CreateWindowW(WINDOW_CLASS_NAME, windowName.c_str(), WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, windowRect.right - windowRect.left, 
-        windowRect.bottom - windowRect.top, nullptr, nullptr, m_hInstance, nullptr);
+    uint32_t width = windowRect.right - windowRect.left;
+    uint32_t height = windowRect.bottom - windowRect.top;
+
+    HWND hWnd = ::CreateWindowExW(NULL, WINDOW_CLASS_NAME, windowName.c_str(), WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, m_hInstance, NULL);
 
     if (!hWnd)
     {

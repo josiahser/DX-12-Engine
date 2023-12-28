@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectXTex-main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,6 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectXTex-main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,6 +122,7 @@
       <ShowIncludes>true</ShowIncludes>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectXTex-main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,6 +142,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectXTex-main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Adapter.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ByteAddressBuffer.h" />
@@ -155,11 +160,13 @@
     <ClInclude Include="CommandList.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="ConstantBufferView.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Demo.h" />
     <ClInclude Include="DescriptorAllocation.h" />
     <ClInclude Include="DescriptorAllocator.h" />
     <ClInclude Include="DescriptorAllocatorPage.h" />
+    <ClInclude Include="Device.h" />
     <ClInclude Include="DynamicDescriptorHeap.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="framework.h" />
@@ -173,12 +180,14 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PanoToCubemapPSO.h" />
+    <ClInclude Include="PipelineStateObject.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceStateTracker.h" />
     <ClInclude Include="RootSignature.h" />
+    <ClInclude Include="ShaderResourceView.h" />
     <ClInclude Include="StructuredBuffer.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureUsage.h" />
     <ClInclude Include="ThreadSafeQueue.h" />
@@ -187,6 +196,7 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Adapter.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="ByteAddressBuffer.cpp" />
@@ -198,7 +208,9 @@
     <ClCompile Include="DescriptorAllocation.cpp" />
     <ClCompile Include="DescriptorAllocator.cpp" />
     <ClCompile Include="DescriptorAllocatorPage.cpp" />
+    <ClCompile Include="Device.cpp" />
     <ClCompile Include="DynamicDescriptorHeap.cpp" />
+    <ClCompile Include="framework.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GenerateMipsPSO.cpp" />
     <ClCompile Include="HighResolutionClock.cpp" />
@@ -273,6 +285,11 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.0</ShaderModel>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="DirectXTex-main\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -37,12 +37,6 @@ CommandQueue::CommandQueue(D3D12_COMMAND_LIST_TYPE type)
 	m_ProcessInFlightCommandListsThread = std::thread(&CommandQueue::ProcessInFlightCommandLists, this);
 }
 
-CommandQueue::~CommandQueue()
-{
-	m_bProcessInFlightCommandLists = false;
-	m_ProcessInFlightCommandListsThread.join();
-}
-
 //Returns a command list in an executable state (doesn't need to be reset)
 std::shared_ptr<CommandList> CommandQueue::GetCommandList()
 {

@@ -3,12 +3,11 @@
 #include "Buffer.h"
 #include "ByteAddressBuffer.h"
 
+class Device;
+
 class StructuredBuffer : public Buffer
 {
 public:
-	StructuredBuffer(const std::wstring& name = L"");
-	StructuredBuffer(const D3D12_RESOURCE_DESC& resDesc, size_t numElements, size_t elementSize, const std::wstring& name = L"");
-
 	//Get the # of elements contained in this buffer
 	virtual size_t GetNumElements() const
 	{
@@ -21,35 +20,42 @@ public:
 		return m_ElementSize;
 	}
 
-	//Create the views for the buffer resource
-	//Used by the command list when setting the buffer contents
-	virtual void CreateViews(size_t numElements, size_t elementSize) override;
+	////Create the views for the buffer resource
+	////Used by the command list when setting the buffer contents
+	//virtual void CreateViews(size_t numElements, size_t elementSize) override;
 
-	//Get the SRV for a resource
-	virtual D3D12_CPU_DESCRIPTOR_HANDLE GetShaderResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC* srvDesc = nullptr) const
-	{
-		return m_SRV.GetDescriptorHandle();
-	}
+	////Get the SRV for a resource
+	//virtual D3D12_CPU_DESCRIPTOR_HANDLE GetShaderResourceView(const D3D12_SHADER_RESOURCE_VIEW_DESC* srvDesc = nullptr) const
+	//{
+	//	return m_SRV.GetDescriptorHandle();
+	//}
 
-	//Get the UAV for a resource or subresource
-	virtual D3D12_CPU_DESCRIPTOR_HANDLE GetUnorderedAccessView(const D3D12_UNORDERED_ACCESS_VIEW_DESC* uavDesc = nullptr) const override
-	{
-		//Buffers don't have subresources
-		return m_UAV.GetDescriptorHandle();
-	}
+	////Get the UAV for a resource or subresource
+	//virtual D3D12_CPU_DESCRIPTOR_HANDLE GetUnorderedAccessView(const D3D12_UNORDERED_ACCESS_VIEW_DESC* uavDesc = nullptr) const override
+	//{
+	//	//Buffers don't have subresources
+	//	return m_UAV.GetDescriptorHandle();
+	//}
 
-	const ByteAddressBuffer& GetCounterBuffer() const
+	std::shared_ptr<ByteAddressBuffer> GetCounterBuffer() const
 	{
 		return m_CounterBuffer;
 	}
+
+protected:
+
+	StructuredBuffer(Device& device, size_t numElements, size_t elementSize);
+	StructuredBuffer(Device& device, Microsoft::WRL::ComPtr<ID3D12Resource> resource, size_t numElements, size_t elementSize);
+
+	virtual ~StructuredBuffer() = default;
 
 private:
 	size_t m_NumElements;
 	size_t m_ElementSize;
 
-	DescriptorAllocation m_SRV;
-	DescriptorAllocation m_UAV;
+	//DescriptorAllocation m_SRV;
+	//DescriptorAllocation m_UAV;
 
 	//A buffer to store the internal counter for the structured buffer
-	ByteAddressBuffer m_CounterBuffer;
+	std::shared_ptr<ByteAddressBuffer> m_CounterBuffer;
 };

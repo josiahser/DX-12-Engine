@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma comment(lib, "dxgi")
+#pragma comment(lib, "d3d12")
+
 #include "DescriptorAllocation.h"
 
 #include "DirectX-Headers/include/directx/d3d12.h"

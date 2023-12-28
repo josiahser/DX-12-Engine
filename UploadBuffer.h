@@ -6,6 +6,8 @@
 
 #include "Defines.h"
 
+#pragma comment(lib, "d3d12")
+
 #include <wrl.h>
 #include "DirectX-Headers/include/directx/d3d12.h"
 
