@@ -6,42 +6,65 @@
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "d3dcompiler")
 
-#include "Application.h"
+//#include "Application.h"
 #include "ByteAddressBuffer.h"
 #include "ConstantBuffer.h"
+#include "ConstantBufferView.h"
 #include "CommandQueue.h"
+#include "Device.h"
 #include "DynamicDescriptorHeap.h"
 #include "GenerateMipsPSO.h"
 #include "IndexBuffer.h"
+#include "Material.h"
+#include "Mesh.h"
 #include "PanoToCubemapPSO.h"
+#include "PipelineStateObject.h"
 #include "RenderTarget.h"
 #include "Resource.h"
 #include "ResourceStateTracker.h"
 #include "RootSignature.h"
+#include "Scene.h"
+#include "SceneNode.h"
+#include "ShaderResourceView.h"
 #include "StructuredBuffer.h"
 #include "Texture.h"
+#include "UnorderedAccessView.h"
 #include "UploadBuffer.h"
 #include "VertexBuffer.h"
+
+//Adapter for std::make_unique
+class MakeUploadBuffer : public UploadBuffer
+{
+public:
+	MakeUploadBuffer(Device& device, size_t pageSize = _2MB)
+		: UploadBuffer(device, pageSize)
+	{}
+
+	virtual ~MakeUploadBuffer(){}
+};
 
 //Static Global member variables
 std::map< std::wstring, ID3D12Resource* > CommandList::ms_TextureCache;
 std::mutex CommandList::ms_TextureCacheMutex;
 
-CommandList::CommandList(D3D12_COMMAND_LIST_TYPE type)
-	:m_d3d12CommandListType(type)
+CommandList::CommandList(Device& device, D3D12_COMMAND_LIST_TYPE type)
+	: m_Device(device)
+	, m_d3d12CommandListType(type)
+	, m_RootSignature(nullptr)
+	, m_PipelineState(nullptr)
 {
-	auto device = Application::Get().GetDevice();
+	auto d3d12Device = m_Device.GetD3D12Device();
 
-	ThrowIfFailed(device->CreateCommandAllocator(m_d3d12CommandListType, IID_PPV_ARGS(&m_d3d12CommandAllocator)));
+	ThrowIfFailed(d3d12Device->CreateCommandAllocator(m_d3d12CommandListType, IID_PPV_ARGS(&m_d3d12CommandAllocator)));
 
-	ThrowIfFailed(device->CreateCommandList(0, m_d3d12CommandListType, m_d3d12CommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_d3d12CommandList)));
+	ThrowIfFailed(d3d12Device->CreateCommandList(0, m_d3d12CommandListType, m_d3d12CommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_d3d12CommandList)));
 
-	m_UploadBuffer = std::make_unique<UploadBuffer>();
+	m_UploadBuffer = std::make_unique<MakeUploadBuffer>(device);
 	m_ResourceStateTracker = std::make_unique<ResourceStateTracker>();
 
 	for (int i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
 	{
-		m_DynamicDescriptorHeap[i] = std::make_unique<DynamicDescriptorHeap>(static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
+		m_DynamicDescriptorHeap[i] = std::make_unique<DynamicDescriptorHeap>(device, static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
 		m_DescriptorHeaps[i] = nullptr;
 	}
 }

@@ -16,14 +16,11 @@ Uses a *FREE LIST* list of available allocations, linearly searched and allocate
 #include <vector>
 
 class DescriptorAllocatorPage;
+class Device;
 
 class DescriptorAllocator
 {
 public:
-	//Type of descriptors can be CBV_SRV_UAV, SAMPLER, RTV, or DSV
-	DescriptorAllocator(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptorsPerHeap = 256);
-	virtual ~DescriptorAllocator();
-
 	/**
 	* Allocate a number of contiguous descriptors from a CPU visible descriptor Heap
 	* 
@@ -35,7 +32,15 @@ public:
 	/**
 	* When the frame has completed, the stale descriptors can be released
 	*/
-	void ReleaseStaleDescriptors(uint64_t frameNumber);
+	//void ReleaseStaleDescriptors(uint64_t frameNumber);
+	void ReleaseStaleDescriptors();
+
+protected:
+	friend class std::default_delete <DescriptorAllocator>;
+
+	//Type of descriptors can be CBV_SRV_UAV, SAMPLER, RTV, or DSV
+	DescriptorAllocator(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptorsPerHeap = 256);
+	virtual ~DescriptorAllocator();
 
 private:
 	//Alias for the vector of ptrs to descriptor allocator pages
@@ -44,6 +49,7 @@ private:
 	//Create a new heap with a specific number of descriptors
 	std::shared_ptr<DescriptorAllocatorPage> CreateAllocatorPage();
 
+	Device& m_Device;
 	D3D12_DESCRIPTOR_HEAP_TYPE m_HeapType;
 	uint32_t m_NumDescriptorsPerHeap;
 

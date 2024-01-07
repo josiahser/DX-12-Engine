@@ -9,7 +9,7 @@
 #include "DescriptorAllocation.h"
 
 #include "DirectX-Headers/include/directx/d3d12.h"
-#include "DirectX-Headers/include/directx/d3dx12.h"
+//#include "DirectX-Headers/include/directx/d3dx12.h"
 #include <wrl.h>
 
 #include <map>
@@ -17,11 +17,11 @@
 #include <mutex>
 #include <queue>
 
+class Device;
+
 class DescriptorAllocatorPage : public std::enable_shared_from_this<DescriptorAllocatorPage>
 {
 public:
-	DescriptorAllocatorPage(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors);
-
 	D3D12_DESCRIPTOR_HEAP_TYPE GetHeapType() const;
 
 	//Check to see if the descriptor page has a contiguous block of descriptors large enough
@@ -38,12 +38,14 @@ public:
 	//The frameNumber stale descriptors are not freed directly,
 	//but put on a stale allocations queue, which are returned
 	//to the heap using the ReleaseStaleAllocations method
-	void Free(DescriptorAllocation&& descriptorHandle, uint64_t frameNumber);
+	void Free(DescriptorAllocation&& descriptorHandle);
 
 	//Returns the stale descriptors back to the descriptor heap
-	void ReleaseStaleDescriptors(uint64_t frameNumber);
+	void ReleaseStaleDescriptors();
 
 protected:
+	DescriptorAllocatorPage(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors);
+	virtual ~DescriptorAllocatorPage() = default;
 	//Compute the offset of the descriptor handle from the start of the heap
 	uint32_t ComputeOffset(D3D12_CPU_DESCRIPTOR_HANDLE handle);
 
@@ -82,10 +84,9 @@ private:
 
 	struct StaleDescriptorInfo
 	{
-		StaleDescriptorInfo(OffsetType offset, SizeType size, uint64_t frame)
+		StaleDescriptorInfo(OffsetType offset, SizeType size)
 			: Offset(offset)
 			, Size(size)
-			, FrameNumber(frame)
 		{}
 
 		//The offset within the descriptor heap
@@ -93,7 +94,7 @@ private:
 		//The number of descriptors
 		SizeType Size;
 		//The frame number that the descriptor was freed
-		uint64_t FrameNumber;
+		//uint64_t FrameNumber;
 	};
 
 	//Stale descriptors are queued for release until the frame they were freed in has completed
@@ -104,6 +105,7 @@ private:
 	FreeListBySize m_FreeListBySize;
 	StaleDescriptorQueue m_StaleDescriptors;
 
+	Device& m_Device;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_d3d12DescriptorHeap;
 	D3D12_DESCRIPTOR_HEAP_TYPE m_HeapType;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_BaseDescriptor;
