@@ -104,6 +104,7 @@ class Device;
 
 class Texture : public Resource
 {
+public:
 	//Resize the texture
 	void Resize(uint32_t width, uint32_t height, uint32_t depthOrArraySize = 1);
 
