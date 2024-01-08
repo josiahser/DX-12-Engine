@@ -31,6 +31,10 @@ public:
 
 	//Check if this is a valid descriptor
 	bool IsNull() const;
+	bool IsValid() const
+	{
+		return !IsNull();
+	}
 
 	//Get a descriptor at a particular offset in the allocation
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDescriptorHandle(uint32_t offset = 0) const;

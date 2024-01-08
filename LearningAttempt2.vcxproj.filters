@@ -22,6 +22,12 @@
     <Filter Include="Header Files\Helpers">
       <UniqueIdentifier>{cda4e549-27f9-46eb-a50d-be3fc9e414cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ImGUI">
+      <UniqueIdentifier>{c02cc8e5-792d-4734-87db-8951a59aedae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImGUI Source">
+      <UniqueIdentifier>{c7bf7846-6446-4916-a059-5a9878752fb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Demo.h">
@@ -150,6 +156,42 @@
     <ClInclude Include="SwapChain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImGUI\imstb_truetype.h">
+      <Filter>Header Files\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imstb_textedit.h">
+      <Filter>Header Files\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imstb_rectpack.h">
+      <Filter>Header Files\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_internal.h">
+      <Filter>Header Files\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui_impl_win32.h">
+      <Filter>Header Files\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imgui.h">
+      <Filter>Header Files\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI\imconfig.h">
+      <Filter>Header Files\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="UnorderedAccessView.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexTypes.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -251,6 +293,21 @@
     <ClCompile Include="Device.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
+    <ClCompile Include="ImGUI\imgui.cpp">
+      <Filter>Source Files\ImGUI Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_demo.cpp">
+      <Filter>Source Files\ImGUI Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_draw.cpp">
+      <Filter>Source Files\ImGUI Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_impl_win32.cpp">
+      <Filter>Source Files\ImGUI Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGUI\imgui_widgets.cpp">
+      <Filter>Source Files\ImGUI Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LearningAttempt2.rc">
@@ -279,6 +336,12 @@
       <Filter>Source Files</Filter>
     </FxCompile>
     <FxCompile Include="PanoToCubemap_CS.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
+    <FxCompile Include="ImGUI_VS.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
+    <FxCompile Include="ImGUI_PS.hlsl">
       <Filter>Source Files</Filter>
     </FxCompile>
   </ItemGroup>

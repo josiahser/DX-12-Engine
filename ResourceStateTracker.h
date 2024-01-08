@@ -91,7 +91,7 @@ public:
 	///	Remove a resource from the global resource state array (map)
 	/// This should only be done when the resource is destroyed
 	/// 
-	static void RemoveGlobalResourceState(ID3D12Resource* resource);
+	//static void RemoveGlobalResourceState(ID3D12Resource* resource);
 
 private:
 	//An array (vector) of resource barriers
