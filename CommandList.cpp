@@ -856,28 +856,378 @@ std::shared_ptr<Scene> CommandList::CreateScene(const VertexCollection& vertices
 	return scene;
 }
 
-//Create Cube is next
-
-void CommandList::ClearTexture(const Texture& texture, const float clearColor[4])
+std::shared_ptr<Scene> CommandList::CreateCube(float size, bool reverseWinding)
 {
-	TransitionBarrier(texture, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	m_d3d12CommandList->ClearRenderTargetView(texture.GetRenderTargetView(), clearColor, 0, nullptr);
+	//Center the cube at 0,0,0
+	float s = size * 0.5f;
+
+	//There's 8 edges to a cube
+	XMFLOAT3 p[8] = { {s, s, -s}, {s, s, s}, {s, -s, s}, {s, -s, -s},
+					 {-s, s, s}, {-s, s, -s}, {-s, -s, -s}, {-s, -s, s} };
+
+	//6 Faces normals
+	XMFLOAT3 n[6] = { {1,0,0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1} };
+
+	//4 Unique texture coordinates
+	XMFLOAT3 t[4] = { {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0} };
+
+	//Indices for the vertex positions
+	uint16_t i[24] = {
+		0, 1, 2, 3,  // +X
+		4, 5, 6, 7,  // -X
+		4, 1, 0, 5,  // +Y
+		2, 7, 6, 3,  // -Y
+		1, 4, 7, 2,  // +Z
+		5, 0, 3, 6   // -Z
+	};
+
+	VertexCollection vertices;
+	IndexCollection indices;
+
+	for (uint16_t f = 0; f < 6; ++f) //For each face of the cube
+	{
+		//Four vertices per face.
+		vertices.emplace_back(p[i[f * 4 + 0]], n[f], t[0]);
+		vertices.emplace_back(p[i[f * 4 + 1]], n[f], t[1]);
+		vertices.emplace_back(p[i[f * 4 + 2]], n[f], t[2]);
+		vertices.emplace_back(p[i[f * 4 + 3]], n[f], t[3]);
+
+		//First triangle
+		indices.emplace_back(f * 4 + 0);
+		indices.emplace_back(f * 4 + 1);
+		indices.emplace_back(f * 4 + 2);
+
+		//Second triangle
+		indices.emplace_back(f * 4 + 2);
+		indices.emplace_back(f * 4 + 3);
+		indices.emplace_back(f * 4 + 0);
+	}
+
+	if (reverseWinding)
+	{
+		ReverseWinding(indices, vertices);
+	}
+
+	return CreateScene(vertices, indices);
+}
+
+std::shared_ptr<Scene> CommandList::CreateSphere(float radius, uint32_t tessellation, bool reverseWinding)
+{
+	if (tessellation < 3)
+	{
+		throw std::out_of_range("Tessellation param out of range");
+	}
+
+	VertexCollection vertices;
+	IndexCollection indices;
+
+	size_t verticalSegments = tessellation;
+	size_t horizontalSegments = tessellation * 2;
+
+	//Create rings of vertices at progressively higher latitudes
+	for (size_t i = 0; i <= verticalSegments; i++)
+	{
+		float v = 1 - (float)i / verticalSegments;
+
+		float latitude = (i * XM_PI / verticalSegments) - XM_PIDIV2;
+		float dy, dxz;
+
+		XMScalarSinCos(&dy, &dxz, latitude);
+
+		//Create a single ring of vertices at this latitude
+		for (size_t j = 0; j <= horizontalSegments; j++)
+		{
+			float u = (float)j / horizontalSegments;
+
+			float longitude = j * XM_2PI / horizontalSegments;
+			float dx, dz;
+
+			XMScalarSinCos(&dx, &dz, longitude);
+
+			dx *= dxz;
+			dz *= dxz;
+
+			auto normal = XMVectorSet(dx, dy, dz, 0);
+			auto textureCoordinate = XMVectorSet(u, v, 0, 0);
+			auto position = normal * radius;
+
+			vertices.emplace_back(position, normal, textureCoordinate);
+		}
+	}
+
+	//Fill the index buffer with triangles joining each pair of latitude rings
+	size_t stride = horizontalSegments + 1;
+
+	for (size_t i = 0; i < verticalSegments; i++)
+	{
+		for (size_t j = 0; j <= horizontalSegments; j++)
+		{
+			size_t nextI = i + 1;
+			size_t nextJ = (j + 1) % stride;
+
+			indices.push_back(i * stride + nextJ);
+			indices.push_back(nextI * stride + j);
+			indices.push_back(i * stride + j);
+
+			indices.push_back(nextI * stride + nextJ);
+			indices.push_back(nextI * stride + j);
+			indices.push_back(i * stride + nextJ);
+		}
+	}
+
+	if (reverseWinding)
+	{
+		ReverseWinding(indices, vertices);
+	}
+
+	return CreateScene(vertices, indices);
+}
+
+void CommandList::CreateCylinderCap(VertexCollection& vertices, IndexCollection& indices, size_t tessellation, float height, float radius, bool isTop)
+{
+	//Create cap indices
+	for (size_t i = 0; i < tessellation - 2; i++)
+	{
+		size_t i1 = (i + 1) % tessellation;
+		size_t i2 = (i + 2) % tessellation;
+
+		if (isTop)
+		{
+			std::swap(i1, i2);
+		}
+
+		size_t vbase = vertices.size();
+		indices.push_back(vbase + i2);
+		indices.push_back(vbase + i1);
+		indices.push_back(vbase);
+	}
+
+	//Find out which end of the cylinder this is
+	XMVECTOR normal = g_XMIdentityR1;
+	XMVECTOR textureScale = g_XMNegativeOneHalf;
+
+	if (!isTop)
+	{
+		normal = XMVectorNegate(normal);
+		textureScale = XMVectorMultiply(textureScale, g_XMNegateX);
+	}
+
+	//Create cap vertices
+	for (size_t i = 0; i < tessellation; i++)
+	{
+		XMVECTOR circleVector = GetCircleVector(i, tessellation);
+		XMVECTOR position = XMVectorAdd(XMVectorScale(circleVector, radius), XMVectorScale(normal, height));
+		XMVECTOR textureCoordinate = XMVectorMultiplyAdd(XMVectorSwizzle<0, 2, 3, 3>(circleVector), textureScale, g_XMOneHalf);
+
+		vertices.emplace_back(position, normal, textureCoordinate);
+	}
+}
+
+std::shared_ptr<Scene> CommandList::CreateCylinder(float radius, float height, uint32_t tessellation, bool reverseWinding)
+{
+	if (tessellation < 3)
+		throw std::out_of_range("tesselllation parameter out of range");
+
+	VertexCollection vertices;
+	IndexCollection indices;
+
+	height /= 2;
+
+	XMVECTOR topOffset = XMVectorScale(g_XMIdentityR1, height);
+
+	size_t stride = tessellation + 1;
+
+	//Create a ring of triangles around the outside of the cylinder
+	for (size_t i = 0; i <= tessellation; i++)
+	{
+		XMVECTOR normal = GetCircleVector(i, tessellation);
+
+		XMVECTOR sideOffset = XMVectorScale(normal, radius);
+
+		float u = float(i) / float(tessellation);
+
+		XMVECTOR textureCoordinate = XMLoadFloat(&u);
+
+		vertices.emplace_back(XMVectorAdd(sideOffset, topOffset), normal, textureCoordinate);
+		vertices.emplace_back(XMVectorSubtract(sideOffset, topOffset), normal, XMVectorAdd(textureCoordinate, g_XMIdentityR1));
+
+		indices.push_back(i * 2 + 1);
+		indices.push_back((i * 2 + 2) % (stride * 2));
+		indices.push_back(i * 2);
+
+		indices.push_back((i * 2 + 3) % (stride * 2));
+		indices.push_back((i * 2 + 2) % (stride * 2));
+		indices.push_back(i * 2 + 1);
+	}
+
+	//Create flat triangle fan caps to seal the top and bottom
+	CreateCylinderCap(vertices, indices, tessellation, height, radius, true);
+	CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
+
+	//Build RH above
+	if (reverseWinding)
+		ReverseWinding(indices, vertices);
+
+	return CreateScene(vertices, indices);
+}
+
+std::shared_ptr<Scene> CommandList::CreateCone(float radius, float height, uint32_t tessellation, bool reverseWinding)
+{
+	if (tessellation < 3)
+	{
+		throw std::out_of_range("Tessellation param is out of range");
+	}
+
+	VertexCollection vertices;
+	IndexCollection indices;
+
+	height /= 2;
+
+	XMVECTOR topOffset = XMVectorScale(g_XMIdentityR1, height);
+	size_t stride = tessellation + 1;
+
+	//Create a ring of triangles around the outside of the cone
+	for (size_t i = 0; i <= tessellation; i++)
+	{
+		XMVECTOR circleVec = GetCircleVector(i, tessellation);
+
+		XMVECTOR sideOffset = XMVectorScale(circleVec, radius);
+
+		float u = float(i) / float(tessellation);
+
+		XMVECTOR textureCoordinate = XMLoadFloat(&u);
+
+		XMVECTOR pt = XMVectorSubtract(sideOffset, topOffset);
+
+		XMVECTOR normal = XMVector3Cross(GetCircleTangent(i, tessellation), XMVectorSubtract(topOffset, pt));
+		normal = XMVector3Normalize(normal);
+
+		//Duplicate the top vertex for distinct normals
+		vertices.emplace_back(topOffset, normal, g_XMZero);
+		vertices.emplace_back(pt, normal, XMVectorAdd(textureCoordinate, g_XMIdentityR1));
+
+		indices.push_back((i * 2 + 1) % (stride * 2));
+		indices.push_back((i * 2 + 3) % (stride * 2));
+		indices.push_back(i * 2);
+	}
+
+	//Create the flat triangle fan cap to seal the bottom
+	CreateCylinderCap(vertices, indices, tessellation, height, radius, false);
+
+	//Build RH above
+	if (reverseWinding)
+		ReverseWinding(indices, vertices);
+
+	return CreateScene(vertices, indices);
+}
+
+std::shared_ptr<Scene> CommandList::CreateTorus(float radius, float thickness, uint32_t tessellation, bool reverseWinding)
+{
+	assert(tessellation > 3);
+
+	VertexCollection vertices;
+	IndexCollection indices;
+
+	size_t stride = tessellation + 1;
+
+	//First we loop through the main ring of the torus
+	for (size_t i = 0; i <= tessellation; i++)
+	{
+		float u = (float)i / tessellation;
+
+		float outerAngle = i * XM_2PI / tessellation - XM_PIDIV2;
+
+		//Create a transform matrix that will align geometry to slice perpendicularly through the current ring position
+		XMMATRIX transform = XMMatrixTranslation(radius, 0, 0) * XMMatrixRotationY(outerAngle);
+
+		//Now we loop along the other axis, around the side of the tube
+		for (size_t j = 0; j <= tessellation; j++)
+		{
+			float v = 1 - (float)j / tessellation;
+
+			float innerAngle = j * XM_2PI / tessellation + XM_PI;
+			float dx, dy;
+
+			XMScalarSinCos(&dy, &dx, innerAngle);
+
+			//Create a vertex
+			auto normal = XMVectorSet(dx, dy, 0, 0);
+			auto position = normal * thickness / 2;
+			auto textureCoordinates = XMVectorSet(u, v, 0, 0);
+
+			position = XMVector3Transform(position, transform);
+			normal = XMVector3TransformNormal(normal, transform);
+
+			vertices.emplace_back(position, normal, textureCoordinates);
+
+			//And create indices for two triangles
+			size_t nextI = (i + 1) % stride;
+			size_t nextJ = (j + 1) % stride;
+
+			indices.push_back(nextI * stride + j);
+			indices.push_back(i * stride + nextJ);
+			indices.push_back(i * stride + j);
+
+			indices.push_back(nextI * stride + j);
+			indices.push_back(nextI * stride + nextJ);
+			indices.push_back(i * stride + nextJ);
+		}
+	}
+
+	if (reverseWinding)
+		ReverseWinding(indices, vertices);
+
+	return CreateScene(vertices, indices);
+}
+
+std::shared_ptr<Scene> CommandList::CreatePlane(float width, float height, bool reverseWinding)
+{
+	using Vertex = VertexPositionNormalTangentBitangentTexture;
+
+	//Clang format off
+	//Define a plane that is aligned with the X-Z plane and the normal is facing up in the Y-axis
+	VertexCollection vertices = {
+		Vertex(XMFLOAT3(-0.5f * width, 0.0f, 0.5f * height), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f)),  // 0
+		Vertex(XMFLOAT3(0.5f * width, 0.0f, 0.5f * height), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f)),   // 1
+		Vertex(XMFLOAT3(0.5f * width, 0.0f, -0.5f * height), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 0.0f)),  // 2
+		Vertex(XMFLOAT3(-0.5f * width, 0.0f, -0.5f * height), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f))  // 3
+	};
+
+	//clang-format on
+	IndexCollection indices = { 1, 3, 0, 2, 3, 1 };
+
+	if (reverseWinding)
+		ReverseWinding(indices, vertices);
+
+	return CreateScene(vertices, indices);
+}
+
+void CommandList::ClearTexture(const std::shared_ptr<Texture>& texture, const float clearColor[4])
+{
+	assert(texture);
+
+	TransitionBarrier(texture, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, true);
+	m_d3d12CommandList->ClearRenderTargetView(texture->GetRenderTargetView(), clearColor, 0, nullptr);
 
 	TrackResource(texture);
 }
 
-void CommandList::ClearDepthStencilTexture(const Texture& texture, D3D12_CLEAR_FLAGS clearFlags, float depth, uint8_t stencil)
+void CommandList::ClearDepthStencilTexture(const std::shared_ptr<Texture>& texture, D3D12_CLEAR_FLAGS clearFlags, float depth, uint8_t stencil)
 {
-	TransitionBarrier(texture, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	m_d3d12CommandList->ClearDepthStencilView(texture.GetDepthStencilView(), clearFlags, depth, stencil, 0, nullptr);
+	assert(texture);
+
+	TransitionBarrier(texture, D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, true);
+	m_d3d12CommandList->ClearDepthStencilView(texture->GetDepthStencilView(), clearFlags, depth, stencil, 0, nullptr);
 
 	TrackResource(texture);
 }
 
-void CommandList::CopyTextureSubresource(Texture& texture, uint32_t firstSubresource, uint32_t numSubresources, D3D12_SUBRESOURCE_DATA* subresourceData)
+void CommandList::CopyTextureSubresource(const std::shared_ptr<Texture>& texture, uint32_t firstSubresource, uint32_t numSubresources, D3D12_SUBRESOURCE_DATA* subresourceData)
 {
-	auto device = Application::Get().GetDevice();
-	auto destinationResource = texture.GetD3D12Resource();
+	assert(texture);
+
+	auto d3d12Device = m_Device.GetD3D12Device();
+	auto destinationResource = texture->GetD3D12Resource();
 	
 	if (destinationResource)
 	{
@@ -889,7 +1239,7 @@ void CommandList::CopyTextureSubresource(Texture& texture, uint32_t firstSubreso
 
 		//Create a temporary (intermediate) resource for uploading the subresources
 		ComPtr<ID3D12Resource> intermediateResource;
-		ThrowIfFailed(device->CreateCommittedResource(
+		ThrowIfFailed(d3d12Device->CreateCommittedResource(
 			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 			D3D12_HEAP_FLAG_NONE,
 			&CD3DX12_RESOURCE_DESC::Buffer(requiredSize),
@@ -923,15 +1273,28 @@ void CommandList::SetCompute32BitConstants(uint32_t rootParameterIndex, uint32_t
 	m_d3d12CommandList->SetComputeRoot32BitConstants(rootParameterIndex, numConstants, constants, 0);
 }
 
-void CommandList::SetVertexBuffer(uint32_t slot, const VertexBuffer& vertexBuffer)
+void CommandList::SetVertexBuffers(uint32_t startSlot, const std::vector<std::shared_ptr<VertexBuffer>>& vertexBuffers)
 {
-	TransitionBarrier(vertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> views;
+	views.reserve(vertexBuffers.size());
 
-	auto vertexBufferView = vertexBuffer.GetVertexBufferView();
+	for (auto vertexBuffer : vertexBuffers)
+	{
+		if (vertexBuffer)
+		{
+			TransitionBarrier(vertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+			TrackResource(vertexBuffer);
 
-	m_d3d12CommandList->IASetVertexBuffers(slot, 1, &vertexBufferView);
+			views.push_back(vertexBuffer->GetVertexBufferView());
+		}
+	}
 
-	TrackResource(vertexBuffer);
+	m_d3d12CommandList->IASetVertexBuffers(startSlot, views.size(), views.data());
+}
+
+void CommandList::SetVertexBuffer(uint32_t slot, const std::shared_ptr<VertexBuffer>& vertexBuffer)
+{
+	SetVertexBuffers(slot, { vertexBuffer } );
 }
 
 void CommandList::SetDynamicVertexBuffer(uint32_t slot, size_t numVertices, size_t vertexSize, const void* vertexBufferData)
@@ -949,15 +1312,17 @@ void CommandList::SetDynamicVertexBuffer(uint32_t slot, size_t numVertices, size
 	m_d3d12CommandList->IASetVertexBuffers(slot, 1, &vertexBufferView);
 }
 
-void CommandList::SetIndexBuffer(const IndexBuffer& indexBuffer)
+void CommandList::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
 {
-	TransitionBarrier(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER);
+	if (indexBuffer)
+	{
+		TransitionBarrier(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
-	auto indexBufferView = indexBuffer.GetIndexBufferView();
+		TrackResource(indexBuffer);
 
-	m_d3d12CommandList->IASetIndexBuffer(&indexBufferView);
+		m_d3d12CommandList->IASetIndexBuffer(&(indexBuffer->GetIndexBufferView()));
 
-	TrackResource(indexBuffer);
+	}
 }
 
 void CommandList::SetDynamicIndexBuffer(size_t numIndices, DXGI_FORMAT indexFormat, const void* indexBufferData)
@@ -1009,16 +1374,26 @@ void CommandList::SetScissorRects(const std::vector<D3D12_RECT>& scissorRects)
 	m_d3d12CommandList->RSSetScissorRects(static_cast<UINT>(scissorRects.size()), scissorRects.data());
 }
 
-void CommandList::SetPipelineState(Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState)
+void CommandList::SetPipelineState(const std::shared_ptr<PipelineStateObject>& pipelineState)
 {
-	m_d3d12CommandList->SetPipelineState(pipelineState.Get());
+	assert(pipelineState);
 
-	TrackResource(pipelineState);
+	auto d3d12PipelineStateObject = pipelineState->GetD3D12PipelineState().Get();
+	if (m_PipelineState != d3d12PipelineStateObject)
+	{
+		m_PipelineState = d3d12PipelineStateObject;
+
+		m_d3d12CommandList->SetPipelineState(d3d12PipelineStateObject);
+
+		TrackResource(d3d12PipelineStateObject);
+	}
 }
 
-void CommandList::SetGraphicsRootSignature(const RootSignature& rootSignature)
+void CommandList::SetGraphicsRootSignature(const std::shared_ptr<RootSignature>& rootSignature)
 {
-	auto d3d12RootSignature = rootSignature.GetRootSignature().Get();
+	assert(rootSignature);
+
+	auto d3d12RootSignature = rootSignature->GetRootSignature().Get();
 	if (m_RootSignature != d3d12RootSignature)
 	{
 		m_RootSignature = d3d12RootSignature;
@@ -1034,9 +1409,11 @@ void CommandList::SetGraphicsRootSignature(const RootSignature& rootSignature)
 	}
 }
 
-void CommandList::SetComputeRootSignature(const RootSignature& rootSignature)
+void CommandList::SetComputeRootSignature(const std::shared_ptr<RootSignature>& rootSignature)
 {
-	auto d3d12RootSignature = rootSignature.GetRootSignature().Get();
+	assert(rootSignature);
+
+	auto d3d12RootSignature = rootSignature->GetRootSignature().Get();
 
 	if (m_RootSignature != d3d12RootSignature)
 	{
@@ -1053,54 +1430,150 @@ void CommandList::SetComputeRootSignature(const RootSignature& rootSignature)
 	}
 }
 
-void CommandList::SetShaderResourceView(uint32_t rootParameterIndex,
-	uint32_t descriptorOffset,
-	const Resource& resource,
-	D3D12_RESOURCE_STATES stateAfter,
-	UINT firstSubresource,
-	UINT numSubresources,
-	const D3D12_SHADER_RESOURCE_VIEW_DESC* srv)
+void CommandList::SetConstantBufferView(uint32_t rootParameterIndex, const std::shared_ptr<ConstantBuffer>& buffer, D3D12_RESOURCE_STATES stateAfter, size_t bufferOffset)
 {
-	if (numSubresources < D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES)
+	if (buffer)
 	{
-		for (uint32_t i = 0; i < numSubresources; ++i)
-		{
-			TransitionBarrier(resource, stateAfter, firstSubresource + i);
-		}
-	}
-	else
-	{
-		TransitionBarrier(resource, stateAfter);
-	}
+		auto d3d12Resource = buffer->GetD3D12Resource();
+		TransitionBarrier(d3d12Resource, stateAfter);
 
-	m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageDescriptors(rootParameterIndex, descriptorOffset, 1, resource.GetShaderResourceView(srv));
+		m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageInLineCBV(rootParameterIndex, d3d12Resource->GetGPUVirtualAddress() + bufferOffset);
 
-	TrackResource(resource);
+		TrackResource(buffer);
+	}
 }
 
-void CommandList::SetUnorderedAccessView(uint32_t rootParameterIndex,
-	uint32_t descriptorOffset,
-	const Resource& resource,
-	D3D12_RESOURCE_STATES stateAfter,
-	UINT firstSubresource,
-	UINT numSubresources,
-	const D3D12_UNORDERED_ACCESS_VIEW_DESC* uav)
+void CommandList::SetShaderResourceView(uint32_t rootParameterIndex, const std::shared_ptr<Buffer>& buffer, D3D12_RESOURCE_STATES stateAfter, size_t bufferOffset)
 {
-	if (numSubresources < D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES)
+	if (buffer)
 	{
-		for (uint32_t i = 0; i < numSubresources; ++i)
+		auto d3d12Resource = buffer->GetD3D12Resource();
+		TransitionBarrier(d3d12Resource, stateAfter);
+
+		m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageInLineSRV(rootParameterIndex, d3d12Resource->GetGPUVirtualAddress() + bufferOffset);
+
+		TrackResource(buffer);
+	}
+}
+
+void CommandList::SetUnorderedAccessView(uint32_t rootParameterIndex, const std::shared_ptr<Buffer>& buffer, D3D12_RESOURCE_STATES stateAfter, size_t bufferOffset)
+{
+	if (buffer)
+	{
+		auto d3d12Resource = buffer->GetD3D12Resource();
+		TransitionBarrier(d3d12Resource, stateAfter);
+
+		m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageInLineUAV(rootParameterIndex, d3d12Resource->GetGPUVirtualAddress() + bufferOffset);
+
+		TrackResource(buffer);
+	}
+}
+
+void CommandList::SetShaderResourceView(uint32_t rootParameterIndex, uint32_t descriptorOffset, const std::shared_ptr<ShaderResourceView>& srv, D3D12_RESOURCE_STATES stateAfter, UINT firstSubresource, UINT numSubresources)
+{
+	assert(srv);
+
+	auto resource = srv->GetResource();
+	if (resource)
+	{
+		if (numSubresources < D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES)
 		{
-			TransitionBarrier(resource, stateAfter, firstSubresource + i);
+			for (uint32_t i = 0; i < numSubresources; ++i)
+			{
+				TransitionBarrier(resource, stateAfter, firstSubresource + i);
+			}
 		}
+		else
+		{
+			TransitionBarrier(resource, stateAfter);
+		}
+
+		TrackResource(resource);
 	}
-	else
+
+	m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageDescriptors(rootParameterIndex, descriptorOffset, 1, srv->GetDescriptorHandle());
+}
+
+void CommandList::SetShaderResourceView(int32_t rootParameterIndex, uint32_t descriptorOffset, const std::shared_ptr<Texture>& texture, D3D12_RESOURCE_STATES stateAfter, UINT firstSubresource, UINT numSubresources)
+{
+	if (texture)
 	{
-		TransitionBarrier(resource, stateAfter);
+		if (numSubresources < D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES)
+		{
+			for (uint32_t i = 0; i < numSubresources; ++i)
+			{
+				TransitionBarrier(texture, stateAfter, firstSubresource + i);
+			}
+		}
+		else
+		{
+			TransitionBarrier(texture, stateAfter);
+		}
+
+		TrackResource(texture);
+
+		m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageDescriptors(rootParameterIndex, descriptorOffset, 1, texture->GetShaderResourceView());
+	}
+}
+
+void CommandList::SetUnorderedAccessView(uint32_t rootParameterIndex, uint32_t descriptorOffset, const std::shared_ptr<UnorderedAccessView>& uav, D3D12_RESOURCE_STATES stateAfter, UINT firstSubresource, UINT numSubresources)
+{
+	assert(uav);
+
+	auto resource = uav->GetResource();
+	if (resource)
+	{
+		if (numSubresources < D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES)
+		{
+			for (uint32_t i = 0; i < numSubresources; ++i)
+			{
+				TransitionBarrier(resource, stateAfter, firstSubresource + i);
+			}
+		}
+		else
+		{
+			TransitionBarrier(resource, stateAfter);
+		}
+		
+		TrackResource(resource);
 	}
 
-	m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageDescriptors(rootParameterIndex, descriptorOffset, 1, resource.GetUnorderedAccessView(uav));
+	m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageDescriptors(rootParameterIndex, descriptorOffset, 1, uav->GetDescriptorHandle());
+}
 
-	TrackResource(resource);
+void CommandList::SetUnorderedAccessView(uint32_t rootParameterIndex, uint32_t descriptorOffset, const std::shared_ptr<Texture>& texture, UINT mip, D3D12_RESOURCE_STATES stateAfter, UINT firstSubresource, UINT numSubresources)
+{
+	if (texture)
+	{
+		if (numSubresources < D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES)
+		{
+			for (uint32_t i = 0; i < numSubresources; ++i)
+			{
+				TransitionBarrier(texture, stateAfter, firstSubresource + i);
+			}
+		}
+		else
+		{
+			TransitionBarrier(texture, stateAfter);
+		}
+		TrackResource(texture);
+
+		m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageDescriptors(rootParameterIndex, descriptorOffset, 1, texture->GetUnorderedAccessView(mip));
+	}
+}
+
+void CommandList::SetConstantBufferView(uint32_t rootParameterIndex, uint32_t descriptorOffset, const std::shared_ptr<ConstantBufferView>& cbv, D3D12_RESOURCE_STATES stateAfter)
+{
+	assert(cbv);
+
+	auto constantBuffer = cbv->GetConstantBuffer();
+	if (constantBuffer)
+	{
+		TransitionBarrier(constantBuffer, stateAfter);
+		TrackResource(constantBuffer);
+	}
+
+	m_DynamicDescriptorHeap[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->StageDescriptors(rootParameterIndex, descriptorOffset, 1, cbv->GetDescriptorHandle());
 }
 
 void CommandList::SetRenderTarget(const RenderTarget& renderTarget)
@@ -1113,24 +1586,24 @@ void CommandList::SetRenderTarget(const RenderTarget& renderTarget)
 	//Bind color targets (max of 8 render targets can be bound to the rendering pipeline
 	for (int i = 0; i < 8; ++i)
 	{
-		auto& texture = textures[i];
+		auto texture = textures[i];
 
-		if (texture.IsValid())
+		if (texture)
 		{
 			TransitionBarrier(texture, D3D12_RESOURCE_STATE_RENDER_TARGET);
-			renderTargetDescriptors.push_back(texture.GetRenderTargetView());
+			renderTargetDescriptors.push_back(texture->GetRenderTargetView());
 
 			TrackResource(texture);
 		}
 	}
 
-	const auto& depthTexture = renderTarget.GetTexture(AttachmentPoint::DepthStencil);
+	auto depthTexture = renderTarget.GetTexture(AttachmentPoint::DepthStencil);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE depthStencilDescriptor(D3D12_DEFAULT);
-	if (depthTexture.GetD3D12Resource())
+	if (depthTexture)
 	{
 		TransitionBarrier(depthTexture, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-		depthStencilDescriptor = depthTexture.GetDepthStencilView();
+		depthStencilDescriptor = depthTexture->GetDepthStencilView();
 
 		TrackResource(depthTexture);
 	}
@@ -1177,7 +1650,7 @@ void CommandList::Dispatch(uint32_t numGroupsX, uint32_t numGroupsY, uint32_t nu
 
 }
 
-bool CommandList::Close(CommandList& pendingCommandList)
+bool CommandList::Close(const std::shared_ptr<CommandList>& pendingCommandList)
 {
 	//Flush any remaining barriers
 	FlushResourceBarriers();
@@ -1216,6 +1689,7 @@ void CommandList::Reset()
 	}
 
 	m_RootSignature = nullptr;
+	m_PipelineState = nullptr;
 	m_ComputeCommandList = nullptr;
 }
 
@@ -1224,9 +1698,11 @@ void CommandList::TrackResource(Microsoft::WRL::ComPtr<ID3D12Object> object)
 	m_TrackedObjects.push_back(object);
 }
 
-void CommandList::TrackResource(const Resource& res)
+void CommandList::TrackResource(const std::shared_ptr<Resource>& res)
 {
-	TrackResource(res.GetD3D12Resource());
+	assert(res);
+
+	TrackResource(res->GetD3D12Resource());
 }
 
 void CommandList::ReleaseTrackedObjects()
