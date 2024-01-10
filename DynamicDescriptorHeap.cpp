@@ -3,20 +3,25 @@
 #include "DynamicDescriptorHeap.h"
 
 #include "Application.h"
+#include "Device.h"
 #include "CommandList.h"
 #include "RootSignature.h"
 
 //Constructor that initializes the variables and allocates storage for the cache
-DynamicDescriptorHeap::DynamicDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, uint32_t numDescriptorsPerHeap)
-	: m_DescriptorHeapType(heapType)
+DynamicDescriptorHeap::DynamicDescriptorHeap(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, uint32_t numDescriptorsPerHeap)
+	: m_Device(device)
+	, m_DescriptorHeapType(heapType)
 	, m_NumDescriptorsPerHeap(numDescriptorsPerHeap)
 	, m_DescriptorTableBitMask(0)
 	, m_StaleDescriptorTableBitMask(0)
+	, m_StaleCBVBitMask(0)
+	, m_StaleSRVBitMask(0)
+	, m_StaleUAVBitMask(0)
 	, m_CurrentCPUDescriptorHandle(D3D12_DEFAULT)
 	, m_CurrentGPUDescriptorHandle(D3D12_DEFAULT)
 	, m_NumFreeHandles(0)
 {
-	m_DescriptorHandleIncrementSize = Application::Get().GetDescriptorHandleIncrementSize(heapType);
+	m_DescriptorHandleIncrementSize = m_Device.GetDescriptorHandleIncrementSize(heapType);
 
 	//Allocate space for staging CPU visible descriptors
 	m_DescriptorHandleCache = std::make_unique<D3D12_CPU_DESCRIPTOR_HANDLE[]>(m_NumDescriptorsPerHeap);
@@ -26,16 +31,18 @@ DynamicDescriptorHeap::DynamicDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType
 DynamicDescriptorHeap::~DynamicDescriptorHeap()
 {}
 
-void DynamicDescriptorHeap::ParseRootSignature(const RootSignature& rootSignature)
+void DynamicDescriptorHeap::ParseRootSignature(const std::shared_ptr<RootSignature>& rootSignature)
 {
+	assert(rootSignature);
+
 	//If the root signature changes, all descriptors must be rebound to the command list
 	m_StaleDescriptorTableBitMask = 0;
 
-	const auto& rootSignatureDesc = rootSignature.GetRootSignatureDesc();
+	const auto& rootSignatureDesc = rootSignature->GetRootSignatureDesc();
 
 	//Get a bit mask that represents the root parameter indices that match
 	//the descriptor heap type for this dynamic descriptor heap
-	m_DescriptorTableBitMask = rootSignature.GetDescriptorTableBitMask(m_DescriptorHeapType);
+	m_DescriptorTableBitMask = rootSignature->GetDescriptorTableBitMask(m_DescriptorHeapType);
 	uint32_t descriptorTableBitMask = m_DescriptorTableBitMask;
 
 	uint32_t currentOffset = 0;
@@ -44,7 +51,7 @@ void DynamicDescriptorHeap::ParseRootSignature(const RootSignature& rootSignatur
 	while (_BitScanForward(&rootIndex, descriptorTableBitMask) && rootIndex < rootSignatureDesc.NumParameters)
 	{
 		//Get # of descriptors in the specific dtable selected from the bitmask in the rootsignature
-		uint32_t numDescriptors = rootSignature.GetNumDescriptors(rootIndex);
+		uint32_t numDescriptors = rootSignature->GetNumDescriptors(rootIndex);
 		//Put that dtable into the dtable cache
 		DescriptorTableCache& descriptorTableCache = m_DescriptorTableCache[rootIndex];
 		descriptorTableCache.NumDescriptors = numDescriptors;
@@ -86,6 +93,30 @@ void DynamicDescriptorHeap::StageDescriptors(uint32_t rootParameterIndex, uint32
 	m_StaleDescriptorTableBitMask |= (1 << rootParameterIndex);
 }
 
+void DynamicDescriptorHeap::StageInLineCBV(uint32_t rootParameterIndex, D3D12_GPU_VIRTUAL_ADDRESS bufferLocation)
+{
+	assert(rootParameterIndex < MaxDescriptorTables);
+
+	m_InlineCBV[rootParameterIndex] = bufferLocation;
+	m_StaleCBVBitMask |= (1 << rootParameterIndex);
+}
+
+void DynamicDescriptorHeap::StageInLineSRV(uint32_t rootParameterIndex, D3D12_GPU_VIRTUAL_ADDRESS bufferLocation)
+{
+	assert(rootParameterIndex < MaxDescriptorTables);
+
+	m_InlineSRV[rootParameterIndex] = bufferLocation;
+	m_StaleSRVBitMask |= (1 << rootParameterIndex);
+}
+
+void DynamicDescriptorHeap::StageInLineUAV(uint32_t rootParameterIndex, D3D12_GPU_VIRTUAL_ADDRESS bufferLocation)
+{
+	assert(rootParameterIndex < MaxDescriptorTables);
+
+	m_InlineUAV[rootParameterIndex] = bufferLocation;
+	m_StaleUAVBitMask |= (1 << rootParameterIndex);
+}
+
 uint32_t DynamicDescriptorHeap::ComputeStaleDescriptorCount() const
 {
 	uint32_t numStaleDescriptors = 0;
@@ -120,7 +151,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DynamicDescriptorHeap::RequestDescr
 
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DynamicDescriptorHeap::CreateDescriptorHeap()
 {
-	auto device = Application::Get().GetDevice();
+	auto d3d12Device = m_Device.GetD3D12Device();
 
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
 	descriptorHeapDesc.Type = m_DescriptorHeapType;
@@ -128,20 +159,20 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DynamicDescriptorHeap::CreateDescri
 	descriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap;
-	ThrowIfFailed(device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap)));
+	ThrowIfFailed(d3d12Device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap)));
 
 	return descriptorHeap;
 }
 
-void DynamicDescriptorHeap::CommitStagedDescriptors(CommandList& commandList, std::function<void(ID3D12GraphicsCommandList*, UINT, D3D12_GPU_DESCRIPTOR_HANDLE)> setFunc)
+void DynamicDescriptorHeap::CommitDescriptorTables(CommandList& commandList, std::function<void(ID3D12GraphicsCommandList*, UINT, D3D12_GPU_DESCRIPTOR_HANDLE)> setFunc)
 {
 	//Compute the number of descriptors that need to be copied
 	uint32_t numDescriptorsToCommit = ComputeStaleDescriptorCount();
 
 	if (numDescriptorsToCommit > 0)
 	{
-		auto device = Application::Get().GetDevice();
-		auto d3d12GraphicsCommandList = commandList.GetGraphicsCommandList().Get();
+		auto d3d12Device = m_Device.GetD3D12Device();
+		auto d3d12GraphicsCommandList = commandList.GetD3D12CommandList().Get();
 		assert(d3d12GraphicsCommandList != nullptr);
 
 		if (!m_CurrentDescriptorHeap || m_NumFreeHandles < numDescriptorsToCommit)
@@ -153,22 +184,22 @@ void DynamicDescriptorHeap::CommitStagedDescriptors(CommandList& commandList, st
 
 			commandList.SetDescriptorHeap(m_DescriptorHeapType, m_CurrentDescriptorHeap.Get());
 
-			//When updating the descriptor heap on the command list, all descriptor
-			//tables must be (re)copied to the new descriptor heap, not just the stale tables
+			//When updating the descriptor heap on the command list, all descriptor tables must be (re)recopied to the new descriptor heap (not just the stale descriptor tables)
 			m_StaleDescriptorTableBitMask = m_DescriptorTableBitMask;
 		}
 
 		DWORD rootIndex;
-		//Scan from Least Significant Bit(LSB) to MSB for a bit set in staleDescriptorsBitMask
+		//Scan from LSB to MSB for a bit set in staleDescriptorsBitMask
 		while (_BitScanForward(&rootIndex, m_StaleDescriptorTableBitMask))
 		{
 			UINT numSrcDescriptors = m_DescriptorTableCache[rootIndex].NumDescriptors;
 			D3D12_CPU_DESCRIPTOR_HANDLE* pSrcDescriptorHandles = m_DescriptorTableCache[rootIndex].BaseDescriptor;
+
 			D3D12_CPU_DESCRIPTOR_HANDLE pDestDescriptorRangeStarts[] = { m_CurrentCPUDescriptorHandle };
 			UINT pDestDescriptorRangeSizes[] = { numSrcDescriptors };
-			
+
 			//Copy the staged CPU visible descriptors to the GPU visible descriptor heap
-			device->CopyDescriptors(1, pDestDescriptorRangeStarts, pDestDescriptorRangeSizes, numSrcDescriptors, pSrcDescriptorHandles, nullptr, m_DescriptorHeapType);
+			d3d12Device->CopyDescriptors(1, pDestDescriptorRangeStarts, pDestDescriptorRangeSizes, numSrcDescriptors, pSrcDescriptorHandles, nullptr, m_DescriptorHeapType);
 
 			//Set the descriptors on the command list using the passed-in setter function
 			setFunc(d3d12GraphicsCommandList, rootIndex, m_CurrentGPUDescriptorHandle);
@@ -178,20 +209,43 @@ void DynamicDescriptorHeap::CommitStagedDescriptors(CommandList& commandList, st
 			m_CurrentGPUDescriptorHandle.Offset(numSrcDescriptors, m_DescriptorHandleIncrementSize);
 			m_NumFreeHandles -= numSrcDescriptors;
 
-			//Flip the stale bit so the descriptor table is not recopied again unless it's updated with a new descriptor
+			//Flip the stale bit so the descriptor table is not recopied again unless it is updated with a new descriptor
 			m_StaleDescriptorTableBitMask ^= (1 << rootIndex);
+		}
+	}
+}
+
+void DynamicDescriptorHeap::CommitInlineDescriptors(CommandList& commandList, const D3D12_GPU_VIRTUAL_ADDRESS* bufferLocations, uint32_t& bitmask,
+	std::function<void(ID3D12GraphicsCommandList*, UINT, D3D12_GPU_VIRTUAL_ADDRESS)> setFunc)
+{
+	if (bitmask != 0)
+	{
+		auto d3d12GraphicsCommandList = commandList.GetD3D12CommandList().Get();
+		DWORD rootIndex;
+		while (_BitScanForward(&rootIndex, bitmask))
+		{
+			setFunc(d3d12GraphicsCommandList, rootIndex, bufferLocations[rootIndex]);
+
+			//Flip the stale bit so the descriptor is not recopied again unless it's updated with a new descriptor
+			bitmask ^= (1 << rootIndex);
 		}
 	}
 }
 
 void DynamicDescriptorHeap::CommitStagedDescriptorsForDraw(CommandList& commandList)
 {
-	CommitStagedDescriptors(commandList, &ID3D12GraphicsCommandList::SetGraphicsRootDescriptorTable);
+	CommitDescriptorTables(commandList, &ID3D12GraphicsCommandList::SetGraphicsRootDescriptorTable);
+	CommitInlineDescriptors(commandList, m_InlineCBV, m_StaleCBVBitMask, &ID3D12GraphicsCommandList::SetGraphicsRootConstantBufferView);
+	CommitInlineDescriptors(commandList, m_InlineSRV, m_StaleSRVBitMask, &ID3D12GraphicsCommandList::SetGraphicsRootShaderResourceView);
+	CommitInlineDescriptors(commandList, m_InlineUAV, m_StaleUAVBitMask, &ID3D12GraphicsCommandList::SetGraphicsRootUnorderedAccessView);
 }
 
 void DynamicDescriptorHeap::CommitStagedDescriptorsForDispatch(CommandList& commandList)
 {
-	CommitStagedDescriptors(commandList, &ID3D12GraphicsCommandList::SetComputeRootDescriptorTable);
+	CommitDescriptorTables(commandList, &ID3D12GraphicsCommandList::SetComputeRootDescriptorTable);
+	CommitInlineDescriptors(commandList, m_InlineCBV, m_StaleCBVBitMask, &ID3D12GraphicsCommandList::SetComputeRootConstantBufferView);
+	CommitInlineDescriptors(commandList, m_InlineSRV, m_StaleSRVBitMask, &ID3D12GraphicsCommandList::SetComputeRootShaderResourceView);
+	CommitInlineDescriptors(commandList, m_InlineUAV, m_StaleUAVBitMask, &ID3D12GraphicsCommandList::SetComputeRootUnorderedAccessView);
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE DynamicDescriptorHeap::CopyDescriptor(CommandList& commandList, D3D12_CPU_DESCRIPTOR_HANDLE cpuDescriptor)
@@ -210,7 +264,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE DynamicDescriptorHeap::CopyDescriptor(CommandList& c
 		m_StaleDescriptorTableBitMask = m_DescriptorTableBitMask;
 	}
 
-	auto device = Application::Get().GetDevice();
+	auto device = m_Device.GetD3D12Device();
 
 	D3D12_GPU_DESCRIPTOR_HANDLE hGPU = m_CurrentGPUDescriptorHandle;
 	device->CopyDescriptorsSimple(1, m_CurrentCPUDescriptorHandle, cpuDescriptor, m_DescriptorHeapType);
@@ -231,10 +285,16 @@ void DynamicDescriptorHeap::Reset()
 	m_NumFreeHandles = 0;
 	m_DescriptorTableBitMask = 0;
 	m_StaleDescriptorTableBitMask = 0;
+	m_StaleCBVBitMask = 0;
+	m_StaleSRVBitMask = 0;
+	m_StaleUAVBitMask = 0;
 
-	//Reset the table cache
+	//Reset the descriptor cache
 	for (int i = 0; i < MaxDescriptorTables; ++i)
 	{
 		m_DescriptorTableCache[i].Reset();
+		m_InlineCBV[i] = 0ull;
+		m_InlineSRV[i] = 0ull;
+		m_InlineUAV[i] = 0ull;
 	}
 }

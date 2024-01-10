@@ -3,6 +3,7 @@
 #include "Texture.h"
 
 #include "Application.h"
+#include "Device.h"
 #include "Helpers.h"
 #include "ResourceStateTracker.h"
 

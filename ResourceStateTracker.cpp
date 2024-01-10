@@ -105,31 +105,36 @@ void ResourceStateTracker::AliasBarrier(const Resource* resourceBefore, const Re
 	ResourceBarrier(CD3DX12_RESOURCE_BARRIER::Aliasing(pResourceBefore, pResourceAfter));
 }
 
-void ResourceStateTracker::FlushResourceBarriers(CommandList& commandList)
+void ResourceStateTracker::FlushResourceBarriers(const std::shared_ptr<CommandList>& commandList)
 {
+	assert(commandList);
+
 	UINT numBarriers = static_cast<UINT>(m_ResourceBarriers.size());
 	if (numBarriers > 0)
 	{
-		auto d3d12CommandList = commandList.GetGraphicsCommandList();
+		auto d3d12CommandList = commandList->GetD3D12CommandList();
 		d3d12CommandList->ResourceBarrier(numBarriers, m_ResourceBarriers.data());
 		m_ResourceBarriers.clear();
 	}
 }
 
-uint32_t ResourceStateTracker::FlushPendingResourceBarriers(CommandList& commandList)
+uint32_t ResourceStateTracker::FlushPendingResourceBarriers(const std::shared_ptr<CommandList>& commandList)
 {
 	assert(ms_IsLocked);
+	assert(commandList);
 
 	//Resolve the pending resource barriers by checking the global state of the resources
 	//Add barriers if the pending state and the global state don't match
 	ResourceBarriers resourceBarriers;
 	//Reserve enough space(worst case, all pending barriers)
 	resourceBarriers.reserve(m_PendingResourceBarriers.size());
+
 	for (auto pendingBarrier : m_PendingResourceBarriers)
 	{	//Only transition barriers should be pending
 		if (pendingBarrier.Type == D3D12_RESOURCE_BARRIER_TYPE_TRANSITION)
 		{
 			auto pendingTransition = pendingBarrier.Transition;
+
 			const auto& iter = ms_GlobalResourceState.find(pendingTransition.pResource);
 			if (iter != ms_GlobalResourceState.end())
 			{
@@ -168,7 +173,7 @@ uint32_t ResourceStateTracker::FlushPendingResourceBarriers(CommandList& command
 	UINT numBarriers = static_cast<UINT>(resourceBarriers.size());
 	if (numBarriers > 0)
 	{
-		auto d3d12CommandList = commandList.GetGraphicsCommandList();
+		auto d3d12CommandList = commandList->GetD3D12CommandList();
 		d3d12CommandList->ResourceBarrier(numBarriers, resourceBarriers.data());
 	}
 
@@ -218,12 +223,12 @@ void ResourceStateTracker::AddGlobalResourceState(ID3D12Resource* resource, D3D1
 		ms_GlobalResourceState[resource].SetSubresourceState(D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, state);
 	}
 }
-
-void ResourceStateTracker::RemoveGlobalResourceState(ID3D12Resource* resource)
-{
-	if (resource != nullptr)
-	{
-		std::lock_guard<std::mutex> lock(ms_GlobalMutex);
-		ms_GlobalResourceState.erase(resource);
-	}
-}
+//
+//void ResourceStateTracker::RemoveGlobalResourceState(ID3D12Resource* resource)
+//{
+//	if (resource != nullptr)
+//	{
+//		std::lock_guard<std::mutex> lock(ms_GlobalMutex);
+//		ms_GlobalResourceState.erase(resource);
+//	}
+//}

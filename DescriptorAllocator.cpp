@@ -3,8 +3,20 @@
 #include "DescriptorAllocator.h"
 #include "DescriptorAllocatorPage.h"
 
-DescriptorAllocator::DescriptorAllocator(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptorsPerHeap)
-	: m_HeapType(type)
+//Adapter for make_shared
+struct MakeAllocatorPage : public DescriptorAllocatorPage
+{
+public:
+	MakeAllocatorPage(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors)
+		: DescriptorAllocatorPage(device, type, numDescriptors)
+	{}
+
+	virtual ~MakeAllocatorPage() {}
+};
+
+DescriptorAllocator::DescriptorAllocator(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptorsPerHeap)
+	: m_Device(device)
+	, m_HeapType(type)
 	, m_NumDescriptorsPerHeap(numDescriptorsPerHeap)
 {
 }
@@ -14,7 +26,7 @@ DescriptorAllocator::~DescriptorAllocator()
 
 std::shared_ptr<DescriptorAllocatorPage> DescriptorAllocator::CreateAllocatorPage()
 {
-	auto newPage = std::make_shared<DescriptorAllocatorPage>(m_HeapType, m_NumDescriptorsPerHeap);
+	std::shared_ptr<DescriptorAllocatorPage> newPage = std::make_shared<MakeAllocatorPage>(m_Device, m_HeapType, m_NumDescriptorsPerHeap);
 
 	m_HeapPool.emplace_back(newPage);
 	m_AvaialableHeaps.insert(m_HeapPool.size() - 1);
@@ -28,7 +40,8 @@ DescriptorAllocation DescriptorAllocator::Allocate(uint32_t numDescriptors)
 
 	DescriptorAllocation allocation;
 
-	for (auto iter = m_AvaialableHeaps.begin(); iter != m_AvaialableHeaps.end(); ++iter)
+	auto iter = m_AvaialableHeaps.begin();
+	while(iter != m_AvaialableHeaps.end())
 	{
 		auto allocatorPage = m_HeapPool[*iter];
 
@@ -38,11 +51,14 @@ DescriptorAllocation DescriptorAllocator::Allocate(uint32_t numDescriptors)
 		{
 			iter = m_AvaialableHeaps.erase(iter);
 		}
+		else
+			++iter;
 
 		//If a valid allocation has been found
 		if (!allocation.IsNull())
 			break;
 	}
+
 	//If no available heap could satisfy the requested number of descriptors, create a new one
 	if (allocation.IsNull())
 	{
@@ -55,7 +71,7 @@ DescriptorAllocation DescriptorAllocator::Allocate(uint32_t numDescriptors)
 	return allocation;
 }
 
-void DescriptorAllocator::ReleaseStaleDescriptors(uint64_t frameNumber)
+void DescriptorAllocator::ReleaseStaleDescriptors()
 {
 	std::lock_guard<std::mutex> lock(m_AllocationMutex);
 
@@ -63,7 +79,7 @@ void DescriptorAllocator::ReleaseStaleDescriptors(uint64_t frameNumber)
 	{
 		auto page = m_HeapPool[i];
 
-		page->ReleaseStaleDescriptors(frameNumber);
+		page->ReleaseStaleDescriptors();
 
 		if (page->NumFreeHandles() > 0)
 		{

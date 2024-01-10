@@ -81,7 +81,7 @@ public:
 
 	//Set the AABB bounding volume for the geometry in this mesh
 	void SetAABB(const DirectX::BoundingBox& aabb);
-	const DirectX::BoundingBox GetAABB() const;
+	const DirectX::BoundingBox& GetAABB() const;
 
 	//Draw a mesh to a command list.
 	//@param commandList The command list to draw to

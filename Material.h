@@ -128,39 +128,41 @@ public:
     const MaterialProperties& GetMaterialProperties() const;
     void SetMaterialProperties(const MaterialProperties& materialProperties);
 
-	//Define some materials
-	static const Material Red;
-    static const Material Green;
-    static const Material Blue;
-    static const Material Cyan;
-    static const Material Magenta;
-    static const Material Yellow;
-    static const Material White;
-    static const Material Black;
-    static const Material Emerald;
-    static const Material Jade;
-    static const Material Obsidian;
-    static const Material Pearl;
-    static const Material Ruby;
-    static const Material Turquoise;
-    static const Material Brass;
-    static const Material Bronze;
-    static const Material Chrome;
-    static const Material Copper;
-    static const Material Gold;
-    static const Material Silver;
-    static const Material BlackPlastic;
-    static const Material CyanPlastic;
-    static const Material GreenPlastic;
-    static const Material RedPlastic;
-    static const Material WhitePlastic;
-    static const Material YellowPlastic;
-    static const Material BlackRubber;
-    static const Material CyanRubber;
-    static const Material GreenRubber;
-    static const Material RedRubber;
-    static const Material WhiteRubber;
-    static const Material YellowRubber;
+    // Define some interesting materials.
+    static const MaterialProperties Zero;
+    static const MaterialProperties Red;
+    static const MaterialProperties Green;
+    static const MaterialProperties Blue;
+    static const MaterialProperties Cyan;
+    static const MaterialProperties Magenta;
+    static const MaterialProperties Yellow;
+    static const MaterialProperties White;
+    static const MaterialProperties WhiteDiffuse;
+    static const MaterialProperties Black;
+    static const MaterialProperties Emerald;
+    static const MaterialProperties Jade;
+    static const MaterialProperties Obsidian;
+    static const MaterialProperties Pearl;
+    static const MaterialProperties Ruby;
+    static const MaterialProperties Turquoise;
+    static const MaterialProperties Brass;
+    static const MaterialProperties Bronze;
+    static const MaterialProperties Chrome;
+    static const MaterialProperties Copper;
+    static const MaterialProperties Gold;
+    static const MaterialProperties Silver;
+    static const MaterialProperties BlackPlastic;
+    static const MaterialProperties CyanPlastic;
+    static const MaterialProperties GreenPlastic;
+    static const MaterialProperties RedPlastic;
+    static const MaterialProperties WhitePlastic;
+    static const MaterialProperties YellowPlastic;
+    static const MaterialProperties BlackRubber;
+    static const MaterialProperties CyanRubber;
+    static const MaterialProperties GreenRubber;
+    static const MaterialProperties RedRubber;
+    static const MaterialProperties WhiteRubber;
+    static const MaterialProperties YellowRubber;
 
 protected:
 private:

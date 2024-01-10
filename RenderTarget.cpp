@@ -2,25 +2,27 @@
 
 #include "RenderTarget.h"
 
+#include "Texture.h"
+
 RenderTarget::RenderTarget()
 	: m_Textures(AttachmentPoint::NumAttachmentPoints)
 	, m_Size(0,0)
 {}
 
 //Attach a texture to the render target, the texture will be copiede into the texture array
-void RenderTarget::AttachTexture(AttachmentPoint attachmentPoint, const Texture& texture)
+void RenderTarget::AttachTexture(AttachmentPoint attachmentPoint, std::shared_ptr<Texture> texture)
 {
 	m_Textures[attachmentPoint] = texture;
 
-	if (texture.GetD3D12Resource())
+	if (texture && texture->GetD3D12Resource())
 	{
-		auto desc = texture.GetD3D12Resource()->GetDesc();
+		auto desc = texture->GetD3D12ResourceDesc();
 		m_Size.x = static_cast<uint32_t>(desc.Width);
 		m_Size.y = static_cast<uint32_t>(desc.Height);
 	}
 }
 
-const Texture& RenderTarget::GetTexture(AttachmentPoint attachmentPoint) const
+std::shared_ptr<Texture> RenderTarget::GetTexture(AttachmentPoint attachmentPoint) const
 {
 	return m_Textures[attachmentPoint];
 }
@@ -29,9 +31,12 @@ const Texture& RenderTarget::GetTexture(AttachmentPoint attachmentPoint) const
 void RenderTarget::Resize(DirectX::XMUINT2 size)
 {
 	m_Size = size;
-	for (auto& texture : m_Textures)
+	for (auto texture : m_Textures)
 	{
-		texture.Resize(m_Size.x, m_Size.y);
+		if (texture)
+		{
+			texture->Resize(m_Size.x, m_Size.y);
+		}
 	}
 }
 
@@ -62,10 +67,10 @@ D3D12_VIEWPORT RenderTarget::GetViewport(DirectX::XMFLOAT2 scale, DirectX::XMFLO
 
 	for (int i = AttachmentPoint::Color0; i <= AttachmentPoint::Color7; ++i)
 	{
-		const Texture& texture = m_Textures[i];
-		if (texture.IsValid())
+		auto texture = m_Textures[i];
+		if (texture)
 		{
-			auto desc = texture.GetD3D12ResourceDesc();
+			auto desc = texture->GetD3D12ResourceDesc();
 			width = std::max(width, desc.Width);
 			height = std::max(height, desc.Height);
 		}
@@ -85,7 +90,7 @@ D3D12_VIEWPORT RenderTarget::GetViewport(DirectX::XMFLOAT2 scale, DirectX::XMFLO
 
 //Get a list of the textures attached to the render target
 //Primarily used by the command list when binding the RT to the OM
-const std::vector<Texture>& RenderTarget::GetTextures() const
+const std::vector<std::shared_ptr<Texture>>& RenderTarget::GetTextures() const
 {
 	return m_Textures;
 }
@@ -96,10 +101,10 @@ D3D12_RT_FORMAT_ARRAY RenderTarget::GetRenderTargetFormats() const
 
 	for (int i = AttachmentPoint::Color0; i <= AttachmentPoint::Color7; ++i)
 	{
-		const Texture& texture = m_Textures[i];
-		if (texture.IsValid())
+		auto texture = m_Textures[i];
+		if (texture)
 		{
-			rtvFormats.RTFormats[rtvFormats.NumRenderTargets++] = texture.GetD3D12ResourceDesc().Format;
+			rtvFormats.RTFormats[rtvFormats.NumRenderTargets++] = texture->GetD3D12ResourceDesc().Format;
 		}
 	}
 
@@ -109,10 +114,25 @@ D3D12_RT_FORMAT_ARRAY RenderTarget::GetRenderTargetFormats() const
 DXGI_FORMAT RenderTarget::GetDepthStencilFormat() const
 {
 	DXGI_FORMAT dsvFormat = DXGI_FORMAT_UNKNOWN;
-	const Texture& depthStencilTexture = m_Textures[AttachmentPoint::DepthStencil];
-	if (depthStencilTexture.IsValid())
+	auto depthStencilTexture = m_Textures[AttachmentPoint::DepthStencil];
+	if (depthStencilTexture)
 	{
-		dsvFormat = depthStencilTexture.GetD3D12ResourceDesc().Format;
+		dsvFormat = depthStencilTexture->GetD3D12ResourceDesc().Format;
 	}
 	return dsvFormat;
+}
+
+DXGI_SAMPLE_DESC RenderTarget::GetSampleDesc() const
+{
+	DXGI_SAMPLE_DESC sampleDesc = { 1, 0 };
+	for (int i = AttachmentPoint::Color0; i <= AttachmentPoint::Color7; ++i)
+	{
+		auto texture = m_Textures[i];
+		if (texture)
+		{
+			sampleDesc = texture->GetD3D12ResourceDesc().SampleDesc;
+			break;
+		}
+	}
+	return sampleDesc;
 }

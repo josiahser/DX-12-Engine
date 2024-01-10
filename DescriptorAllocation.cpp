@@ -56,7 +56,7 @@ void DescriptorAllocation::Free()
 {
 	if (!IsNull() && m_Page)
 	{
-		m_Page->Free(std::move(*this), Application::GetFrameCount() );
+		m_Page->Free(std::move(*this));
 
 		m_Descriptor.ptr = 0;
 		m_NumHandles = 0;

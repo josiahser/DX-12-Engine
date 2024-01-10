@@ -1,22 +1,25 @@
 #include "framework.h"
 
+#include "CommandQueue.h"
 #include "DescriptorAllocatorPage.h"
+#include "Device.h"
 #include "Application.h"
 
-DescriptorAllocatorPage::DescriptorAllocatorPage(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors)
-	: m_HeapType(type)
+DescriptorAllocatorPage::DescriptorAllocatorPage(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors)
+	: m_Device(device)
+	, m_HeapType(type)
 	, m_NumDescsriptorsInHeap(numDescriptors)
 {
-	auto device = Application::Get().GetDevice();
+	auto d3d12Device = m_Device.GetD3D12Device();
 
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 	heapDesc.Type = m_HeapType;
 	heapDesc.NumDescriptors = m_NumDescsriptorsInHeap;
 
-	ThrowIfFailed(device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&m_d3d12DescriptorHeap)));
+	ThrowIfFailed(d3d12Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&m_d3d12DescriptorHeap)));
 
 	m_BaseDescriptor = m_d3d12DescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	m_DescriptorHandleIncrementSize = device->GetDescriptorHandleIncrementSize(m_HeapType);
+	m_DescriptorHandleIncrementSize = d3d12Device->GetDescriptorHandleIncrementSize(m_HeapType);
 	m_NumFreeHandles = m_NumDescsriptorsInHeap;
 
 	//Initialize the free lists
@@ -100,7 +103,7 @@ uint32_t DescriptorAllocatorPage::ComputeOffset(D3D12_CPU_DESCRIPTOR_HANDLE hand
 	return static_cast<uint32_t>(handle.ptr - m_BaseDescriptor.ptr) / m_DescriptorHandleIncrementSize;
 }
 
-void DescriptorAllocatorPage::Free(DescriptorAllocation&& descriptor, uint64_t frameNumber)
+void DescriptorAllocatorPage::Free(DescriptorAllocation&& descriptor)
 {
 	//Compute the offset of the descriptor within the descriptor heap
 	auto offset = ComputeOffset(descriptor.GetDescriptorHandle());
@@ -108,7 +111,7 @@ void DescriptorAllocatorPage::Free(DescriptorAllocation&& descriptor, uint64_t f
 	std::lock_guard<std::mutex> lock(m_AllocationMutex);
 
 	//Don't add the block directly to the free list until the frame is done
-	m_StaleDescriptors.emplace(offset, descriptor.GetNumHandles(), frameNumber);
+	m_StaleDescriptors.emplace(offset, descriptor.GetNumHandles());
 }
 
 void DescriptorAllocatorPage::FreeBlock(uint32_t offset, uint32_t numDescriptors)
@@ -123,6 +126,7 @@ void DescriptorAllocatorPage::FreeBlock(uint32_t offset, uint32_t numDescriptors
 	//If its not the first block in the list
 	if (prevBlockIt != m_FreeListByOffset.begin())
 	{
+		//Go to previous block in the list
 		--prevBlockIt;
 	}
 	else
@@ -164,11 +168,11 @@ void DescriptorAllocatorPage::FreeBlock(uint32_t offset, uint32_t numDescriptors
 	AddNewBlock(offset, numDescriptors);
 }
 
-void DescriptorAllocatorPage::ReleaseStaleDescriptors(uint64_t frameNumber)
+void DescriptorAllocatorPage::ReleaseStaleDescriptors()
 {
 	std::lock_guard<std::mutex> lock(m_AllocationMutex);
 
-	while (!m_StaleDescriptors.empty() && m_StaleDescriptors.front().FrameNumber <= frameNumber)
+	while (!m_StaleDescriptors.empty())
 	{
 		auto& staleDescriptor = m_StaleDescriptors.front();
 

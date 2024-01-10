@@ -135,9 +135,6 @@
     <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Adapter.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
@@ -190,6 +187,9 @@
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
     <ClInclude Include="SceneNode.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -281,9 +281,6 @@
     <ClCompile Include="Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="framework.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
@@ -307,6 +304,18 @@
     </ClCompile>
     <ClCompile Include="ImGUI\imgui_widgets.cpp">
       <Filter>Source Files\ImGUI Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferView.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="PipelineStateObject.cpp">
+      <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
