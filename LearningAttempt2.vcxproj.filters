@@ -317,6 +317,9 @@
     <ClCompile Include="PipelineStateObject.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Class Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LearningAttempt2.rc">
