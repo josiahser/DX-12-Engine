@@ -1,0 +1,6 @@
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/kubazip_x64-windows/lib/cmake/kubazip/kubazipConfig.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/kubazip_x64-windows/lib/cmake/kubazip/kubazipConfigVersion.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/kubazip_x64-windows/lib/cmake/kubazip/kubazipTargets.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/kubazip_x64-windows/lib/cmake/kubazip/kubazipTargets-release.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/kubazip_x64-windows/lib/kubazip.lib
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/kubazip_x64-windows/include/kubazip/zip/zip.h

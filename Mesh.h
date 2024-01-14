@@ -1,11 +1,8 @@
 #pragma once
 
-#include "CommandList.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-
 #include <DirectXCollision.h>
 #include <DirectXMath.h>
+
 #include "DirectX-Headers/include/directx/d3d12.h"
 
 #include <wrl.h>

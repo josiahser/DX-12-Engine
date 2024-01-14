@@ -6,7 +6,6 @@
 #include <vector>
 
 #include <DirectXMath.h>
-#include <DirectXCollision.h>
 
 class Mesh;
 class CommandList;

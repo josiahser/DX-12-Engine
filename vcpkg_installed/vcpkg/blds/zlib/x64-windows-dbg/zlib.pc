@@ -1,0 +1,13 @@
+prefix=C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/debug
+exec_prefix=C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/debug
+libdir=C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/debug/lib
+sharedlibdir=C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/debug/lib
+includedir=C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/debug/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.3
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lzlibd
+Cflags: -I${includedir}

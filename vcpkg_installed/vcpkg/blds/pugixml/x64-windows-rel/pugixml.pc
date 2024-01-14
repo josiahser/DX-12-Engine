@@ -1,0 +1,11 @@
+prefix=C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows
+exec_prefix=${prefix}
+includedir=C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/include
+libdir=C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/lib
+
+Name: pugixml
+Description: Light-weight, simple and fast XML parser for C++ with XPath support.
+URL: https://pugixml.org/
+Version: 1.14
+Cflags: -I${includedir}
+Libs: -L${libdir} -lpugixml

@@ -56,6 +56,7 @@ private:
 	void ImportMesh(CommandList& commandList, const aiMesh& mesh);
 	std::shared_ptr<SceneNode> ImportSceneNode(CommandList& commandList, std::shared_ptr<SceneNode> parent, const aiNode* aiNode);
 	
+
 	using MaterialMap = std::map<std::string, std::shared_ptr<Material>>;
 	using MaterialList = std::vector<std::shared_ptr<Material>>;
 	using MeshList = std::vector<std::shared_ptr<Mesh>>;

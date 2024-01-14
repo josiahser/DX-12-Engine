@@ -74,10 +74,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectX-Headers\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\assimp\x64-windows-dbg;C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectX-Headers\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\assimp\x64-windows-dbg\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgManifestInstall>true</VcpkgManifestInstall>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgInstalledDir>$(MSBuildProjectDirectory)</VcpkgInstalledDir>
@@ -120,9 +122,11 @@
       <EnableModules>true</EnableModules>
       <BuildStlModules>true</BuildStlModules>
       <ShowIncludes>true</ShowIncludes>
-      <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectXTex-main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\josia\source\repos\DX-12-Engine\assimp;C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectXTex-main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -245,10 +249,15 @@
     <ClCompile Include="ResourceStateTracker.cpp" />
     <ClCompile Include="RootSignature.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="ShaderResourceView.cpp" />
     <ClCompile Include="StructuredBuffer.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="UnorderedAccessView.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="VertexTypes.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -260,11 +269,6 @@
   <ItemGroup>
     <Image Include="LearningAttempt2.ico" />
     <Image Include="small.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageLayout Include="vcpkg.json">
-      <FileType>Document</FileType>
-    </PackageLayout>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="GenerateMips_CS.hlsl">

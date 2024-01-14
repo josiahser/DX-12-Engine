@@ -62,4 +62,13 @@ using namespace DirectX;
 
 namespace fs = std::filesystem;
 
+//Assimp header files
+#include <assimp/Exporter.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/ProgressHandler.hpp>
+#include <assimp/anim.h>
+#include <assimp/mesh.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 #include "Helpers.h"
