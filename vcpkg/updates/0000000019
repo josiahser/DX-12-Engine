@@ -1,7 +1,8 @@
-Package: vcpkg-cmake-get-vars
-Version: 2023-03-02
-Depends: vcpkg-cmake
+Package: boost-core
+Version: 1.83.0
+Depends: boost-assert, boost-config, boost-static-assert, boost-throw-exception, boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 12d90d515becc52c701391b9b1bd6b797cf8d192a3fb1a20326d471e8eea8340
+Abi: 8aff22c503563eef113ac6b76f9fa6f04e2a9dabc2bab53c7bdf19034853b8c1
+Description: Boost core module
 Status: install ok installed

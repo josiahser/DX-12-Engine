@@ -1,0 +1,8 @@
+Package: boost-bind
+Version: 1.83.0
+Depends: boost-config, boost-core, boost-vcpkg-helpers
+Architecture: x64-windows
+Multi-Arch: same
+Abi: f974d50404532948193d7590a45fa0fefd8e369c3a45b8049234542db22c784b
+Description: Boost bind module
+Status: install ok installed

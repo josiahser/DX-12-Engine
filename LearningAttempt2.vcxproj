@@ -74,8 +74,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\assimp\x64-windows-dbg;C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectX-Headers\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\boost-optional\src\ost-1.83.0-8661f902d7.clean\include;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\boost-signals2\src\ost-1.83.0-b35853f3de.clean\include;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\assimp\x64-windows-dbg;C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectX-Headers\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\assimp\x64-windows-dbg\lib;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\zlib;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Adapter.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="ApplicationHeaders.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ByteAddressBuffer.h" />
     <ClInclude Include="Camera.h" />
@@ -165,6 +167,7 @@
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="ConstantBufferView.h" />
+    <ClInclude Include="CThreadSafeQueue.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Demo.h" />
     <ClInclude Include="DescriptorAllocation.h" />
@@ -178,7 +181,7 @@
     <ClInclude Include="GenerateMipsPSO.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Helpers.h" />
-    <ClInclude Include="HighResolutionClock.h" />
+    <ClInclude Include="HighResolutionTimer.h" />
     <ClInclude Include="ImGUI\imconfig.h" />
     <ClInclude Include="ImGUI\imgui.h" />
     <ClInclude Include="ImGUI\imgui_impl_win32.h" />
@@ -191,6 +194,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="optional.hpp" />
     <ClInclude Include="PanoToCubemapPSO.h" />
     <ClInclude Include="PipelineStateObject.h" />
     <ClInclude Include="RenderTarget.h" />
@@ -200,6 +204,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderResourceView.h" />
+    <ClInclude Include="signals.hpp" />
     <ClInclude Include="StructuredBuffer.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Texture.h" />
@@ -214,6 +219,7 @@
   <ItemGroup>
     <ClCompile Include="Adapter.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="ApplicationHeaders.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="ByteAddressBuffer.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -231,7 +237,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GenerateMipsPSO.cpp" />
     <ClCompile Include="GUI.cpp" />
-    <ClCompile Include="HighResolutionClock.cpp" />
+    <ClCompile Include="HighResolutionTimer.cpp" />
     <ClCompile Include="ImGUI\imgui.cpp" />
     <ClCompile Include="ImGUI\imgui_demo.cpp" />
     <ClCompile Include="ImGUI\imgui_draw.cpp" />

@@ -1,8 +1,8 @@
-Package: rapidjson
-Version: 2023-07-17
-Depends: vcpkg-cmake, vcpkg-cmake-config
+Package: boost-assert
+Version: 1.83.0
+Depends: boost-config, boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: abe0c8c2b5c56d6b74e3ce4627304deaca606e1e5e93206263c91a9c6e1652db
-Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
+Abi: 0e8ed26e61edf5337440f641f09d1ef0b653b76887fb6609c452fbd999f3370c
+Description: Boost assert module
 Status: install ok installed

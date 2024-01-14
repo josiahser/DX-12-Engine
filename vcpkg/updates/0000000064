@@ -1,0 +1,8 @@
+Package: boost-concept-check
+Version: 1.83.0
+Depends: boost-config, boost-preprocessor, boost-static-assert, boost-type-traits, boost-vcpkg-helpers
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 91ef0bd9d7bcb5795bf6b072b7597f9160d4cb0644f204be73a10f32baa2b32d
+Description: Boost concept_check module
+Status: install ok half-installed

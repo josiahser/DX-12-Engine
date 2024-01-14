@@ -1,6 +1,7 @@
-Package: vcpkg-cmake
-Version: 2023-05-04
+Package: boost-uninstall
+Version: 1.83.0
 Architecture: x64-windows
 Multi-Arch: same
-Abi: c62da996a7b71d8c0f633c18ce2938d82903a191cc178cbee3722793543520d5
+Abi: b621a2f759526619c083860e6d5c2afae04f537ea8e10a09eba816b2b9556f01
+Description: Internal vcpkg port used to uninstall Boost
 Status: install ok half-installed

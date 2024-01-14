@@ -1,8 +1,8 @@
-Package: zlib
-Version: 1.3
-Depends: vcpkg-cmake
+Package: boost-vcpkg-helpers
+Version: 1.83.0
+Depends: boost-uninstall
 Architecture: x64-windows
 Multi-Arch: same
-Abi: af3edc859e26e8b95d82d9a014ffdfc5f147f6d6d3aac87a1fa37ec47953563a
-Description: A compression library
+Abi: a954850d8d2b10e62ce6cfc4daf5ca6859b8874214915b8fd467f638899277c8
+Description: Internal vcpkg port used to modularize Boost
 Status: install ok half-installed

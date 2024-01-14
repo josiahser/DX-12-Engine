@@ -1,9 +1,8 @@
-Package: polyclipping
-Version: 6.4.2
-Port-Version: 12
-Depends: vcpkg-cmake, vcpkg-cmake-config
+Package: boost-preprocessor
+Version: 1.83.0
+Depends: boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: c1ba380edb644e6e01420ffb8d64c1232398ee030588d1f1359f31099d6ae678
-Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
+Abi: 9712639924f962d17949a0da0382b40fb9bc76ce507fb8e88cfe9ee2d3221968
+Description: Boost preprocessor module
 Status: install ok installed

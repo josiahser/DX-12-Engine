@@ -1,8 +1,8 @@
-Package: stb
-Version: 2023-04-11
-Port-Version: 1
+Package: boost-type-traits
+Version: 1.83.0
+Depends: boost-config, boost-static-assert, boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 7baa8749666daed63e4f3d4cde166bef4670bd883d4e425ab6f4905d58db44c4
-Description: public domain header-only libraries
+Abi: 229601125580e9645685de5f4dbc8336e6a0a06b7eb88d5393afb095c59bd62a
+Description: Boost type_traits module
 Status: install ok half-installed

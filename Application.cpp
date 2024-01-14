@@ -1,36 +1,106 @@
-#include "framework.h"
+#include "ApplicationHeaders.h"
+
 #include "Application.h"
-#include "Game.h"
+
 #include "Window.h"
-#include "CommandQueue.h"
-#include "DescriptorAllocator.h"
 
-constexpr wchar_t WINDOW_CLASS_NAME[] = L"DX12RenderWindowClass";
-
-using WindowPtr = std::shared_ptr<Window>;
-using WindowMap = std::map<HWND, WindowPtr>;
-using WindowNameMap = std::map<std::wstring, WindowPtr>;
-
-static Application* gs_pSingleton = nullptr;
-static WindowMap gs_Windows;
-static WindowNameMap gs_WindowByName;
-
-uint64_t Application::ms_FrameCount = 0;
+static Application* gs_pSingelton = nullptr;
+constexpr wchar_t WINDOW_CLASS_NAME[] = L"RenderWindowClass";
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+//Set the name of a std::thread
+//for debugging
+const DWORD MS_VC_EXCEPTION = 0x406D1388;
+
+//Set the name of a running thread
+#pragma pack(push, 8)
+typedef struct tagTHREADNAME_INFO
+{
+    DWORD dwType; //Must be 0x1000
+    LPCSTR szName; //POinter to name (in user address space)
+    DWORD dwThreadID; //Thread ID (-1=caller thread)
+    DWORD dwFlags; //Reserved for future use, must be zero
+} THREADNAME_INFO;
+#pragma pack(pop)
+
+inline void SetThreadName(std::thread& thread, const char* threadName)
+{
+    THREADNAME_INFO info;
+    info.dwType = 0x1000;
+    info.szName = threadName;
+    info.dwThreadID = ::GetThreadId(reinterpret_cast<HANDLE>(thread.native_handle()));
+    info.dwFlags = 0;
+
+    __try
+    {
+        ::RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+
+    }
+}
+
+constexpr int MAX_CONSOLE_LINES = 500;
+
+using WindowMap = std::map<HWND, std::weak_ptr<Window>>;
+using WindowMapByName = std::map<std::wstring, std::weak_ptr<Window>>;
+static WindowMap gs_WindowMap;
+static WindowMapByName gs_WindowMapByName;
+
+static std::mutex gs_WindowHandlesMutex;
 
 //Wrapper struct to allow shared pointers for the window class (the constructor and destructor for the Window class are protected, and not accessible by std::make_shared
 struct MakeWindow : public Window
 {
-	MakeWindow(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync)
-		: Window(hWnd, windowName, clientWidth, clientHeight, vSync)
+	MakeWindow(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight)
+		: Window(hWnd, windowName, clientWidth, clientHeight)
 	{}
 };
 
+//Create a console window (consoles are not automatically created for Windows subsystem)
+static void CreateConsole()
+{
+    //Allocate a console
+    if (AllocConsole())
+    {
+        HANDLE lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+        //Increase screen buffer to allow more lines of text than the default
+        CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+        GetConsoleScreenBufferInfo(lStdHandle, &consoleInfo);
+        consoleInfo.dwSize.Y = MAX_CONSOLE_LINES;
+        SetConsoleScreenBufferSize(lStdHandle, consoleInfo.dwSize);
+        SetConsoleCursorPosition(lStdHandle, { 0, 0 });
+
+        //Redirect unbuffered STDOUT to the console
+        int hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+        FILE* fp = _fdopen(hConHandle, "w");
+        freopen_s(&fp, "CONOUT$", "w", stdout);
+        setvbuf(stdout, nullptr, _IONBF, 0);
+
+        //Redirect unbuffered STDIN to the console
+        lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
+        hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+        fp = _fdopen(hConHandle, "w");
+        freopen_s(&fp, "CONOUT", "w", stderr);
+        setvbuf(stderr, nullptr, _IONBF, 0);
+
+        //Clear the error state for each of the C++ standard stream objects
+        std::wcout.clear();
+        std::cout.clear();
+        std::wcerr.clear();
+        std::cerr.clear();
+        std::wcin.clear();
+        std::cin.clear();
+    }
+}
+
 Application::Application(HINSTANCE hInstance)
-    : m_hInstance(hInstance),
-    m_TearingSupported(false)
+    : m_hInstance(hInstance)
+    , m_bIsRunning(false)
+    , m_RequestQuit(false)
 {
     // Per monitor V2 DPI awareness context, added in Windows 10
     SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);

@@ -1,8 +1,8 @@
-Package: kubazip
-Version: 0.2.6
-Depends: vcpkg-cmake, vcpkg-cmake-config
+Package: boost-mp11
+Version: 1.83.0
+Depends: boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 506b7a258d8cf3259a9219e81327773e76ea574e909a3aabd98af56d16550a9c
-Description: A portable, simple zip library written in C
+Abi: 2380f0cb9e2326857f9f3e2d6a19e09437229e962e3dcd5d8f790beeb24942ac
+Description: Boost mp11 module
 Status: install ok installed

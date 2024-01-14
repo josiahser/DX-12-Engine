@@ -28,21 +28,21 @@
     <Filter Include="Source Files\ImGUI Source">
       <UniqueIdentifier>{c7bf7846-6446-4916-a059-5a9878752fb5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GameFiles">
+      <UniqueIdentifier>{605e2b8e-df3c-44e0-b0e5-9530478508b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{139584bf-5e96-4ee8-b198-c31149f3711f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameHeaders">
+      <UniqueIdentifier>{ccb515f8-2829-48f2-9d28-deea872e742d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Demo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>Header Files\Class Headers</Filter>
-    </ClInclude>
     <ClInclude Include="CommandQueue.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
-      <Filter>Header Files\Class Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
     <ClInclude Include="Events.h">
@@ -54,7 +54,7 @@
     <ClInclude Include="Helpers.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="HighResolutionClock.h">
+    <ClInclude Include="HighResolutionTimer.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
     <ClInclude Include="KeyCodes.h">
@@ -129,12 +129,6 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Adapter.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
@@ -149,9 +143,6 @@
     </ClInclude>
     <ClInclude Include="ShaderResourceView.h">
       <Filter>Header Files\Class Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="SwapChain.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImGUI\imstb_truetype.h">
       <Filter>Header Files\ImGUI</Filter>
@@ -192,17 +183,38 @@
     <ClInclude Include="Material.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Demo.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>Header Files\Class Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="optional.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="signals.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="CThreadSafeQueue.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationHeaders.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Demo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Source Files\Class Sources</Filter>
-    </ClCompile>
     <ClCompile Include="CommandQueue.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
@@ -212,7 +224,7 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
-    <ClCompile Include="HighResolutionClock.cpp">
+    <ClCompile Include="HighResolutionTimer.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
     <ClCompile Include="UploadBuffer.cpp">
@@ -275,12 +287,6 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="framework.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
@@ -335,6 +341,24 @@
     <ClCompile Include="VertexTypes.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Demo.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationHeaders.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LearningAttempt2.rc">
@@ -350,23 +374,23 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VertexShader.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
-    <FxCompile Include="PixelShader.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
     <FxCompile Include="GenerateMips_CS.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
-    <FxCompile Include="PanoToCubemap_CS.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
-    <FxCompile Include="ImGUI_VS.hlsl">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="ImGUI_PS.hlsl">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ImGUI_VS.hlsl">
+      <Filter>Source Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PanoToCubemap_CS.hlsl">
+      <Filter>Source Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>Source Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>Source Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

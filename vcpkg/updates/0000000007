@@ -1,8 +1,8 @@
-Package: utfcpp
-Version: 4.0.5
-Depends: vcpkg-cmake, vcpkg-cmake-config
+Package: boost-static-assert
+Version: 1.83.0
+Depends: boost-config, boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: a9b15ebabad94987d39be88825bffefd5d947bb5f49a50a9e53acbfc00dc23f3
-Description: UTF-8 with C++ in a Portable Way
+Abi: 0c2720d4c01833f62cb0911e8bf736cccb448c6c4d8a95d629b71decfc21e372
+Description: Boost static_assert module
 Status: install ok installed

@@ -1,27 +1,32 @@
 #pragma once
 
-#pragma comment(lib, "dxgi")
-#pragma comment(lib, "d3d12")
+#include "Events.h"
 
-#include "DescriptorAllocation.h"
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
-#include "DirectX-Headers/include/directx/d3d12.h"
-#include <dxgi1_6.h>
-#include <wrl.h>
+//Undefine windows macro
+#ifdef CreateWindow
+	#undef CreateWindow
+#endif
 
+#include <cstdint>
+#include <limits>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
+#include <type_traits>
 
-class DescriptorAllocator;
 class Window;
-class Game;
-class CommandQueue;
+
+using WndProcEvent = Delegater<LRESULT(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)>;
 
 class Application
 {
 public:
 	//Create a single application with the application instance handle
-	static void Create(HINSTANCE hInstance);
+	static Application& Create(HINSTANCE hInstance);
 
 	//Destroy the application instance and all windows created by it
 	static void Destroy();
@@ -29,83 +34,99 @@ public:
 	//Get the single Application
 	static Application& Get();
 
-	//Check if v-sync off is supported
-	bool IsTearingSupported() const;
+	//Create logger
 
-	//Check if the requested multisample quality is supported for the given format
-	DXGI_SAMPLE_DESC GetMultisampleQualityLevels(DXGI_FORMAT format, UINT numSamples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE) const;
+	//Get keyboard device ID
 
-	//Create a new render window instance, width and height in pixels. If window with that name exists, that window will be returned
-	std::shared_ptr<Window> CreateRenderWindow(const std::wstring& windowClassName, int width, int height, bool vSync = true);
+	//Get mouse device ID
 
-	//Destroy window given the window name
-	void DestroyWindow(const std::wstring& windowName);
+	//Get gamepad device ID
 
-	//Destroy the window given the window reference
-	void DestroyWindow(std::shared_ptr<Window> window);
+	//Get an input device template
 
-	//Find window by window name
-	std::shared_ptr<Window> GetWindowByName(const std::wstring& windowName);
+	//Create input map
+
+	////Check if v-sync off is supported
+	//bool IsTearingSupported() const;
+	////Check if the requested multisample quality is supported for the given format
+	//DXGI_SAMPLE_DESC GetMultisampleQualityLevels(DXGI_FORMAT format, UINT numSamples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE) const;
+	////Create a new render window instance, width and height in pixels. If window with that name exists, that window will be returned
+	//std::shared_ptr<Window> CreateRenderWindow(const std::wstring& windowClassName, int width, int height, bool vSync = true);
+	////Destroy window given the window name
+	//void DestroyWindow(const std::wstring& windowName);
+	////Destroy the window given the window reference
+	//void DestroyWindow(std::shared_ptr<Window> window);
+	////Find window by window name
+	//std::shared_ptr<Window> GetWindowByName(const std::wstring& windowName);
 
 	//Run the application loop and message pump
 	//return error code if error occurs
-	int Run(std::shared_ptr<Game> pGame);
+	int32_t Run();
+
+	//Inform the input manager of changes to the size of the display
+	//Needed for gainput to normalize mouse inputs
+	//Only use it on a single window's Resize event
+	void SetDisplaySize(int width, int height);
+
+	//Process input events, should be called once per frame before updating game logic
+	void ProcessInput();
 
 	//Request to quit the application and close all windows
-	//@param exitCode is the error code to return to the invoking process
-	void Quit(int exitCode = 0);
+	void Stop();
 
-	//Get the Direct3D Device
-	Microsoft::WRL::ComPtr<ID3D12Device2> GetDevice() const;
+	//Register directoryChange Listener
 
-	//Get a specific type of command queue
-	std::shared_ptr<CommandQueue> GetCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
+	//Create a render window
+	std::shared_ptr<Window> CreateWindow(const std::wstring& windowName, int clientWidth, int clientHeight);
 
-	//Flush all commandqueues
-	void Flush();
+	//Get window by name
+	std::shared_ptr<Window> GetWindowByName(const std::wstring& windowName) const;
 
-	//Allocate a number of CPU visible descriptors
-	DescriptorAllocation AllocateDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors = 1);
+	//Invoked when a message is sent to a window
+	WndProcEvent WndProcHandler;
 
-	//Release stale descriptors. Should only be called with a completed frame counter
-	void ReleaseStaleDescriptors(uint64_t finishedFrame);
+	//invoked when a file is modified on disk
 
-	//Create the descriptor heap and its increment size
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type);
-	UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type) const;
-
-	static uint64_t GetFrameCount()
-	{
-		return ms_FrameCount;
-	}
+	//Application is exiting
+	Event Exit;
 
 protected:
+	friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	
 	Application(HINSTANCE hInstance);
-
 	virtual ~Application();
 
-	//Initialize application instance
-	void Initialize();
+	//A file modification was detected
 
-	Microsoft::WRL::ComPtr<ID3D12Device2> CreateDevice(Microsoft::WRL::ComPtr<IDXGIAdapter4> adapter);
-	Microsoft::WRL::ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp);
+	//Windows message handler
+	virtual LRESULT OnWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-	bool CheckTearingSupport();
+	//Application is going to close
+	virtual void OnExit(EventArgs& e);
 
 private:
-	friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-	Application(const Application& copy) = delete;
-	Application& operator=(const Application& other) = delete;
+	Application(const Application&) = delete;
+	Application(Application&&) = delete;
+	Application& operator=(Application&) = delete;
+	Application& operator=(Application&&) = delete;
 
+	//Directory change listener thread entry point function
+
+	//Handle to app instance
 	HINSTANCE m_hInstance;
-	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device;
-	std::shared_ptr<CommandQueue> m_DirectCommandQueue;
-	std::shared_ptr<CommandQueue> m_CopyCommandQueue;
-	std::shared_ptr<CommandQueue> m_ComputeCommandQueue;
 
-	std::unique_ptr<DescriptorAllocator> m_DescriptorAllocators[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+	//Logger m_Logger;
 
-	bool m_TearingSupported;
+	//Gainput input manager and devices
 
-	static uint64_t ms_FrameCount;
+	//Set to true while app is running
+	std::atomic_bool m_bIsRunning;
+	//Should the app quit?
+	std::atomic_bool m_RequestQuit;
+
+	//Directory change listener
+
+	//Thread to run directory change listener
+
+	//Flag to terminate directory change thread
 };

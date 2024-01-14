@@ -1,5 +1,6 @@
 {
   "dependencies": [
-    "assimp"
+    "assimp",
+    "boost-signals2"
   ]
 }

@@ -1,0 +1,8 @@
+Package: boost-functional
+Version: 1.83.0
+Depends: boost-config, boost-core, boost-function, boost-function-types, boost-mpl, boost-preprocessor, boost-type-traits, boost-typeof, boost-utility, boost-vcpkg-helpers
+Architecture: x64-windows
+Multi-Arch: same
+Abi: ecaad976f3eef3c033c6ed82147f6bab2b543844f372853b7717216f18c75877
+Description: Boost functional module
+Status: install ok half-installed

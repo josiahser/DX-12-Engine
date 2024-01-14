@@ -1,9 +1,8 @@
-Package: poly2tri
-Version: 2020-07-21
-Port-Version: 3
-Depends: vcpkg-cmake, vcpkg-cmake-config
+Package: boost-io
+Version: 1.83.0
+Depends: boost-config, boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: d77484b7e43857c4fcf3c9a1a9dbfd10666cafe5414539415d86f936df0b933f
-Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
+Abi: 979ba3f16bb1f4423d7d3abe35dd78f7b1b278827bbd95610b3530e09ac54bad
+Description: Boost io module
 Status: install ok installed

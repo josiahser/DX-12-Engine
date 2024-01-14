@@ -2,10 +2,13 @@
 
 #include "UploadBuffer.h"
 
-#include "Application.h"
+//#include "Application.h"
+#include "Device.h"
+#include "Helpers.h"
 
-UploadBuffer::UploadBuffer(size_t pageSize)
+UploadBuffer::UploadBuffer(Device& device, size_t pageSize)
 	: m_PageSize(pageSize)
+	, m_Device(device)
 {}
 
 UploadBuffer::~UploadBuffer()
@@ -62,21 +65,23 @@ void UploadBuffer::Reset()
 	}
 }
 
-UploadBuffer::Page::Page(size_t sizeInBytes)
+UploadBuffer::Page::Page(Device& device, size_t sizeInBytes)
 	: m_PageSize(sizeInBytes)
 	, m_Offset(0)
 	, m_CPUPtr(nullptr)
 	, m_GPUPtr(D3D12_GPU_VIRTUAL_ADDRESS(0))
+	, m_Device(device)
 {
-	auto device = Application::Get().GetDevice();
+	auto d3d12Device = m_Device.GetD3D12Device();
 
-	ThrowIfFailed(device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+	ThrowIfFailed(d3d12Device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 		D3D12_HEAP_FLAG_NONE,
 		&CD3DX12_RESOURCE_DESC::Buffer(m_PageSize),
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&m_Resource)));
 
+	m_Resource->SetName(L"Upload Buffer(Page)");
 	m_GPUPtr = m_Resource->GetGPUVirtualAddress();
 	m_Resource->Map(0, nullptr, &m_CPUPtr);
 }
@@ -98,13 +103,11 @@ bool UploadBuffer::Page::HasSpace(size_t sizeInBytes, size_t alignment) const
 
 UploadBuffer::Allocation UploadBuffer::Page::Allocate(size_t sizeInBytes, size_t alignment)
 {
-	//This check is redundant, do to its implementation in UploadBuffer::Allocate
-	// As such, it has been commented out
-	//if (!HasSpace(sizeInBytes, alignment))
-	//{
-	//	//Can't allocate space from page, page too small
-	//	throw std::bad_alloc();
-	//}
+	if (!HasSpace(sizeInBytes, alignment))
+	{
+		//Can't allocate space from page, page too small
+		throw std::bad_alloc();
+	}
 
 	//Not Thread Safe! If thread safety is required, add std::lock_guard here
 	size_t alignedSize = Math::AlignUp(sizeInBytes, alignment);

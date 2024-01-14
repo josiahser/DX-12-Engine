@@ -1,8 +1,7 @@
 #pragma once
 
-#pragma once
-
 #include "RenderTarget.h"
+
 #include <dxgi1_5.h>
 #include <wrl/client.h>
 

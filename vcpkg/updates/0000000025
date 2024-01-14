@@ -1,9 +1,8 @@
-Package: draco
-Version: 1.5.6
-Port-Version: 1
-Depends: vcpkg-cmake, vcpkg-cmake-config
+Package: boost-describe
+Version: 1.83.0
+Depends: boost-mp11, boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 66a373eeea775e0a526108d55a533febbefb4de03e8b179972a5586503814f5d
-Description: A library for compressing and decompressing 3D geometric meshes and point clouds. It is intended to improve the storage and transmission of 3D graphics.
+Abi: a3bbea5dfcabffbb1402a60ed8403b7d449456a2cc8f660a2124b44b326c5ec6
+Description: Boost describe module
 Status: install ok installed

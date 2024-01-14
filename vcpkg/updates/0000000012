@@ -1,8 +1,8 @@
-Package: pugixml
-Version: 1.14
-Depends: vcpkg-cmake, vcpkg-cmake-config
+Package: boost-throw-exception
+Version: 1.83.0
+Depends: boost-assert, boost-config, boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 4223348a99018d50981b271c5e53a62ace19d58e35165eca42ad7955222f1c38
-Description: Light-weight, simple and fast XML parser for C++ with XPath support
+Abi: 8a32e5a710036332107f539567d4a32c95f2364a44420f6b55cb159e05079d2e
+Description: Boost throw_exception module
 Status: install ok half-installed

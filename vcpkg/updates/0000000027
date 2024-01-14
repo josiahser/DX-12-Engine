@@ -1,9 +1,8 @@
-Package: assimp
-Version: 5.3.1
-Port-Version: 3
-Depends: draco, kubazip, minizip, poly2tri, polyclipping, pugixml, rapidjson, stb, utfcpp, vcpkg-cmake, vcpkg-cmake-config, zlib
+Package: boost-container-hash
+Version: 1.83.0
+Depends: boost-config, boost-describe, boost-mp11, boost-type-traits, boost-vcpkg-helpers
 Architecture: x64-windows
 Multi-Arch: same
-Abi: faadd3810c43dc3f2972da1a3227919f147c7f45eea6690b0372c8bfb06cf0db
-Description: The Open Asset import library
+Abi: 353b7484fcc4cb1532b6a5fa206af33934e3c2b226910d7368ddbd1b805a79dc
+Description: Boost container_hash module
 Status: install ok installed
