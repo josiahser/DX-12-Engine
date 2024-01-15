@@ -1,22 +1,33 @@
 #pragma once
 
 #include "Camera.h"
-#include "Game.h"
-#include "IndexBuffer.h"
 #include "Light.h"
-#include "Window.h"
-#include "Mesh.h"
+
+#include "Events.h"
+#include "Application.h"
+
 #include "RenderTarget.h"
-#include "RootSignature.h"
-#include "Texture.h"
-#include "VertexBuffer.h"
 
-#include <DirectXMath.h>
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
 
-class Demo : public Game
+class CommandList;
+class Device;
+class GUI;
+class Mesh;
+class RootSignature;
+class PipelineStateObject;
+class Scene;
+class SwapChain;
+class Texture;
+
+class Window;
+
+class Demo
 {
 public:
-	using super = Game;
 
 	Demo(const std::wstring& name, int width, int height, bool vSync = false);
 	virtual ~Demo();
