@@ -32,55 +32,68 @@ public:
 	Demo(const std::wstring& name, int width, int height, bool vSync = false);
 	virtual ~Demo();
 
+	//Start the game loop and return the error code
+	uint32_t Run();
+
 	//Load content for the demo
-	virtual bool LoadContent() override;
+	bool LoadContent();
 
 	//Unload demo content that was loaded in LoadContent()
-	virtual void UnloadContent() override;
+	void UnloadContent();
 
 protected:
 	//Update the game logic
-	virtual void OnUpdate(UpdateEventArgs& e) override;
+	void OnUpdate(UpdateEventArgs& e);
 
 	//Render the stuff
-	virtual void OnRender(RenderEventArgs& e) override;
+	void OnRender();
+
+	void OnGUI(const std::shared_ptr<CommandList>& commandList, const RenderTarget& renderTarget);
 
 	//Invoked by the window when a key is pressed while it has focus
-	virtual void OnKeyPressed(KeyEventArgs& e) override;
+	void OnKeyPressed(KeyEventArgs& e);
 
 	//Invoked when said key is released
-	virtual void OnKeyReleased(KeyEventArgs& e);
+	void OnKeyReleased(KeyEventArgs& e);
 
 	//Invoked when mouse is moved over the window
-	virtual void OnMouseMoved(MouseMotionEventArgs& e);
+	void OnMouseMoved(MouseMotionEventArgs& e);
 
 	//Invoked when mouse wheel is scrolled
-	virtual void OnMouseWheel(MouseWheelEventArgs& e) override;
+	void OnMouseWheel(MouseWheelEventArgs& e);
 
-	virtual void OnResize(ResizeEventArgs& e) override;
+	void OnResize(ResizeEventArgs& e);
 
 private:
 	//Member variables here below
-	//Some geometry to render
-	std::unique_ptr<Mesh> m_CubeMesh;
-	std::unique_ptr<Mesh> m_SphereMesh;
-	std::unique_ptr<Mesh> m_ConeMesh;
-	std::unique_ptr<Mesh> m_TorusMesh;
-	std::unique_ptr<Mesh> m_PlaneMesh;
+	std::shared_ptr<Window> m_Window; //Render window (from Application)
+	
+	// DX12 device
+	std::shared_ptr<Device> m_Device;
+	std::shared_ptr<SwapChain> m_SwapChain;
+	std::shared_ptr<GUI> m_GUI;
 
-	Texture m_DefaultTexture;
-	Texture m_DirectXTexture;
-	Texture m_EarthTexture;
-	Texture m_MonaLisaTexture;
+	//Some geometry to render
+	std::shared_ptr<Scene> m_Cube;
+	std::shared_ptr<Scene> m_Sphere;
+	std::shared_ptr<Scene> m_Cone;
+	std::shared_ptr<Scene> m_Torus;
+	std::shared_ptr<Scene> m_Plane;
+
+	std::shared_ptr<Texture> m_DefaultTexture;
+	std::shared_ptr<Texture> m_DirectXTexture;
+	std::shared_ptr<Texture> m_EarthTexture;
+	std::shared_ptr<Texture> m_MonaLisaTexture;
 
 	//Render target
 	RenderTarget m_RenderTarget;
 
 	//Root signature
-	RootSignature m_RootSignature;
+	std::shared_ptr<RootSignature> m_RootSignature;
 
 	//Pipeline state object
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
+	std::shared_ptr<PipelineStateObject> m_PipelineState;
+	std::shared_ptr<PipelineStateObject> m_UnlitPipelineState;
 
 	D3D12_VIEWPORT m_Viewport;
 	D3D12_RECT m_ScissorRect;
@@ -111,6 +124,7 @@ private:
 
 	int m_Height;
 	int m_Width;
+	bool m_VSync;
 
 	//Define some lights
 	std::vector<PointLight> m_PointLights;

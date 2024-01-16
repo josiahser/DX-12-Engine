@@ -1,15 +1,16 @@
 #define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <shellapi.h>
 #include <Shlwapi.h>
+#include <Windows.h>
+#include <dxgi1_3.h>
+#include <dxgidebug.h>
+#include <shellapi.h>
+#include <wrl/client.h>
+
+#include "Helpers.h"
 
 #include "Application.h"
+
 #include "Demo.h"
-
-#pragma comment(lib, "dxgi")
-#pragma comment(lib, "DXGUID")
-
-#include <dxgidebug.h>
 
 void ReportLiveObjects()
 {
@@ -23,6 +24,13 @@ void ReportLiveObjects()
 int CALLBACK wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nShowCmd)
 {
 	int retCode = 0;
+
+#if defined (_DEBUG)
+	//Enable debug layer before doing anything DX12 related
+	Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
+	ThrowIfFailed(::D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
+	debugInterface->EnableDebugLayer();
+#endif
 
 	WCHAR path[MAX_PATH];
 
@@ -44,9 +52,10 @@ int CALLBACK wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	Application::Create(hInstance);
 	{
-		std::shared_ptr<Demo> demo = std::make_shared<Demo>(L"Learning DirectX12", 1280, 720);
-		retCode = Application::Get().Run(demo);
+		std::unique_ptr<Demo> demo = std::make_unique<Demo>(L"Learning DirectX12", 1280, 720);
+		retCode = demo->Run();
 	}
+
 	Application::Destroy();
 
 	atexit(&ReportLiveObjects);

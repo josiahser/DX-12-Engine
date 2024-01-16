@@ -1,29 +1,38 @@
 #include "Demo.h"
 
-#include "Application.h"
-#include "CommandQueue.h"
-#include "CommandList.h"
-#include "Helpers.h"
 #include "Light.h"
-#include "Material.h"
+#include "Camera.h"
+
+#include "Application.h"
 #include "Window.h"
+
+#include "CommandList.h"
+#include "CommandQueue.h"
+#include "Device.h"
+#include "GUI.h"
+#include "Helpers.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "PipelineStateObject.h"
+#include "RootSignature.h"
+#include "Scene.h"
+#include "SwapChain.h"
+#include "Texture.h"
+
+#include "ImGUI/imgui.h"
 
 #include <wrl.h>
 using namespace Microsoft::WRL;
 
-#include "DirectX-Headers/include/directx/d3dx12.h"
-#include <d3dcompiler.h>
 #include <DirectXColors.h>
+#include <d3dcompiler.h>
+#include "DirectX-Headers/include/directx/d3dx12.h"
+
 using namespace DirectX;
 
 #include <algorithm>
-#if defined(min)
-#undef min
-#endif
-
-#if defined(max)
-#undef max
-#endif
+#include <functional>
+#include <string>
 
 struct Mat
 {
@@ -72,8 +81,7 @@ XMMATRIX XM_CALLCONV LookAtMatrix(FXMVECTOR Position, FXMVECTOR Direction, FXMVE
 }
 
 Demo::Demo(const std::wstring& name, int width, int height, bool vSync)
-    : super(name, width, height, vSync)
-    , m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
+    : m_ScissorRect(CD3DX12_RECT(0, 0, LONG_MAX, LONG_MAX))
     , m_Viewport(CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)))
     , m_Forward(0)
     , m_Backward(0)
@@ -87,7 +95,17 @@ Demo::Demo(const std::wstring& name, int width, int height, bool vSync)
     , m_Shift(false)
     , m_Width(0)
     , m_Height(0)
+    , m_VSync(vSync)
 {
+    m_Window = Application::Get().CreateWindow(name, width, height);
+
+    m_Window->Update += UpdateEvent::slot(&Demo::OnUpdate, this);
+    m_Window->KeyPressed += KeyboardEvent::slot(&Demo::OnKeyPressed, this);
+    m_Window->KeyReleased += KeyboardEvent::slot(&Demo::OnKeyReleased, this);
+    m_Window->MouseMoved += MouseMotionEvent::slot(&Demo::OnMouseMoved, this);
+    m_Window->MouseWheel += MouseWheelEvent::slot(&Demo::OnMouseWheel, this);
+    m_Window->Resize += ResizeEvent::slot(&Demo::OnResize, this);
+
     XMVECTOR cameraPos = XMVectorSet(0, 5, -20, 1);
     XMVECTOR cameraTarget = XMVectorSet(0, 5, 0, 1);
     XMVECTOR cameraUp = XMVectorSet(0, 1, 0, 0);
@@ -105,21 +123,48 @@ Demo::~Demo()
     _aligned_free(m_pAlignedCameraData);
 }
 
+uint32_t Demo::Run()
+{
+    LoadContent();
+
+    m_Window->Show();
+
+    uint32_t retCode = Application::Get().Run();
+
+    UnloadContent();
+
+    return retCode;
+}
+
 bool Demo::LoadContent()
 {
-    auto device = Application::Get().GetDevice();
-    auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
-    auto commandList = commandQueue->GetCommandList();
+    //Create the DX12 Device
+    m_Device = Device::Create();
 
-    //Create a cube mesh
-    m_CubeMesh = Mesh::CreateCube(*commandList);
-    m_SphereMesh = Mesh::CreateSphere(*commandList);
-    m_ConeMesh = Mesh::CreateCone(*commandList);
-    m_TorusMesh = Mesh::CreateTorus(*commandList);
-    m_PlaneMesh = Mesh::CreatePlane(*commandList);
+    //Create a swapchain
+    m_SwapChain = m_Device->CreateSwapChain(m_Window->GetWindowHandle(), DXGI_FORMAT_R8G8B8A8_UNORM);
+    m_SwapChain->SetVSync(m_VSync);
+
+    m_GUI = m_Device->CreateGUI(m_Window->GetWindowHandle(), m_SwapChain->GetRenderTarget());
+
+    //This magic here allows ImGui to process window messages
+    Application::Get().WndProcHandler += WndProcEvent::slot(&GUI::WndProcHandler, m_GUI);
+
+    auto& commandQueue = m_Device->GetCommandQueue(D3D12_COMMAND_LIST_TYPE_COPY);
+    auto commandList = commandQueue.GetCommandList();
+
+    //Create some geometry to render
+    m_Cube = commandList->CreateCube();
+    m_Sphere = commandList->CreateSphere();
+    m_Cone = commandList->CreateCone();
+    m_Torus = commandList->CreateTorus();
+    m_Plane = commandList->CreatePlane();
 
     //Load some textures
     //TODO: Organize and have textures to load
+
+    //Start loading resources
+    commandQueue.ExecuteCommandList(commandList);
 
     //Load the vertex shader
     ComPtr<ID3DBlob> vertexShaderBlob;
@@ -130,13 +175,6 @@ bool Demo::LoadContent()
     ThrowIfFailed(D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBlob));
 
     //Create a root signature
-    D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-    featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-    if (FAILED(device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-    {
-        featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-    }
-
     //Allow input layout and deny unnecessary access to certain pipeline stages
     D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
         D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -160,7 +198,7 @@ bool Demo::LoadContent()
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
     rootSignatureDescription.Init_1_1(RootParameters::NumRootParameters, rootParameters, 1, &linearRepeatSampler, rootSignatureFlags);
 
-    m_RootSignature.SetRootSignatureDesc(rootSignatureDescription.Desc_1_1, featureData.HighestVersion);
+    m_RootSignature = m_Device->CreateRootSignature(rootSignatureDescription.Desc_1_1);
 
     //Setup the pipeline state
     struct PipelineStateStream
@@ -180,14 +218,14 @@ bool Demo::LoadContent()
     DXGI_FORMAT depthBufferFormat = DXGI_FORMAT_D32_FLOAT;
 
     //Check the best multisample quality level that can be used for the given back buffer format
-    DXGI_SAMPLE_DESC sampleDesc = Application::Get().GetMultisampleQualityLevels(backBufferFormat, D3D12_MAX_MULTISAMPLE_SAMPLE_COUNT);
+    DXGI_SAMPLE_DESC sampleDesc = m_Device->GetMultisampleQualityLevels(backBufferFormat);
 
     D3D12_RT_FORMAT_ARRAY rtvFormats = {};
     rtvFormats.NumRenderTargets = 1;
     rtvFormats.RTFormats[0] = backBufferFormat;
 
-    pipelineStateStream.pRootSignature = m_RootSignature.GetRootSignature().Get();
-    pipelineStateStream.InputLayout = { VertexPositionNormalTexture::InputElements, VertexPositionNormalTexture::InputElementCount };
+    pipelineStateStream.pRootSignature = m_RootSignature->GetRootSignature().Get();
+    pipelineStateStream.InputLayout = VertexPositionNormalTangentBitangentTexture::InputLayout;
     pipelineStateStream.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     pipelineStateStream.VS = CD3DX12_SHADER_BYTECODE(vertexShaderBlob.Get());
     pipelineStateStream.PS = CD3DX12_SHADER_BYTECODE(pixelShaderBlob.Get());
@@ -195,10 +233,7 @@ bool Demo::LoadContent()
     pipelineStateStream.RTVFormats = rtvFormats;
     pipelineStateStream.SampleDesc = sampleDesc;
 
-    D3D12_PIPELINE_STATE_STREAM_DESC pipelineStateStreamDesc = {
-        sizeof(PipelineStateStream), &pipelineStateStream 
-    };
-    ThrowIfFailed(device->CreatePipelineState(&pipelineStateStreamDesc, IID_PPV_ARGS(&m_PipelineState)));
+    m_PipelineState = m_Device->CreatePipelineStateObject(pipelineStateStream);
 
     //Create an off-screen render target with a single color buffer and a depth buffer
     auto colorDesc = CD3DX12_RESOURCE_DESC::Tex2D(backBufferFormat,
@@ -211,7 +246,8 @@ bool Demo::LoadContent()
     colorClearValue.Color[2] = 0.9f;
     colorClearValue.Color[3] = 1.0f;
 
-    Texture colorTexture = Texture(colorDesc, &colorClearValue, TextureUsage::RenderTarget, L"Color Render Target");
+    auto colorTexture = m_Device->CreateTexture(colorDesc, &colorClearValue);
+    colorTexture->SetName(L"Color Render Target");
 
     //Create a depth buffer
     auto depthDesc = CD3DX12_RESOURCE_DESC::Tex2D(depthBufferFormat, m_Width, m_Height, 1, 1, sampleDesc.Count, sampleDesc.Quality, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
@@ -220,39 +256,54 @@ bool Demo::LoadContent()
     depthClearValue.Format = depthDesc.Format;
     depthClearValue.DepthStencil = { 1.0f, 0 };
 
-    Texture depthTexture = Texture(depthDesc, &depthClearValue, TextureUsage::Depth, L"Depth Render Target");
+    auto depthTexture = m_Device->CreateTexture(depthDesc, &depthClearValue);
+    depthTexture->SetName(L"Depth Render Target");
 
     //Attach the textures to the render target
     m_RenderTarget.AttachTexture(AttachmentPoint::Color0, colorTexture);
     m_RenderTarget.AttachTexture(AttachmentPoint::DepthStencil, depthTexture);
 
-    auto fenceValue = commandQueue->ExecuteCommandList(commandList);
-    commandQueue->WaitForFenceValue(fenceValue);
+    commandQueue.Flush(); //Wait for loading operations to complete before rendering the first frame
 
     return true;
 }
 
-//Unloads all the content
-void Demo::UnloadContent()
-{
-}
-
 void Demo::OnResize(ResizeEventArgs& e)
 {
-    super::OnResize(e);
+    m_Width = (1 > e.Width ? 1 : e.Width);
+    m_Height = (1 > e.Height ? 1 : e.Height);
 
-    if (m_Width != e.Width || m_Height != e.Height)
-    {
-        m_Width = std::max(1, e.Width);
-        m_Height = std::max(1, e.Height);
+    m_SwapChain->Resize(m_Width, m_Height);
 
-        float aspectRatio = m_Width / (float)m_Height;
-        m_Camera.set_Projection(45.0f, aspectRatio, 0.1f, 100.0f);
+    float aspectRatio = m_Width / (float)m_Height;
+    m_Camera.set_Projection(45.0f, aspectRatio, 0.1f, 100.0f);
 
-        m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(m_Width), static_cast<float>(m_Height));
+    m_Viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(m_Width), static_cast<float>(m_Height));
 
-        m_RenderTarget.Resize(m_Width, m_Height);
-    }
+    m_RenderTarget.Resize(m_Width, m_Height);
+}
+
+void Demo::UnloadContent()
+{
+    m_Cube.reset();
+    m_Sphere.reset();
+    m_Cone.reset();
+    m_Torus.reset();
+    m_Plane.reset();
+
+    m_DefaultTexture.reset();
+    m_DirectXTexture.reset();
+    m_EarthTexture.reset();
+    m_MonaLisaTexture.reset();
+
+    m_RenderTarget.Reset();
+
+    m_RootSignature.reset();
+    m_PipelineState.reset();
+
+    m_GUI.reset();
+    m_SwapChain.reset();
+    m_Device.reset();
 }
 
 //Called before the screen is rendered, used to update the MVP matrices.
@@ -260,30 +311,31 @@ void Demo::OnUpdate(UpdateEventArgs& e)
 {
     static uint64_t frameCount = 0;
     static double totalTime = 0.0;
-
-    super::OnUpdate(e);
     
     //Keep track of the FPS in debug and output
-    totalTime += e.ElapsedTime;
+    totalTime += e.DeltaTime;
     frameCount++;
 
     if (totalTime > 1.0)
     {
         double fps = frameCount / totalTime;
 
-        char buffer[512];
-        sprintf_s(buffer, "FPS: %f\n", fps);
-        OutputDebugStringA(buffer);
+        wchar_t buffer[512];
+        ::swprintf_s(buffer, L"FPS: %f\n", fps);
+        m_Window->SetWindowTitle(buffer);
+        //OutputDebugStringA((buffer));
 
         frameCount = 0;
         totalTime = 0.0;
     }
 
+    m_SwapChain->WaitForSwapChain();
+
     //Update the camera
     float speedMultiplier = (m_Shift ? 16.0f : 4.0f);
 
-    XMVECTOR cameraTranslate = XMVectorSet(m_Right - m_Left, 0.0f, m_Forward - m_Backward, 1.0f) * speedMultiplier * static_cast<float>(e.ElapsedTime);
-    XMVECTOR cameraPan = XMVectorSet(0.0f, m_Up - m_Down, 0.0f, 1.0f) * speedMultiplier * static_cast<float>(e.ElapsedTime);
+    XMVECTOR cameraTranslate = XMVectorSet(m_Right - m_Left, 0.0f, m_Forward - m_Backward, 1.0f) * speedMultiplier * static_cast<float>(e.DeltaTime);
+    XMVECTOR cameraPan = XMVectorSet(0.0f, m_Up - m_Down, 0.0f, 1.0f) * speedMultiplier * static_cast<float>(e.DeltaTime);
     m_Camera.Translate(cameraTranslate, Space::Local);
     m_Camera.Translate(cameraPan, Space::Local);
 
@@ -303,7 +355,7 @@ void Demo::OnUpdate(UpdateEventArgs& e)
     static float lightAnimTime = 0.0f;
     if (m_AnimateLights)
     {
-        lightAnimTime += static_cast<float>(e.ElapsedTime) * 0.5f * XM_PI;
+        lightAnimTime += static_cast<float>(e.DeltaTime) * 0.5f * XM_PI;
     }
 
     const float radius = 8.0f;
@@ -352,6 +404,8 @@ void Demo::OnUpdate(UpdateEventArgs& e)
         l.LinearAttenuation = 0.08f;
         l.QuadraticAttenuation = 0.0f;
     }
+
+    OnRender();
 }
 
 void XM_CALLCONV ComputeMatrices(FXMMATRIX model, CXMMATRIX view, CXMMATRIX viewProjection, Mat& mat)
@@ -362,12 +416,13 @@ void XM_CALLCONV ComputeMatrices(FXMMATRIX model, CXMMATRIX view, CXMMATRIX view
     mat.ModelViewProjectionMatrix = model * viewProjection;
 }
 
-void Demo::OnRender(RenderEventArgs& e)
+void Demo::OnRender()
 {
-    super::OnRender(e);
+    auto& commandQueue = m_Device->GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    auto commandList = commandQueue.GetCommandList();
 
-    auto commandQueue = Application::Get().GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    auto commandList = commandQueue->GetCommandList();
+    //Create a scene visitor that is used to perform the actual rendering of the meshes in the scenes
+    //SceneVisitor visitor(*commandList);
 
     //Clear the render target
     {
@@ -409,7 +464,8 @@ void Demo::OnRender(RenderEventArgs& e)
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::White);
     commandList->SetShaderResourceView(RootParameters::Textures, 0, m_EarthTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-    m_SphereMesh->Draw(*commandList);
+    //Render the eath sphere using the SceneVisitor
+    //m_Sphere->Accept(visitor);
 
     //Draw a cube
     translationMatrix = XMMatrixTranslation(4.0f, 4.0f, 4.0f);
@@ -423,7 +479,8 @@ void Demo::OnRender(RenderEventArgs& e)
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::White);
     commandList->SetShaderResourceView(RootParameters::Textures, 0, m_MonaLisaTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-    m_CubeMesh->Draw(*commandList);
+    //Render the cube with the scene visitor
+    //m_Cube->Accept(visitor);
 
     //Draw a torus
     translationMatrix = XMMatrixTranslation(4.0f, 0.6f, -4.0f);
@@ -437,7 +494,7 @@ void Demo::OnRender(RenderEventArgs& e)
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::Ruby);
     commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DefaultTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-    m_TorusMesh->Draw(*commandList);
+    //m_Torus->Accept(visitor);
 
     //Floor plane
     float scalePlane = 20.0f;
@@ -454,7 +511,7 @@ void Demo::OnRender(RenderEventArgs& e)
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::White);
     commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DirectXTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-    m_PlaneMesh->Draw(*commandList);
+    //m_Plane->Accept(visitor);
 
     //Back wall
     translationMatrix = XMMatrixTranslation(0.0f, translateOffset, translateOffset);
@@ -465,9 +522,9 @@ void Demo::OnRender(RenderEventArgs& e)
 
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
 
-    m_PlaneMesh->Draw(*commandList);
+    //m_Plane->Accept(visitor)
 
-    //Ceiling plane
+    // Ceiling plane
     translationMatrix = XMMatrixTranslation(0, translateOffset * 2.0f, 0);
     rotationMatrix = XMMatrixRotationX(XMConvertToRadians(180));
     worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
@@ -476,9 +533,10 @@ void Demo::OnRender(RenderEventArgs& e)
 
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
 
-    m_PlaneMesh->Draw(*commandList);
+    // Render the plane using the SceneVisitor.
+   // m_Plane->Accept(visitor);
 
-    //Front wall
+    // Front wall
     translationMatrix = XMMatrixTranslation(0, translateOffset, -translateOffset);
     rotationMatrix = XMMatrixRotationX(XMConvertToRadians(90));
     worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
@@ -487,9 +545,10 @@ void Demo::OnRender(RenderEventArgs& e)
 
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
 
-    m_PlaneMesh->Draw(*commandList);
+    // Render the plane using the SceneVisitor.
+   // m_Plane->Accept(visitor);
 
-    //Left Wall
+    // Left wall
     translationMatrix = XMMatrixTranslation(-translateOffset, translateOffset, 0);
     rotationMatrix = XMMatrixRotationX(XMConvertToRadians(-90)) * XMMatrixRotationY(XMConvertToRadians(-90));
     worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
@@ -498,11 +557,13 @@ void Demo::OnRender(RenderEventArgs& e)
 
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::Red);
-    commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DefaultTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DefaultTexture,
+        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-    m_PlaneMesh->Draw(*commandList);
+    // Render the plane using the SceneVisitor.
+    //m_Plane->Accept(visitor);
 
-    //Right wall
+    // Right wall
     translationMatrix = XMMatrixTranslation(translateOffset, translateOffset, 0);
     rotationMatrix = XMMatrixRotationX(XMConvertToRadians(-90)) * XMMatrixRotationY(XMConvertToRadians(90));
     worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
@@ -512,12 +573,14 @@ void Demo::OnRender(RenderEventArgs& e)
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::Blue);
 
-    m_PlaneMesh->Draw(*commandList);
+    // Render the plane using the SceneVisitor.
+    //m_Plane->Accept(visitor);
 
     //Draw shapes to visualize the position of the lights in the scene
-    Material lightMaterial;
+    commandList->SetPipelineState(m_PipelineState);
+
+    MaterialProperties lightMaterial = Material::Zero;
     //No specular
-    lightMaterial.Specular = { 0, 0, 0, 1 };
     for (const auto& l : m_PointLights)
     {
         lightMaterial.Emissive = l.Color;
@@ -528,7 +591,7 @@ void Demo::OnRender(RenderEventArgs& e)
         commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
         commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, lightMaterial);
 
-        m_SphereMesh->Draw(*commandList);
+        //m_Sphere->Accept(visitor);
     }
 
     for (const auto& l : m_SpotLights)
@@ -547,93 +610,106 @@ void Demo::OnRender(RenderEventArgs& e)
         commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
         commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, lightMaterial);
 
-        m_ConeMesh->Draw(*commandList);
+       //m_Cone->Accept(visitor);
     }
 
-    commandQueue->ExecuteCommandList(commandList);
+    //Resolve the MSAA render target to the swapchain's backbuffer
+    auto& swapChainRT = m_SwapChain->GetRenderTarget();
+    auto swapChainBackBuffer = swapChainRT.GetTexture(AttachmentPoint::Color0);
+    auto msaaRenderTarget = m_RenderTarget.GetTexture(AttachmentPoint::Color0);
+
+    commandList->ResolveSubResource(swapChainBackBuffer, msaaRenderTarget);
+
+    //Render the GUI directly to the swap chain's render target
+    OnGUI(commandList, swapChainRT);
+
+    commandQueue.ExecuteCommandList(commandList);
+
+    m_SwapChain->Present();
+}
+
+void Demo::OnGUI(const std::shared_ptr<CommandList>& commandList, const RenderTarget& renderTarget)
+{
+    m_GUI->NewFrame();
 
     static bool showDemoWindow = false;
-    //if (showDemoWindow)
-    //{
-    //    //ImGui::ShowDemoWindow(&showDemoWindow);
-    //}
+    if (showDemoWindow)
+    {
+        ImGui::ShowDemoWindow(&showDemoWindow);
+    }
 
-    //Present
-    m_pWindow->Present(m_RenderTarget.GetTexture(AttachmentPoint::Color0));
+    m_GUI->Render(commandList, renderTarget);
 }
 
 static bool g_AllowFullscreenToggle = true;
 
 void Demo::OnKeyPressed(KeyEventArgs& e)
 {
-    super::OnKeyPressed(e);
-
-    //if(!ImGui::GetIO().WantCaptureKeyboard)
-    //{
-    switch (e.Key)
+    if (!ImGui::GetIO().WantCaptureKeyboard)
     {
-    case KeyCode::Escape:
-        Application::Get().Quit(0);
-        break;
-    case KeyCode::Enter:
-        if (e.Alt)
+        switch (e.Key)
         {
-        [[fallthrough]];
-    case KeyCode::F11:
-        if (g_AllowFullscreenToggle)
-        {
-            m_pWindow->ToggleFullscreen();
-            g_AllowFullscreenToggle = false;
+        case KeyCode::Escape:
+            Application::Get().Stop();
+            break;
+        case KeyCode::Enter:
+            if (e.Alt)
+            {
+                [[fallthrough]];
+        case KeyCode::F11:
+            if (g_AllowFullscreenToggle)
+            {
+                m_Window->ToggleFullscreen();
+                g_AllowFullscreenToggle = false;
+            }
+            break;
+            }
+            [[fallthrough]];
+        case KeyCode::V:
+            m_SwapChain->ToggleVSync();
+            break;
+        case KeyCode::R:
+            //Reset camera transform
+            m_Camera.set_Translation(m_pAlignedCameraData->m_InitialCamPos);
+            m_Camera.set_Rotation(m_pAlignedCameraData->m_InitialCamRot);
+            m_Pitch = 0.0f;
+            m_Yaw = 0.0f;
+            break;
+        case KeyCode::Up:
+        case KeyCode::W:
+            m_Forward = 1.0f;
+            break;
+        case KeyCode::Left:
+        case KeyCode::A:
+            m_Left = 1.0f;
+            break;
+        case KeyCode::Down:
+        case KeyCode::S:
+            m_Backward = 1.0f;
+            break;
+        case KeyCode::Right:
+        case KeyCode::D:
+            m_Right = 1.0f;
+            break;
+        case KeyCode::Q:
+            m_Down = 1.0f;
+            break;
+        case KeyCode::E:
+            m_Up = 1.0f;
+            break;
+        case KeyCode::Space:
+            m_AnimateLights = !m_AnimateLights;
+            break;
+        case KeyCode::ShiftKey:
+            m_Shift = true;
+            break;
+            //}
         }
-        break;
-        }
-        [[fallthrough]];
-    case KeyCode::V:
-        m_pWindow->ToggleVSync();
-        break;
-    case KeyCode::R:
-        //Reset camera transform
-        m_Camera.set_Translation(m_pAlignedCameraData->m_InitialCamPos);
-        m_Camera.set_Rotation(m_pAlignedCameraData->m_InitialCamRot);
-        m_Pitch = 0.0f;
-        m_Yaw = 0.0f;
-        break;
-    case KeyCode::Up:
-    case KeyCode::W:
-        m_Forward = 1.0f;
-        break;
-    case KeyCode::Left:
-    case KeyCode::A:
-        m_Left = 1.0f;
-        break;
-    case KeyCode::Down:
-    case KeyCode::S:
-        m_Backward = 1.0f;
-        break;
-    case KeyCode::Right:
-    case KeyCode::D:
-        m_Right = 1.0f;
-        break;
-    case KeyCode::Q:
-        m_Down = 1.0f;
-        break;
-    case KeyCode::E:
-        m_Up = 1.0f;
-        break;
-    case KeyCode::Space:
-        m_AnimateLights = !m_AnimateLights;
-        break;
-    case KeyCode::ShiftKey:
-        m_Shift = true;
-        break;
-        //}
     }
 }
 
 void Demo::OnKeyReleased(KeyEventArgs& e)
 {
-    super::OnKeyReleased(e);
-
     switch (e.Key)
     {
     case KeyCode::Enter:
@@ -673,36 +749,34 @@ void Demo::OnKeyReleased(KeyEventArgs& e)
 
 void Demo::OnMouseMoved(MouseMotionEventArgs& e)
 {
-    super::OnMouseMoved(e);
-
     const float mouseSpeed = 0.1f;
 
-    //if(!ImGui::GetIO().WantCaptureMouse)
-    //{
-    if (e.LeftButton)
+    if (!ImGui::GetIO().WantCaptureMouse)
     {
-        m_Pitch -= e.RelY * mouseSpeed;
+        if (e.LeftButton)
+        {
+            m_Pitch -= e.RelY * mouseSpeed;
 
-        m_Pitch = std::clamp(m_Pitch, -90.0f, 90.0f);
+            m_Pitch = std::clamp(m_Pitch, -90.0f, 90.0f);
 
-        m_Yaw -= e.RelX * mouseSpeed;
+            m_Yaw -= e.RelX * mouseSpeed;
+        }
     }
 }
-//}
 
 void Demo::OnMouseWheel(MouseWheelEventArgs& e)
 {
-    //if(!ImGui::GetIO().WantCaptureMouse)
-    //{
-    auto fov = m_Camera.get_FoV();
+    if (!ImGui::GetIO().WantCaptureMouse)
+    {
+        auto fov = m_Camera.get_FoV();
 
-    fov -= e.WheelDelta;
-    fov = std::clamp(fov, 12.0f, 90.0f);
+        fov -= e.WheelDelta;
+        fov = std::clamp(fov, 12.0f, 90.0f);
 
-    m_Camera.set_FoV(fov);
+        m_Camera.set_FoV(fov);
 
-    char buffer[256];
-    sprintf_s(buffer, "FoV: %f\n", fov);
-    OutputDebugStringA(buffer);
+        char buffer[256];
+        sprintf_s(buffer, "FoV: %f\n", fov);
+        OutputDebugStringA(buffer);
+    }
 }
-//}

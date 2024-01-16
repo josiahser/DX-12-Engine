@@ -1,8 +1,0 @@
-Package: boost-fusion
-Version: 1.83.0
-Depends: boost-config, boost-container-hash, boost-core, boost-function-types, boost-functional, boost-mpl, boost-preprocessor, boost-static-assert, boost-tuple, boost-type-traits, boost-typeof, boost-utility, boost-vcpkg-helpers
-Architecture: x64-windows
-Multi-Arch: same
-Abi: 52fcfa16dd09dad0c093345ea3ad743ccb0019fb46c490ccd9aacbe996e42cb3
-Description: Boost fusion module
-Status: install ok installed

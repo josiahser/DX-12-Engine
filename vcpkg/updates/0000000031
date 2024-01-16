@@ -1,8 +1,0 @@
-Package: boost-predef
-Version: 1.83.0
-Depends: boost-vcpkg-helpers
-Architecture: x64-windows
-Multi-Arch: same
-Abi: 084a7e0b9fd0a6b65ce52a4de51b908be19bc0f7aa20dce85b48f025a5f935ea
-Description: Boost predef module
-Status: install ok installed
