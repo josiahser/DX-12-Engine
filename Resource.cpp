@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "Resource.h"
 
-#include "Application.h"
+//#include "Application.h"
 #include "Device.h"
 #include "ResourceStateTracker.h"
 

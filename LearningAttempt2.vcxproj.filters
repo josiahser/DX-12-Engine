@@ -42,9 +42,6 @@
     <ClInclude Include="CommandQueue.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Header Files\Class Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Events.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
@@ -216,9 +213,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommandQueue.cpp">
-      <Filter>Source Files\Class Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
     <ClCompile Include="UploadBuffer.cpp">

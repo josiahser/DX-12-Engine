@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DirectX-Headers/include/directx/d3d12.h"
+#include <memory>
 #include <wrl.h>
 
 #include <string>
@@ -82,7 +83,7 @@ protected:
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> m_d3d12Resource;
 	D3D12_FEATURE_DATA_FORMAT_SUPPORT m_FormatSupport;
-	std::unique_ptr <D3D12_CLEAR_VALUE> m_d3d12ClearValue;
+	std::unique_ptr<D3D12_CLEAR_VALUE> m_d3d12ClearValue;
 	std::wstring m_ResourceName;
 
 private:

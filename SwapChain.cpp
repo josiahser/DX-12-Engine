@@ -106,7 +106,7 @@ void SwapChain::SetFullscreen(bool fullscreen)
 
 void SwapChain::WaitForSwapChain()
 {
-	DWORD result = ::WaitForSingleObjectEx(m_hFrameLatencyWaitableObject, 1000, TRUE) //Wait for a second
+	DWORD result = ::WaitForSingleObjectEx(m_hFrameLatencyWaitableObject, 1000, TRUE); //Wait for a second
 }
 
 void SwapChain::Resize(uint32_t width, uint32_t height)

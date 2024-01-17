@@ -44,7 +44,7 @@ std::shared_ptr<UploadBuffer::Page> UploadBuffer::RequestPage()
 	}
 	else
 	{
-		page = std::make_shared<Page>(m_PageSize);
+		page = std::make_shared<Page>(m_Device, m_PageSize);
 		m_PagePool.push_back(page);
 	}
 
@@ -66,11 +66,11 @@ void UploadBuffer::Reset()
 }
 
 UploadBuffer::Page::Page(Device& device, size_t sizeInBytes)
-	: m_PageSize(sizeInBytes)
+	: m_Device(device)
+	, m_PageSize(sizeInBytes)
 	, m_Offset(0)
 	, m_CPUPtr(nullptr)
 	, m_GPUPtr(D3D12_GPU_VIRTUAL_ADDRESS(0))
-	, m_Device(device)
 {
 	auto d3d12Device = m_Device.GetD3D12Device();
 
@@ -82,6 +82,7 @@ UploadBuffer::Page::Page(Device& device, size_t sizeInBytes)
 		IID_PPV_ARGS(&m_Resource)));
 
 	m_Resource->SetName(L"Upload Buffer(Page)");
+
 	m_GPUPtr = m_Resource->GetGPUVirtualAddress();
 	m_Resource->Map(0, nullptr, &m_CPUPtr);
 }

@@ -1,6 +1,0 @@
-Package: vcpkg-cmake
-Version: 2023-05-04
-Architecture: x64-windows
-Multi-Arch: same
-Abi: 97ffa0158c084ce35e6978684460cae1123b882c66517281d222a29ed819b68c
-Status: purge ok not-installed

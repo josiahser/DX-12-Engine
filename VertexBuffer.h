@@ -5,11 +5,6 @@
 class VertexBuffer : public Buffer
 {
 public:
-	
-
-	//Inherited from Buffer
-	virtual void CreateViews(size_t numElements, size_t elementSize) override;
-
 	//Get the vertex buffer view for binding to the input assembler stage
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() const
 	{

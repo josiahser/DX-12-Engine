@@ -24,9 +24,6 @@ IndexBuffer::IndexBuffer(Device& device, Microsoft::WRL::ComPtr<ID3D12Resource> 
 	CreateIndexBufferView();
 }
 
-IndexBuffer::~IndexBuffer()
-{}
-
 void IndexBuffer::CreateIndexBufferView()
 {
 	UINT bufferSize = m_NumIndicies * (m_IndexFormat == DXGI_FORMAT_R16_UINT ? 2 : 4);

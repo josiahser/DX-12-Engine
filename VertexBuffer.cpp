@@ -23,16 +23,6 @@ VertexBuffer::VertexBuffer(Device& device, Microsoft::WRL::ComPtr<ID3D12Resource
 VertexBuffer::~VertexBuffer()
 {}
 
-void VertexBuffer::CreateViews(size_t numElements, size_t elementSize)
-{
-	m_NumVertices = numElements;
-	m_VertexStride = elementSize;
-
-	m_VertexBufferView.BufferLocation = m_d3d12Resource->GetGPUVirtualAddress();
-	m_VertexBufferView.SizeInBytes = static_cast<UINT>(m_NumVertices * m_VertexStride);
-	m_VertexBufferView.StrideInBytes = static_cast<UINT>(m_VertexStride);
-}
-
 void VertexBuffer::CreateVertexBufferView()
 {
 	m_VertexBufferView.BufferLocation = m_d3d12Resource->GetGPUVirtualAddress();

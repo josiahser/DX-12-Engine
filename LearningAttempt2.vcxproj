@@ -44,9 +44,9 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <VCToolsVersion>
-    </VCToolsVersion>
+    <VCToolsVersion>14.37.32822</VCToolsVersion>
     <CLRSupport>false</CLRSupport>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -74,9 +74,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\boost-optional\src\ost-1.83.0-8661f902d7.clean\include;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\boost-signals2\src\ost-1.83.0-b35853f3de.clean\include;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\assimp\x64-windows-dbg;C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectX-Headers\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\assimp\x64-windows-dbg\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\boost-optional\src\ost-1.83.0-8661f902d7.clean\include;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\boost-signals2\src\ost-1.83.0-b35853f3de.clean\include;C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\vcpkg\blds\assimp\src\v5.3.1-c1ad782f20.clean\include\assimp;C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectX-Headers\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\vcpkg\blds\assimp\x64-windows-dbg\lib;C:\Program Files\Microsoft Visual Studio\2022\Community\SDK\ScopeCppSDK\vc15\VC\lib;C:\Program Files\Microsoft Visual Studio\2022\Community\SDK\ScopeCppSDK\vc15\SDK\lib</LibraryPath>
     <ExternalIncludePath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\vcpkg\blds\zlib;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExcludePath />
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
@@ -84,6 +85,7 @@
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgInstalledDir>$(MSBuildProjectDirectory)</VcpkgInstalledDir>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -136,20 +138,33 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <EnableModules>true</EnableModules>
       <BuildStlModules>true</BuildStlModules>
       <ShowIncludes>true</ShowIncludes>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\josia\source\repos\DX-12-Engine\assimp;C:\Users\jo_serravalle\source\repos\LearningAttempt2\DirectXTex-main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+      <CompileAsManaged>false</CompileAsManaged>
+      <UseFullPaths>false</UseFullPaths>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>wWinMain</EntryPointSymbol>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>"ComCtl32.lib" %(AdditionalOptions)</AdditionalOptions>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
@@ -205,7 +220,6 @@
     <ClInclude Include="DynamicDescriptorHeap.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Game.h" />
     <ClInclude Include="GenerateMipsPSO.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Helpers.h" />
@@ -262,7 +276,6 @@
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DynamicDescriptorHeap.cpp" />
     <ClCompile Include="framework.cpp" />
-    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GenerateMipsPSO.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="HighResolutionTimer.cpp" />

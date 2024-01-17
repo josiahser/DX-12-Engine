@@ -17,11 +17,6 @@ Mesh::Mesh()
 	: m_PrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
 {}
 
-Mesh::~Mesh()
-{
-//Allocated resources will be cleaned automatically when the pointers go out of scope
-}
-
 void Mesh::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY primitiveTopology)
 {
 	m_PrimitiveTopology = primitiveTopology;
