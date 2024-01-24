@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/draco-x64-windows-1.5.6#1-271d8a02-32d7-407f-8dee-3580782f1812",
-  "name": "draco:x64-windows@1.5.6#1 75921bb6d75187f37321da839764b507ad72e098b9204f247cb22588c2a6dc25",
+  "documentNamespace": "https://spdx.org/spdxdocs/draco-x64-windows-1.5.6#1-d4ff51d1-cdbe-41ed-8cac-92d379535fcd",
+  "name": "draco:x64-windows@1.5.6#1 ecc6bb0ffac8b43031a3cd1906031bdd28dc6e5db0264de770f9f1890f8b3f64",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
+      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-13T20:22:52Z"
+    "created": "2024-01-24T01:48:56Z"
   },
   "relationships": [
     {
@@ -109,7 +109,7 @@
     {
       "name": "draco:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "75921bb6d75187f37321da839764b507ad72e098b9204f247cb22588c2a6dc25",
+      "versionInfo": "ecc6bb0ffac8b43031a3cd1906031bdd28dc6e5db0264de770f9f1890f8b3f64",
       "downloadLocation": "NONE",
       "licenseConcluded": "Apache-2.0",
       "licenseDeclared": "NOASSERTION",

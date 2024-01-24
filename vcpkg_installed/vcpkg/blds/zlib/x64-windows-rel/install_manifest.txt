@@ -1,4 +1,0 @@
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/lib/zlib.lib
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/bin/zlib1.dll
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/include/zconf.h
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/zlib_x64-windows/include/zlib.h

@@ -1,7 +1,0 @@
-Package: boost-type-index
-Version: 1.83.0
-Depends: boost-config, boost-container-hash, boost-core, boost-preprocessor, boost-static-assert, boost-throw-exception, boost-type-traits, boost-vcpkg-helpers
-Architecture: x64-windows
-Multi-Arch: same
-Abi: db84608cf745021338a81c0558174d09d56bfe11aa161aef5d5e01619a405817
-Description: Boost type_index module

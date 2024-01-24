@@ -1,2 +1,3 @@
 {
+  "dependencies": ["directx-headers", "directxtex", "directxtk12", "assimp", "gainput", "spdlog", "curl", "zlib", "directx-dxc"]
 }

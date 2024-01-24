@@ -10,7 +10,7 @@
 
 #pragma comment( lib, "Shlwapi.lib" )
 
-#include "..\resource.h"
+#include "resource.h"
 
 // STL
 #include <algorithm>

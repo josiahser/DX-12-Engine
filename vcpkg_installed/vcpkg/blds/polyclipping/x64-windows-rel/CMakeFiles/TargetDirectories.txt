@@ -1,6 +1,0 @@
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/polyclipping/x64-windows-rel/CMakeFiles/polyclipping.dir
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/polyclipping/x64-windows-rel/CMakeFiles/edit_cache.dir
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/polyclipping/x64-windows-rel/CMakeFiles/rebuild_cache.dir
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/polyclipping/x64-windows-rel/CMakeFiles/list_install_components.dir
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/polyclipping/x64-windows-rel/CMakeFiles/install.dir
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/polyclipping/x64-windows-rel/CMakeFiles/install/local.dir

@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/vcpkg-cmake-get-vars-x64-windows-2023-03-02-9947dde1-1ad2-4b82-8723-55e027d3a9ca",
-  "name": "vcpkg-cmake-get-vars:x64-windows@2023-03-02 12d90d515becc52c701391b9b1bd6b797cf8d192a3fb1a20326d471e8eea8340",
+  "documentNamespace": "https://spdx.org/spdxdocs/vcpkg-cmake-get-vars-x64-windows-2023-12-31-9236a0bd-ada7-46cc-a998-290a278a98af",
+  "name": "vcpkg-cmake-get-vars:x64-windows@2023-12-31 e9454384d9dece913557a31d0b98328b089f6ab89c2cbdd7d55a71a19d118fd6",
   "creationInfo": {
     "creators": [
       "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-13T20:39:52Z"
+    "created": "2024-01-24T01:48:00Z"
   },
   "relationships": [
     {
@@ -77,8 +77,8 @@
     {
       "name": "vcpkg-cmake-get-vars",
       "SPDXID": "SPDXRef-port",
-      "versionInfo": "2023-03-02",
-      "downloadLocation": "git+https://github.com/microsoft/vcpkg@2e624c2cf12a97a7a802e31ff1d28b9fa6ba9bde",
+      "versionInfo": "2023-12-31",
+      "downloadLocation": "git+https://github.com/microsoft/vcpkg@725c841810ceb8de33da68ea879eb8f0b4d6c94c",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
@@ -87,7 +87,7 @@
     {
       "name": "vcpkg-cmake-get-vars:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "12d90d515becc52c701391b9b1bd6b797cf8d192a3fb1a20326d471e8eea8340",
+      "versionInfo": "e9454384d9dece913557a31d0b98328b089f6ab89c2cbdd7d55a71a19d118fd6",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -97,19 +97,19 @@
   ],
   "files": [
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/2e624c2cf12a97a7a802e31ff1d28b9fa6ba9bde/cmake_get_vars/CMakeLists.txt",
+      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/cmake_get_vars/CMakeLists.txt",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "f5935752b5b9c584fe8087fb5a69dabc21f44e5eb2069cc256964e98ffeca723"
+          "checksumValue": "75a1291434249775e2f82942e9e04b41efef3e8cded19c30a9940c691ad9148f"
         }
       ],
       "licenseConcluded": "NOASSERTION",
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/2e624c2cf12a97a7a802e31ff1d28b9fa6ba9bde/portfile.cmake",
+      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/portfile.cmake",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -121,7 +121,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/2e624c2cf12a97a7a802e31ff1d28b9fa6ba9bde/vcpkg-port-config.cmake",
+      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg-port-config.cmake",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -133,19 +133,19 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/2e624c2cf12a97a7a802e31ff1d28b9fa6ba9bde/vcpkg.json",
+      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg.json",
       "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "0e07bef9b6127ff7ae367a2cb4f73eb1931f688a0a1354b77245704ff8bd046a"
+          "checksumValue": "90ff3bf8d338ffa039b69e800a1758c30f939085efcf1dfcee4d975871475a09"
         }
       ],
       "licenseConcluded": "NOASSERTION",
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/2e624c2cf12a97a7a802e31ff1d28b9fa6ba9bde/vcpkg_cmake_get_vars.cmake",
+      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg_cmake_get_vars.cmake",
       "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {

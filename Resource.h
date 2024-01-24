@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DirectX-Headers/include/directx/d3d12.h"
+#include <d3d12.h>
 #include <memory>
 #include <wrl.h>
 

@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/assimp-x64-windows-5.3.1#3-8a144bc8-aac6-4432-b72c-640bf26c4aa8",
-  "name": "assimp:x64-windows@5.3.1#3 3d207b70f070bcb8573bba534c94d745242b65fb0d6b0b96e87c8c9ce199c4bc",
+  "documentNamespace": "https://spdx.org/spdxdocs/assimp-x64-windows-5.3.1#3-b12a527b-a121-48a2-87ec-0eb9ee2b25ea",
+  "name": "assimp:x64-windows@5.3.1#3 7f89e93124d7d01beb71bc0962b67c08b22addc2124a5e9d7cbe32b0fb721e29",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
+      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-13T20:24:42Z"
+    "created": "2024-01-24T01:50:37Z"
   },
   "relationships": [
     {
@@ -69,7 +69,7 @@
     {
       "name": "assimp:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "3d207b70f070bcb8573bba534c94d745242b65fb0d6b0b96e87c8c9ce199c4bc",
+      "versionInfo": "7f89e93124d7d01beb71bc0962b67c08b22addc2124a5e9d7cbe32b0fb721e29",
       "downloadLocation": "NONE",
       "licenseConcluded": "BSD-3-Clause",
       "licenseDeclared": "NOASSERTION",

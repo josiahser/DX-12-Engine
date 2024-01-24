@@ -1,2 +1,0 @@
-C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/pkgs/zlib_x64-windows/debug/lib/zlibd.lib
-C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/pkgs/zlib_x64-windows/debug/bin/zlibd1.dll

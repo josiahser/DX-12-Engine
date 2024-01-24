@@ -1,9 +1,0 @@
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/lib/pugixml.lib
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/bin/pugixml.dll
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/lib/cmake/pugixml/pugixml-targets.cmake
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/lib/cmake/pugixml/pugixml-targets-release.cmake
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/lib/cmake/pugixml/pugixml-config-version.cmake
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/lib/cmake/pugixml/pugixml-config.cmake
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/lib/pkgconfig/pugixml.pc
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/include/pugiconfig.hpp
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/pugixml_x64-windows/include/pugixml.hpp

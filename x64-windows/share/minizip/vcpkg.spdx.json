@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/minizip-x64-windows-1.3#1-1ac9ebf5-4b6e-452f-9823-1dccfae96753",
-  "name": "minizip:x64-windows@1.3#1 2bc447f38c257f3cf6add661709de3a49e8b56f5a82ef7de57b1d82faa488dea",
+  "documentNamespace": "https://spdx.org/spdxdocs/minizip-x64-windows-1.3#1-b09ef050-6c4e-4cb5-87c5-534da3278784",
+  "name": "minizip:x64-windows@1.3#1 b12aff40c9ac716dec5d4cf2d695e67a04a1469e955ca983a1101a3c6d24828c",
   "creationInfo": {
     "creators": [
       "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-13T20:39:55Z"
+    "created": "2024-01-24T01:48:03Z"
   },
   "relationships": [
     {
@@ -159,7 +159,7 @@
     {
       "name": "minizip:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "2bc447f38c257f3cf6add661709de3a49e8b56f5a82ef7de57b1d82faa488dea",
+      "versionInfo": "b12aff40c9ac716dec5d4cf2d695e67a04a1469e955ca983a1101a3c6d24828c",
       "downloadLocation": "NONE",
       "licenseConcluded": "Zlib",
       "licenseDeclared": "NOASSERTION",

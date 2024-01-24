@@ -1,6 +1,0 @@
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/polyclipping_x64-windows/include/polyclipping/clipper.hpp
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/polyclipping_x64-windows/lib/polyclipping.lib
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/polyclipping_x64-windows/share/pkgconfig/polyclipping.pc
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/polyclipping_x64-windows/lib/polyclipping.lib
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/polyclipping_x64-windows/share/polyclipping/polyclippingConfig.cmake
-C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/polyclipping_x64-windows/share/polyclipping/polyclippingConfig-release.cmake

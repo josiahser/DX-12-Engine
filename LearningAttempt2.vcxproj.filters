@@ -210,6 +210,9 @@
     <ClInclude Include="HighResolutionTimer.h">
       <Filter>Header Files\GameHeaders</Filter>
     </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommandQueue.cpp">
