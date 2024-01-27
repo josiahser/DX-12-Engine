@@ -4,13 +4,13 @@
 #include "VertexTypes.h"
 #include <DirectXMath.h>
 
-#include "DirectX-Headers/include/directx/d3d12.h"
+#include <d3d12.h>
 #include <wrl.h>
 
-#pragma comment(lib, "d3d12")
-#pragma comment(lib, "dxgi")
-#pragma comment(lib, "d3dcompiler")
-#pragma comment(lib, "DXGUID")
+//#pragma comment(lib, "d3d12")
+//#pragma comment(lib, "dxgi")
+//#pragma comment(lib, "d3dcompiler")
+//#pragma comment(lib, "DXGUID")
 
 #include <functional>
 #include <map>

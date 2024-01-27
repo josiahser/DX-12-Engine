@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/fmt-x64-windows-10.2.1-d255980d-551b-4d57-a7c1-a8b6ef1c0c7c",
-  "name": "fmt:x64-windows@10.2.1 e3aad9c963c1e9b8635d1aadd25643b647ab175c37c2a018b0195432c6e04906",
+  "documentNamespace": "https://spdx.org/spdxdocs/fmt-x64-windows-10.2.1-3da92104-c200-44e0-805b-d7bd29a4d750",
+  "name": "fmt:x64-windows@10.2.1 321658f59f808d6e47c2752a0e34f3e2ff91097ab6f09f742be84717e5d99511",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
+      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
     ],
-    "created": "2024-01-24T01:53:04Z"
+    "created": "2024-01-25T01:17:37Z"
   },
   "relationships": [
     {
@@ -79,7 +79,7 @@
     {
       "name": "fmt:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "e3aad9c963c1e9b8635d1aadd25643b647ab175c37c2a018b0195432c6e04906",
+      "versionInfo": "321658f59f808d6e47c2752a0e34f3e2ff91097ab6f09f742be84717e5d99511",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",

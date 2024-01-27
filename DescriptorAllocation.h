@@ -1,8 +1,8 @@
 #pragma once
 
-#pragma comment(lib, "d3d12")
+//#pragma comment(lib, "d3d12")
 
-#include "DirectX-Headers/include/directx/d3d12.h"
+#include <d3d12.h>
 
 #include <cstdint>
 #include <memory>

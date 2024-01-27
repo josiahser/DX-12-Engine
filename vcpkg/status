@@ -20,7 +20,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: d11a9d905033897914dd290a698c5b9f7331a36c55d6dad5a8acf6d1949e4112
 Description: Official DirectX 12 Headers
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: directxmath
 Version: 2023-12-31
@@ -29,7 +29,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: fac6406921b572e34774a9c9acf02bfdf465b593882dc46d279a20197da3dddf
 Description: DirectXMath SIMD C++ math library
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: directxtex
 Version: 2023-12-31
@@ -39,14 +39,14 @@ Multi-Arch: same
 Abi: 0005c7ed793e089ad090b4f576bbb401d31fcf28c22c56cba342ef42dfc4dbd0
 Description: DirectXTex texture processing library
 Default-Features: dx11
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: directxtex
 Feature: dx11
 Architecture: x64-windows
 Multi-Arch: same
 Description: Build with DirectX11 support
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: directx-dxc
 Version: 2023-08-14
@@ -65,14 +65,14 @@ Multi-Arch: same
 Abi: 70ed35db5ad49a642fdec33b8275462e710b081a42e70bea59a80c37344a6b97
 Description: A collection of helper classes for writing DirectX 12 code in C++.
 Default-Features: xaudio2-9
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: directxtk12
 Feature: xaudio2-9
 Architecture: x64-windows
 Multi-Arch: same
 Description: Build with XAudio 2.9 support for Windows 10/11
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: zlib
 Version: 1.3
@@ -81,7 +81,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: 93a79e31589bb76afa5ffadae3ee47fbc5219a3a1f69b2ef5749e7152676844e
 Description: A compression library
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: utfcpp
 Version: 4.0.5
@@ -90,7 +90,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: 7022002384b1924d20c8a52c44dc84bc74b5f18e8c6897c18db5c5a15e395afe
 Description: UTF-8 with C++ in a Portable Way
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: stb
 Version: 2023-04-11
@@ -99,7 +99,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: 7baa8749666daed63e4f3d4cde166bef4670bd883d4e425ab6f4905d58db44c4
 Description: public domain header-only libraries
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: rapidjson
 Version: 2023-07-17
@@ -109,7 +109,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: d1adf6543b53456af8b566bf897d02cd55a438c21818a72036e04b0e471e54a5
 Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: pugixml
 Version: 1.14
@@ -118,7 +118,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: ca97042dd857e7e10226b0f72715db9818b4295b58fcb21ca67dc2c574f60592
 Description: Light-weight, simple and fast XML parser for C++ with XPath support
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: polyclipping
 Version: 6.4.2
@@ -128,7 +128,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: a7ed5153eedbb35830fda184d877d3dd054054b22e27831942c48846a8df730a
 Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: poly2tri
 Version: 2020-07-21
@@ -138,7 +138,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: bc8a9df60112446651903a92e20fe924f15218c6e878a5128a0d4b5a9cdb67e9
 Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: vcpkg-cmake-get-vars
 Version: 2023-12-31
@@ -156,7 +156,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: b12aff40c9ac716dec5d4cf2d695e67a04a1469e955ca983a1101a3c6d24828c
 Description: Minizip zip file manipulation library
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: kubazip
 Version: 0.2.6
@@ -165,7 +165,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: 4fa081f3d660c9772baaf59ba08f94955647caac745a2f3b06cfcd7c43f85eba
 Description: A portable, simple zip library written in C
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: draco
 Version: 1.5.6
@@ -175,7 +175,7 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: ecc6bb0ffac8b43031a3cd1906031bdd28dc6e5db0264de770f9f1890f8b3f64
 Description: A library for compressing and decompressing 3D geometric meshes and point clouds. It is intended to improve the storage and transmission of 3D graphics.
-Status: install ok installed
+Status: purge ok not-installed
 
 Package: assimp
 Version: 5.3.1
@@ -185,5 +185,538 @@ Architecture: x64-windows
 Multi-Arch: same
 Abi: 7f89e93124d7d01beb71bc0962b67c08b22addc2124a5e9d7cbe32b0fb721e29
 Description: The Open Asset import library
+Status: purge ok not-installed
+
+Package: curl
+Version: 8.5.0
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 6a11d4b5bcf42b38edf8b514e909995f6ee53ed0bdb4ce8dd7f0c1017bc441ee
+Description: A library for transferring data with URLs
+Default-Features: non-http, ssl
+Status: purge ok not-installed
+
+Package: curl
+Feature: non-http
+Architecture: x64-windows
+Multi-Arch: same
+Description: Enables protocols beyond HTTP/HTTPS/HTTP2
+Status: purge ok not-installed
+
+Package: curl
+Feature: schannel
+Architecture: x64-windows
+Multi-Arch: same
+Description: SSL support (Secure Channel)
+Status: purge ok not-installed
+
+Package: curl
+Feature: ssl
+Architecture: x64-windows
+Multi-Arch: same
+Description: Default SSL backend
+Status: purge ok not-installed
+
+Package: curl
+Feature: sspi
+Architecture: x64-windows
+Multi-Arch: same
+Description: SSPI support
+Status: purge ok not-installed
+
+Package: gainput
+Version: 1.0.0
+Port-Version: 6
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 5f388373947fe8fbca09fba8748c69cfbcff114e61a5c4a01333de60670cafbe
+Description: Gainput is a multiplatform C++ input library, supporting mouse, keyboard and controllers
+Status: purge ok not-installed
+
+Package: fmt
+Version: 10.2.1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: e3aad9c963c1e9b8635d1aadd25643b647ab175c37c2a018b0195432c6e04906
+Description: Formatting library for C++. It can be used as a safe alternative to printf or as a fast alternative to IOStreams.
+Status: purge ok not-installed
+
+Package: spdlog
+Version: 1.13.0
+Depends: fmt, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: a7ee0d5c627d52c1d5c8301cd34490244964578675dfb8c6e3f22f221ecf06b5
+Description: Very fast, header only, C++ logging library
+Status: purge ok not-installed
+
+Package: zlib
+Version: 1.3
+Depends: vcpkg-cmake:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 87037d4e158d92ffcec45b83ec41a05bdd0bb850ccb6f14647bad343719d611b
+Description: A compression library
+Status: purge ok not-installed
+
+Package: utfcpp
+Version: 4.0.5
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 5a13bf2f38e82ca5b01ba9998aad73aa6c56ab91021937ea1bc72203a8e5c341
+Description: UTF-8 with C++ in a Portable Way
+Status: purge ok not-installed
+
+Package: stb
+Version: 2023-04-11
+Port-Version: 1
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 892c184feac8fcbbb532572431326b6f8b9ee86602db75f9d21bec7ed5a78752
+Description: public domain header-only libraries
+Status: purge ok not-installed
+
+Package: rapidjson
+Version: 2023-07-17
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 5447ef847893991996e54aed119076a41d9c331fc027dfd813102059d752f680
+Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
+Status: purge ok not-installed
+
+Package: pugixml
+Version: 1.14
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 70d2d1aa0d9107117b13e770f82345dfdd6bde2b7ae0c02f6d6f84090d32a54e
+Description: Light-weight, simple and fast XML parser for C++ with XPath support
+Status: purge ok not-installed
+
+Package: polyclipping
+Version: 6.4.2
+Port-Version: 12
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: e515fdbdce214ed0fb745943abecdd41f860319007fe5abe44482ea778f2677c
+Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
+Status: purge ok not-installed
+
+Package: poly2tri
+Version: 2020-07-21
+Port-Version: 3
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 4f2f97444042d033af411a97f89f3774dff6ea488c5087767a25fa7f8f41be4c
+Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
+Status: purge ok not-installed
+
+Package: minizip
+Version: 1.3
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, vcpkg-cmake-get-vars:x64-windows, zlib
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 4b7962b77c319de8e30da38ffe720137fecd189ddf910dd8d1d294d39c91bfa5
+Description: Minizip zip file manipulation library
+Status: purge ok not-installed
+
+Package: kubazip
+Version: 0.2.6
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 2d757e673effc24016227662d37b178a00af38215509d0e10e11375490ae01d0
+Description: A portable, simple zip library written in C
+Status: purge ok not-installed
+
+Package: draco
+Version: 1.5.6
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 0bdcb06fa02e069bd070e5fc37c4dcd470b8104633ef6e64d1c54289325a146b
+Description: A library for compressing and decompressing 3D geometric meshes and point clouds. It is intended to improve the storage and transmission of 3D graphics.
+Status: purge ok not-installed
+
+Package: assimp
+Version: 5.3.1
+Port-Version: 3
+Depends: draco, kubazip, minizip, poly2tri, polyclipping, pugixml, rapidjson, stb, utfcpp, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 459f589cbafa951d7c28a2a1d21c8dffe43840d1b79ea2e87b7888038d6d0bef
+Description: The Open Asset import library
+Status: purge ok not-installed
+
+Package: curl
+Version: 8.5.0
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 9a97d083f82b45f8a23cb36b806721b910e47a3aca2c30ce106b5455377633ea
+Description: A library for transferring data with URLs
+Default-Features: non-http, ssl
+Status: purge ok not-installed
+
+Package: curl
+Feature: non-http
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Description: Enables protocols beyond HTTP/HTTPS/HTTP2
+Status: purge ok not-installed
+
+Package: curl
+Feature: schannel
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Description: SSL support (Secure Channel)
+Status: purge ok not-installed
+
+Package: curl
+Feature: ssl
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Description: Default SSL backend
+Status: purge ok not-installed
+
+Package: curl
+Feature: sspi
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Description: SSPI support
+Status: purge ok not-installed
+
+Package: directx-dxc
+Version: 2023-08-14
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 99c18d1f73da46c817e7f649aceba184d74059c8bfd9e10f470351d3b15be7d6
+Description: DirectX Shader Compiler (LLVM/Clang)
+Status: purge ok not-installed
+
+Package: directx-headers
+Version: 1.611.0
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 3e2cde8434d3d919f1592fba25c9df7059c7add25c993af7779122504e49cd57
+Description: Official DirectX 12 Headers
+Status: purge ok not-installed
+
+Package: directxmath
+Version: 2023-12-31
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 8aebd926d21f9d825252e5f7eef10f7888830e43eec745ae9d6c6c2ff19227c6
+Description: DirectXMath SIMD C++ math library
+Status: purge ok not-installed
+
+Package: directxtex
+Version: 2023-12-31
+Depends: directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 9fa5a27641df70bab254596afe96e7524129addb966f45d76d8aa6544179849c
+Description: DirectXTex texture processing library
+Default-Features: dx11
+Status: purge ok not-installed
+
+Package: directxtex
+Feature: dx11
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Description: Build with DirectX11 support
+Status: purge ok not-installed
+
+Package: directxtk12
+Version: 2023-12-31
+Depends: directx-dxc:x64-windows, directx-headers, directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 74a80e120b63066b7a0f89eb7a467ddc7a65d44df2aea962c335e7ec1e222ed2
+Description: A collection of helper classes for writing DirectX 12 code in C++.
+Default-Features: xaudio2-9
+Status: purge ok not-installed
+
+Package: directxtk12
+Feature: xaudio2-9
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Description: Build with XAudio 2.9 support for Windows 10/11
+Status: purge ok not-installed
+
+Package: gainput
+Version: 1.0.0
+Port-Version: 6
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 3964b8e47d49a878ca063c097c826ed7af9a5a7a48c0cb88c1f27306ad355f9f
+Description: Gainput is a multiplatform C++ input library, supporting mouse, keyboard and controllers
+Status: purge ok not-installed
+
+Package: fmt
+Version: 10.2.1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 3531403175ab58431036ad60dfd5b15c993664e9f5bb9ca5650650e2ff5712e4
+Description: Formatting library for C++. It can be used as a safe alternative to printf or as a fast alternative to IOStreams.
+Status: purge ok not-installed
+
+Package: spdlog
+Version: 1.13.0
+Depends: fmt, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 3be79698e42d4b33cb2133475697d1e9d87eb33565efee4563fc4f2438368f35
+Description: Very fast, header only, C++ logging library
+Status: purge ok not-installed
+
+Package: zlib
+Version: 1.3
+Depends: vcpkg-cmake:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 8ae21a40677ad33df05f1572b0491f963284ac9525e8e1afbebdcce45205e14a
+Description: A compression library
+Status: install ok installed
+
+Package: utfcpp
+Version: 4.0.5
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: e06f56eee67a3386e49256b29465c4830121c528b9ede2dd73325db33b75b417
+Description: UTF-8 with C++ in a Portable Way
+Status: install ok installed
+
+Package: stb
+Version: 2023-04-11
+Port-Version: 1
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: d755d905ed7b6b9199bad4c03dce3898d847ae9dc6d15fd008b93832e46e9e68
+Description: public domain header-only libraries
+Status: install ok installed
+
+Package: rapidjson
+Version: 2023-07-17
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 5f01ee6412bd01fccbe9f78dc1d5e9fce3d035fdd2bf0cdc22e577c215a8f365
+Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
+Status: install ok installed
+
+Package: pugixml
+Version: 1.14
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 73bc6087108f347d5d453e290b872aec6134065a13028a75287157caba1461fd
+Description: Light-weight, simple and fast XML parser for C++ with XPath support
+Status: install ok installed
+
+Package: polyclipping
+Version: 6.4.2
+Port-Version: 12
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 2d7bb82f5cc64c816f97bbce705e7aa39057fec459233f5593281374fcec4a7c
+Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
+Status: install ok installed
+
+Package: poly2tri
+Version: 2020-07-21
+Port-Version: 3
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 9a1d39babb0dafabc2bd91a7b692cd0a9b7f5ac63220406c1be2d70cc165405e
+Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
+Status: install ok installed
+
+Package: minizip
+Version: 1.3
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, vcpkg-cmake-get-vars:x64-windows, zlib
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 84c47510d605e0cbb050cbdfdd1fb0bb4cdc15a4544081f2dc33f4da7cab08a8
+Description: Minizip zip file manipulation library
+Status: install ok installed
+
+Package: kubazip
+Version: 0.2.6
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 1d7818ddc54d56e6c454172262b65d1f375959f832e700bbfd607f905be74fcb
+Description: A portable, simple zip library written in C
+Status: install ok installed
+
+Package: draco
+Version: 1.5.6
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: fd06c135237ff7f2b7fc0334d2947e0dbe11455da5f4f9831e5a951a9fb0dabe
+Description: A library for compressing and decompressing 3D geometric meshes and point clouds. It is intended to improve the storage and transmission of 3D graphics.
+Status: install ok installed
+
+Package: assimp
+Version: 5.3.1
+Port-Version: 3
+Depends: draco, kubazip, minizip, poly2tri, polyclipping, pugixml, rapidjson, stb, utfcpp, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: bbed6dd9617edff9f36cb1d601d15c1d934d4bd9ab478860507e4487f21071ca
+Description: The Open Asset import library
+Status: install ok installed
+
+Package: curl
+Version: 8.5.0
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 4bbd0a95ee1d2b27d14d337d59ab52d5009265da0d651f820674a8e9a75e2c2b
+Description: A library for transferring data with URLs
+Default-Features: non-http, ssl
+Status: install ok installed
+
+Package: curl
+Feature: non-http
+Architecture: x64-windows-static
+Multi-Arch: same
+Description: Enables protocols beyond HTTP/HTTPS/HTTP2
+Status: install ok installed
+
+Package: curl
+Feature: schannel
+Architecture: x64-windows-static
+Multi-Arch: same
+Description: SSL support (Secure Channel)
+Status: install ok installed
+
+Package: curl
+Feature: ssl
+Architecture: x64-windows-static
+Multi-Arch: same
+Description: Default SSL backend
+Status: install ok installed
+
+Package: curl
+Feature: sspi
+Architecture: x64-windows-static
+Multi-Arch: same
+Description: SSPI support
+Status: install ok installed
+
+Package: directx-dxc
+Version: 2023-08-14
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 42d484e7a01b9f1cd435245a3419f8499ecce4aea3250c2467329dde065341dc
+Description: DirectX Shader Compiler (LLVM/Clang)
+Status: install ok installed
+
+Package: directx-headers
+Version: 1.611.0
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: f9ac276b215eb7682b46aa9492d4a78326818b3c519bd6ca6b911d429ef340a0
+Description: Official DirectX 12 Headers
+Status: install ok installed
+
+Package: directxmath
+Version: 2023-12-31
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: e85c69f35ecd9f3c7ca09815823c5a47d6c478c0cffe86eca04c9fa02d19cca8
+Description: DirectXMath SIMD C++ math library
+Status: install ok installed
+
+Package: directxtex
+Version: 2023-12-31
+Depends: directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: f42bf6358200017158e6a1ad0dd8e6539573e2466e18c22a0b4bfe94cab59403
+Description: DirectXTex texture processing library
+Default-Features: dx11
+Status: install ok installed
+
+Package: directxtex
+Feature: dx11
+Architecture: x64-windows-static
+Multi-Arch: same
+Description: Build with DirectX11 support
+Status: install ok installed
+
+Package: directxtk12
+Version: 2023-12-31
+Depends: directx-dxc:x64-windows, directx-headers, directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 600076045796a05c661ca1e98fa472c2c55c5ea148f49ba86aea9411a99eac91
+Description: A collection of helper classes for writing DirectX 12 code in C++.
+Default-Features: xaudio2-9
+Status: install ok installed
+
+Package: directxtk12
+Feature: xaudio2-9
+Architecture: x64-windows-static
+Multi-Arch: same
+Description: Build with XAudio 2.9 support for Windows 10/11
+Status: install ok installed
+
+Package: gainput
+Version: 1.0.0
+Port-Version: 6
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: fd7aed9c14fc233a812b12a742eb15a467d21a30ac310bd012c9285d560f5a0f
+Description: Gainput is a multiplatform C++ input library, supporting mouse, keyboard and controllers
+Status: install ok installed
+
+Package: fmt
+Version: 10.2.1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: b77b608c56b2aa59e5a3d5d4db727d8e1fa77a17164166618a8d9ce88c15910f
+Description: Formatting library for C++. It can be used as a safe alternative to printf or as a fast alternative to IOStreams.
+Status: install ok installed
+
+Package: spdlog
+Version: 1.13.0
+Depends: fmt, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
+Multi-Arch: same
+Abi: 7cba2a4e90aadc22d1a8e196781963f7cefe1dc4000e0f449982ca055bd3f614
+Description: Very fast, header only, C++ logging library
 Status: install ok installed
 

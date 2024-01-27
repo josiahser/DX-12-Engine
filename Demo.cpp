@@ -26,7 +26,7 @@ using namespace Microsoft::WRL;
 
 #include <DirectXColors.h>
 #include <d3dcompiler.h>
-#include "DirectX-Headers/include/directx/d3dx12.h"
+#include "d3dx12.h"
 
 using namespace DirectX;
 

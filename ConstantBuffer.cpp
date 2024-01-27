@@ -3,7 +3,7 @@
 #include "ConstantBuffer.h"
 #include "Application.h"
 #include "Device.h"
-#include "DirectX-Headers/include/directx/d3dx12.h"
+#include "d3dx12.h"
 
 ConstantBuffer::ConstantBuffer(Device& device, Microsoft::WRL::ComPtr<ID3D12Resource> resource)
 	: Buffer(device, resource)

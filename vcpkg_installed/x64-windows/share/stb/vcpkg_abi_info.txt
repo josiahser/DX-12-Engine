@@ -2,7 +2,7 @@ FindStb.cmake d6d9e778ddb6e7b5d13c63a63872a7a5ddba00b1cef675a7cc7c91a9a9508d91
 cmake 3.27.1
 features core
 portfile.cmake 4bcb5ded7fcb24cc0d9830bacc8a7be53d082ac1f8d0f74fb90ba1ac2ef5f92e
-ports.cmake acdf95a924917ff29a9e6bfbee2ecbdb786501f36a847bdff366e41544465592
+ports.cmake 5a8e00cedff0c898b1f90f7d129329d0288801bc9056562b039698caf31ff3f3
 post_build_checks 2
 powershell 7.2.11
 triplet x64-windows

@@ -1,8 +1,9 @@
-Package: fmt
-Version: 10.2.1
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-windows
+Package: directxtex
+Version: 2023-12-31
+Depends: directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
 Multi-Arch: same
-Abi: e3aad9c963c1e9b8635d1aadd25643b647ab175c37c2a018b0195432c6e04906
-Description: Formatting library for C++. It can be used as a safe alternative to printf or as a fast alternative to IOStreams.
-Status: install ok half-installed
+Abi: f42bf6358200017158e6a1ad0dd8e6539573e2466e18c22a0b4bfe94cab59403
+Description: DirectXTex texture processing library
+Default-Features: dx11
+Status: purge ok not-installed

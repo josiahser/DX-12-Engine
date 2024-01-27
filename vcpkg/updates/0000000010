@@ -1,9 +1,9 @@
-Package: gainput
-Version: 1.0.0
-Port-Version: 6
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-windows
+Package: directxtex
+Version: 2023-12-31
+Depends: directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
 Multi-Arch: same
-Abi: 5f388373947fe8fbca09fba8748c69cfbcff114e61a5c4a01333de60670cafbe
-Description: Gainput is a multiplatform C++ input library, supporting mouse, keyboard and controllers
-Status: install ok half-installed
+Abi: f42bf6358200017158e6a1ad0dd8e6539573e2466e18c22a0b4bfe94cab59403
+Description: DirectXTex texture processing library
+Default-Features: dx11
+Status: purge ok half-installed

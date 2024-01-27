@@ -2,9 +2,9 @@
 
 #include "CommandList.h"
 
-#pragma comment(lib, "d3d12")
-#pragma comment(lib, "dxgi")
-#pragma comment(lib, "d3dcompiler")
+//#pragma comment(lib, "d3d12")
+//#pragma comment(lib, "dxgi")
+//#pragma comment(lib, "d3dcompiler")
 
 //#include "Application.h"
 #include "ByteAddressBuffer.h"

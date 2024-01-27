@@ -1,6 +1,9 @@
-Package: curl
-Feature: sspi
-Architecture: x64-windows
+Package: gainput
+Version: 1.0.0
+Port-Version: 6
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
 Multi-Arch: same
-Description: SSPI support
-Status: install ok half-installed
+Abi: fd7aed9c14fc233a812b12a742eb15a467d21a30ac310bd012c9285d560f5a0f
+Description: Gainput is a multiplatform C++ input library, supporting mouse, keyboard and controllers
+Status: purge ok half-installed

@@ -1,0 +1,8 @@
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/directxtex_x64-windows/lib/DirectXTex.lib
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/directxtex_x64-windows/share/directxtex/DirectXTex-targets.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/directxtex_x64-windows/share/directxtex/DirectXTex-targets-release.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/directxtex_x64-windows/include/DirectXTex.h
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/directxtex_x64-windows/include/DirectXTex.inl
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/directxtex_x64-windows/share/directxtex/directxtex-config.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/directxtex_x64-windows/share/directxtex/directxtex-config-version.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/directxtex_x64-windows/lib/pkgconfig/DirectXTex.pc

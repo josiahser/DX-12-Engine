@@ -7,7 +7,7 @@ Uses a *FREE LIST* list of available allocations, linearly searched and allocate
 */
 #include "DescriptorAllocation.h"
 
-#include "DirectX-Headers/include/directx/d3dx12.h"
+#include "d3dx12.h"
 
 #include <cstdint>
 #include <mutex>

@@ -23,12 +23,12 @@ using namespace Microsoft::WRL;
 #include <dxgidebug.h>
 
 using namespace DirectX;
-//
-//#pragma comment(lib, "d3d12")
-//#pragma comment(lib, "dxgi")
-//#pragma comment(lib, "d3dcompiler")
-//#pragma comment(lib, "libcmt")
-// 
+ /*
+#pragma comment(lib, "d3d12")
+#pragma comment(lib, "dxgi")
+#pragma comment(lib, "d3dcompiler")
+#pragma comment(lib, "libcmt")*/
+ 
 // C RunTime Header Files
 //#include <stdlib.h>
 //#include <malloc.h>
@@ -64,12 +64,13 @@ using namespace DirectX;
 namespace fs = std::filesystem;
 
 //Assimp header files
-#include "assimp/Exporter.hpp"
-#include "assimp/Importer.hpp"
-#include "assimp/ProgressHandler.hpp"
-#include "assimp/anim.h"
-#include "assimp/mesh.h"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
+
+#include <assimp/Exporter.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/ProgressHandler.hpp>
+#include <assimp/anim.h>
+#include <assimp/mesh.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 #include "Helpers.h"

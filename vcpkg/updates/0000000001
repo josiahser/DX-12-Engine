@@ -1,6 +1,8 @@
-Package: curl
-Feature: non-http
-Architecture: x64-windows
+Package: spdlog
+Version: 1.13.0
+Depends: fmt, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
 Multi-Arch: same
-Description: Enables protocols beyond HTTP/HTTPS/HTTP2
-Status: install ok half-installed
+Abi: 7cba2a4e90aadc22d1a8e196781963f7cefe1dc4000e0f449982ca055bd3f614
+Description: Very fast, header only, C++ logging library
+Status: purge ok not-installed

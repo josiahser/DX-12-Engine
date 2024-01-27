@@ -9,7 +9,7 @@
 #include "Device.h"
 #include "RootSignature.h"
 
-#include "DirectX-Headers/include/directx/d3dx12.h"
+#include "d3dx12.h"
 
 PanoToCubemapPSO::PanoToCubemapPSO(Device& device)
 {

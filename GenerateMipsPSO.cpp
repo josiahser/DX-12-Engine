@@ -8,7 +8,7 @@
 #include "Helpers.h"
 #include "RootSignature.h"
 
-#include "DirectX-Headers/include/directx/d3dx12.h"
+#include "d3dx12.h"
 
 GenerateMipsPSO::GenerateMipsPSO(Device& device)
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include "DirectX-Headers/include/directx/d3d12.h"
+#include <d3d12.h>
 
 #include <cstdint>
 #include <memory>

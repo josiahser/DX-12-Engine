@@ -6,7 +6,7 @@
 #include "Device.h"
 #include "ResourceStateTracker.h"
 
-#include "DirectX-Headers/include/directx/d3dx12.h"
+#include "d3dx12.h"
 
 StructuredBuffer::StructuredBuffer(Device& device, size_t numElements, size_t elementSize)
 	: Buffer(device, CD3DX12_RESOURCE_DESC::Buffer(numElements * elementSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))

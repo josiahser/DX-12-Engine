@@ -1,9 +1,10 @@
 #pragma once
 
+
 #include "Resource.h"
 #include "TextureUsage.h"
 #include "DescriptorAllocation.h"
-#include "DirectX-Headers/include/directx/d3dx12.h"
+#include "d3dx12.h"
 
 #include <mutex>
 #include <unordered_map>

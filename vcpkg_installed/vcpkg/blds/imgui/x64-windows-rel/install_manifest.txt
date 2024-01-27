@@ -1,0 +1,11 @@
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/lib/imgui.lib
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/include/imgui.h
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/include/imconfig.h
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/include/imgui_internal.h
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/include/imstb_textedit.h
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/include/imstb_rectpack.h
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/include/imstb_truetype.h
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/include/imgui_stdlib.h
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/share/imgui/imgui-config.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/share/imgui/imgui-targets.cmake
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/pkgs/imgui_x64-windows/share/imgui/imgui-targets-release.cmake

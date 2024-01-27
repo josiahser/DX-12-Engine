@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include <comdef.h>
 
-#include "DirectX-Headers/include/directx/d3d12.h"
+#include <d3d12.h>
 
 inline void ThrowIfFailed(HRESULT hr)
 {

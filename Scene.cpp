@@ -19,7 +19,7 @@ public:
 		, m_ProgressCallback(progressCallback)
 	{}
 
-	virtual bool ProgressHandler::Update(float percentage)
+	virtual bool Update(float percentage)
 	{
 		//Invoke the progress callback
 		if (m_ProgressCallback)

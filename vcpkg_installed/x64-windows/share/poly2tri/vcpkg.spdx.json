@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/poly2tri-x64-windows-2020-07-21#3-5a9a7816-aaf2-46cb-a557-647f0bf7bc3a",
-  "name": "poly2tri:x64-windows@2020-07-21#3 bc8a9df60112446651903a92e20fe924f15218c6e878a5128a0d4b5a9cdb67e9",
+  "documentNamespace": "https://spdx.org/spdxdocs/poly2tri-x64-windows-2020-07-21#3-dc880f72-ec9d-4096-b8f6-ee0a68e2e8f4",
+  "name": "poly2tri:x64-windows@2020-07-21#3 9d10cb9ff50fa7894ec18024e56ef6bbd93b279b0b91ac1243fa4c540ca89611",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
+      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
     ],
-    "created": "2024-01-24T01:48:00Z"
+    "created": "2024-01-24T00:53:42Z"
   },
   "relationships": [
     {
@@ -79,7 +79,7 @@
     {
       "name": "poly2tri:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "bc8a9df60112446651903a92e20fe924f15218c6e878a5128a0d4b5a9cdb67e9",
+      "versionInfo": "9d10cb9ff50fa7894ec18024e56ef6bbd93b279b0b91ac1243fa4c540ca89611",
       "downloadLocation": "NONE",
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",

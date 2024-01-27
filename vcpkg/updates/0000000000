@@ -1,10 +1,8 @@
-Package: curl
-Version: 8.5.0
-Port-Version: 1
-Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
-Architecture: x64-windows
+Package: spdlog
+Version: 1.13.0
+Depends: fmt, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
 Multi-Arch: same
-Abi: 6a11d4b5bcf42b38edf8b514e909995f6ee53ed0bdb4ce8dd7f0c1017bc441ee
-Description: A library for transferring data with URLs
-Default-Features: non-http, ssl
-Status: install ok half-installed
+Abi: 7cba2a4e90aadc22d1a8e196781963f7cefe1dc4000e0f449982ca055bd3f614
+Description: Very fast, header only, C++ logging library
+Status: purge ok half-installed

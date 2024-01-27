@@ -1,8 +1,8 @@
-Package: spdlog
-Version: 1.13.0
-Depends: fmt, vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-windows
+Package: directxmath
+Version: 2023-12-31
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static
 Multi-Arch: same
-Abi: a7ee0d5c627d52c1d5c8301cd34490244964578675dfb8c6e3f22f221ecf06b5
-Description: Very fast, header only, C++ logging library
-Status: install ok installed
+Abi: e85c69f35ecd9f3c7ca09815823c5a47d6c478c0cffe86eca04c9fa02d19cca8
+Description: DirectXMath SIMD C++ math library
+Status: purge ok not-installed

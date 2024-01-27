@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/gainput-x64-windows-1.0.0#6-77088526-f91a-4d80-b8e8-f0236044dd2a",
-  "name": "gainput:x64-windows@1.0.0#6 5f388373947fe8fbca09fba8748c69cfbcff114e61a5c4a01333de60670cafbe",
+  "documentNamespace": "https://spdx.org/spdxdocs/gainput-x64-windows-1.0.0#6-fc06d21b-9014-4952-9867-0df109961c22",
+  "name": "gainput:x64-windows@1.0.0#6 a802514933f216cb2d4d8e1b6f71a757234339acce88d05ae2b2a5f3cb50e06b",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
+      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
     ],
-    "created": "2024-01-24T01:52:59Z"
+    "created": "2024-01-25T01:17:32Z"
   },
   "relationships": [
     {
@@ -79,7 +79,7 @@
     {
       "name": "gainput:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "5f388373947fe8fbca09fba8748c69cfbcff114e61a5c4a01333de60670cafbe",
+      "versionInfo": "a802514933f216cb2d4d8e1b6f71a757234339acce88d05ae2b2a5f3cb50e06b",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",

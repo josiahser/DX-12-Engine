@@ -1,0 +1,11 @@
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/CMakeFiles/edit_cache.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/CMakeFiles/rebuild_cache.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/CMakeFiles/list_install_components.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/CMakeFiles/install.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/CMakeFiles/install/local.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/lib/CMakeFiles/gainput.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/lib/CMakeFiles/edit_cache.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/lib/CMakeFiles/rebuild_cache.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/lib/CMakeFiles/list_install_components.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/lib/CMakeFiles/install.dir
+C:/Users/josia/source/repos/DX-12-Engine/vcpkg_installed/vcpkg/blds/gainput/x64-windows-dbg/lib/CMakeFiles/install/local.dir

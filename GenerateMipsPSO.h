@@ -2,7 +2,7 @@
 
 #include "DescriptorAllocation.h"
 
-#include "DirectX-Headers/include/directx/d3d12.h"
+#include <d3d12.h>
 #include <DirectXMath.h>
 #include <wrl.h>
 
