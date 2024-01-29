@@ -11,8 +11,8 @@
 #include "Texture.h"
 
 //Include compiled shaders for ImGui
-#include "ImGUI_VS.h"
 #include "ImGUI_PS.h"
+#include "ImGUI_VS.h"
 #include "ImGUI/imgui_impl_win32.h"
 
 //Root parameters for the ImGui root signature
@@ -36,7 +36,7 @@ GUI::GUI(Device& device, HWND hWnd, const RenderTarget& renderTarget)
 {
 	m_pImGuiCtx = ImGui::CreateContext();
 	ImGui::SetCurrentContext(m_pImGuiCtx);
-	if (!ImGui_ImplWin32_Init(hWnd))
+	if (!ImGui_ImplWin32_Init(m_hWnd))
 	{
 		throw std::exception("Failed to initialize ImGui");
 	}
@@ -101,7 +101,7 @@ GUI::GUI(Device& device, HWND hWnd, const RenderTarget& renderTarget)
 	const D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offsetof(ImDrawVert, pos), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offsetof(ImDrawVert, uv), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-	{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, offsetof(ImDrawVert, col), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+	{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, offsetof(ImDrawVert, col), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
 	//Clang format-on
 

@@ -193,7 +193,7 @@ LightResult DoLighting(float3 P, float3 N)
     return totalResult;
 }
 
-float4 main(PixelShaderInput IN) : SV_TARGET
+float4 main(PixelShaderInput IN) : SV_Target
 {
     LightResult lit = DoLighting(IN.PositionVS.xyz, normalize(IN.NormalVS));
     

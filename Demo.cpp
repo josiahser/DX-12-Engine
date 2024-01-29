@@ -93,8 +93,8 @@ Demo::Demo(const std::wstring& name, int width, int height, bool vSync)
     , m_Yaw(0)
     , m_AnimateLights(false)
     , m_Shift(false)
-    , m_Width(0)
-    , m_Height(0)
+    , m_Width(width)
+    , m_Height(height)
     , m_VSync(vSync)
 {
     m_Window = Application::Get().CreateWindow(name, width, height);
@@ -161,7 +161,10 @@ bool Demo::LoadContent()
     m_Plane = commandList->CreatePlane();
 
     //Load some textures
-    //TODO: Organize and have textures to load
+    m_DefaultTexture = commandList->LoadTextureFromFile(L"Mona_Lisa.jpg", true);
+    m_DirectXTexture = commandList->LoadTextureFromFile(L"Mona_Lisa.jpg", true);
+    m_EarthTexture = commandList->LoadTextureFromFile(L"Mona_Lisa.jpg", true);
+    m_MonaLisaTexture = commandList->LoadTextureFromFile(L"Mona_Lisa.jpg", true);
 
     //Start loading resources
     commandQueue.ExecuteCommandList(commandList);
@@ -577,7 +580,7 @@ void Demo::OnRender()
     //m_Plane->Accept(visitor);
 
     //Draw shapes to visualize the position of the lights in the scene
-    commandList->SetPipelineState(m_PipelineState);
+    //commandList->SetPipelineState(m_PipelineState);
 
     MaterialProperties lightMaterial = Material::Zero;
     //No specular

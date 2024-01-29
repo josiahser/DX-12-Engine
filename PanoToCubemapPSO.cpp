@@ -3,13 +3,12 @@
 #include "PanoToCubemapPSO.h"
 
 //Compiled
-#include "PanoToCubemap_CS.h"
-
-#include "Application.h"
 #include "Device.h"
 #include "RootSignature.h"
 
 #include "d3dx12.h"
+
+#include "PanoToCubemap_CS.h"
 
 PanoToCubemapPSO::PanoToCubemapPSO(Device& device)
 {

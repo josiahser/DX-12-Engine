@@ -111,8 +111,8 @@ void main( ComputeShaderInput IN )
                 float2 UV = TexelSize * (IN.DispatchThreadID.xy + 0.5);
             
                 Src1 = SrcMip.SampleLevel(LinearClampSampler, UV, SrcMipLevel);
-            }
-            break;
+        }
+        break;
         case WIDTH_ODD_HEIGHT_EVEN:
         {
             // > 2:1 in X dimension, use 2 bilinear samples to gurantee we don't undersample when downsizing by more than 2x horizontally
@@ -120,8 +120,8 @@ void main( ComputeShaderInput IN )
             float2 Off = TexelSize * float2(0.5, 0.0);
             
                 Src1 = 0.5 * (SrcMip.SampleLevel(LinearClampSampler, UV1, SrcMipLevel) + SrcMip.SampleLevel(LinearClampSampler, UV1 + Off, SrcMipLevel));
-            }
-            break;
+        }
+        break;
         case WIDTH_EVEN_HEIGHT_ODD:
         {
             // > 2:1 in Y dimension, use 2 bilinear samples to gurantee we don't undersample when downsizing by more than 2x vertically

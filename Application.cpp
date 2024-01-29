@@ -155,7 +155,7 @@ Application::Application(HINSTANCE hInstance)
     wndClass.hIcon = ::LoadIcon(m_hInstance, nullptr);
     wndClass.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
     wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wndClass.lpszMenuName = NULL;
+    wndClass.lpszMenuName = nullptr;
     wndClass.lpszClassName = WINDOW_CLASS_NAME;
     wndClass.hIconSm = ::LoadIcon(m_hInstance, nullptr);
 

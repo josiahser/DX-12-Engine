@@ -304,14 +304,14 @@ void Scene::ImportMesh(CommandList& commandList, const aiMesh& aiMesh)
 		}
 	}
 
-	if (aiMesh.HasTangentsAndBitangents())
+	/*if (aiMesh.HasTangentsAndBitangents())
 	{
 		for (i = 0; i < aiMesh.mNumVertices; ++i)
 		{
 			vertexData[i].Tangent = { aiMesh.mTangents[i].x, aiMesh.mTangents[i].y, aiMesh.mTangents[i].z };
 			vertexData[i].Bitangent = { aiMesh.mBitangents[i].x, aiMesh.mBitangents[i].y, aiMesh.mBitangents[i].z };
 		}
-	}
+	}*/
 
 	if (aiMesh.HasTextureCoords(0))
 	{

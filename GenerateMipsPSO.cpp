@@ -1,14 +1,14 @@
 #include "framework.h"
 
 #include "GenerateMipsPSO.h"
-#include "GenerateMips_CS.h"
 
-#include "Application.h"
 #include "Device.h"
 #include "Helpers.h"
 #include "RootSignature.h"
 
 #include "d3dx12.h"
+
+#include "GenerateMips_CS.h"
 
 GenerateMipsPSO::GenerateMipsPSO(Device& device)
 {
