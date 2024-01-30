@@ -1,0 +1,6 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/kubazip_x64-windows/lib/cmake/kubazip/kubazipConfig.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/kubazip_x64-windows/lib/cmake/kubazip/kubazipConfigVersion.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/kubazip_x64-windows/lib/cmake/kubazip/kubazipTargets.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/kubazip_x64-windows/lib/cmake/kubazip/kubazipTargets-release.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/kubazip_x64-windows/lib/kubazip.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/kubazip_x64-windows/include/kubazip/zip/zip.h

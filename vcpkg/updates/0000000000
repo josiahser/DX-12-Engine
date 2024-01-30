@@ -1,8 +1,9 @@
-Package: spdlog
-Version: 1.13.0
-Depends: fmt, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: imgui
+Version: 1.90
+Port-Version: 3
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: 7cba2a4e90aadc22d1a8e196781963f7cefe1dc4000e0f449982ca055bd3f614
-Description: Very fast, header only, C++ logging library
+Abi: c2fb44cb6818cd447bf4b22bc75e80d46f97701bb67b92f10844fbc18429b263
+Description: Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 Status: purge ok half-installed

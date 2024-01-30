@@ -18,6 +18,7 @@ class Device;
 class SceneNode;
 class Mesh;
 class Material;
+class Visitor;
 
 class Scene
 {
@@ -37,6 +38,8 @@ public:
 
 	//Get the AABB of the scene. This returns the AABB of the root node of the scene
 	DirectX::BoundingBox GetAABB() const;
+
+	virtual void Accept(Visitor& visitor);
 
 protected:
 	friend class CommandList;

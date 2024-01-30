@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/directxtex-x64-windows-2023-12-31-848b4f02-74d4-4e0b-b5b4-4a0b9d83cc23",
-  "name": "directxtex:x64-windows@2023-12-31 8dfa6800eb125a5a5cf17fb1e8b0866de677a2b288fd405eb50eb8dd041a355a",
+  "documentNamespace": "https://spdx.org/spdxdocs/directxtex-x64-windows-2023-12-31-f225d987-05e0-42b4-a78d-ae54ea33b026",
+  "name": "directxtex:x64-windows@2023-12-31 c9cccf90d99eaf27656dbc509f5d043e2ff58d1243d63aa01ca1b9621bf602c1",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
+      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-25T01:16:50Z"
+    "created": "2024-01-25T21:45:09Z"
   },
   "relationships": [
     {
@@ -69,7 +69,7 @@
     {
       "name": "directxtex:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "8dfa6800eb125a5a5cf17fb1e8b0866de677a2b288fd405eb50eb8dd041a355a",
+      "versionInfo": "c9cccf90d99eaf27656dbc509f5d043e2ff58d1243d63aa01ca1b9621bf602c1",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -108,7 +108,7 @@
   ],
   "files": [
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/badb59a9a275010d4edfa78e2f63d35a91341126/portfile.cmake",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/badb59a9a275010d4edfa78e2f63d35a91341126/portfile.cmake",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -120,7 +120,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/badb59a9a275010d4edfa78e2f63d35a91341126/usage",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/badb59a9a275010d4edfa78e2f63d35a91341126/usage",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -132,7 +132,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/badb59a9a275010d4edfa78e2f63d35a91341126/vcpkg.json",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/badb59a9a275010d4edfa78e2f63d35a91341126/vcpkg.json",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {

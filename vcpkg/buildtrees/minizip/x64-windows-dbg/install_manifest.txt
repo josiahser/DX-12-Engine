@@ -1,0 +1,7 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/debug/lib/minizip.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/debug/bin/minizip.dll
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/debug/share/unofficial-minizip/unofficial-minizipConfig.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/debug/share/unofficial-minizip/unofficial-minizipConfigVersion.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/debug/share/unofficial-minizip/unofficial-minizipTargets.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/debug/share/unofficial-minizip/unofficial-minizipTargets-debug.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/debug/lib/pkgconfig/minizip.pc

@@ -1,9 +1,9 @@
-Package: directxtk12
-Version: 2023-12-31
-Depends: directx-dxc:x64-windows, directx-headers, directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: gainput
+Version: 1.0.0
+Port-Version: 6
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: 600076045796a05c661ca1e98fa472c2c55c5ea148f49ba86aea9411a99eac91
-Description: A collection of helper classes for writing DirectX 12 code in C++.
-Default-Features: xaudio2-9
+Abi: a802514933f216cb2d4d8e1b6f71a757234339acce88d05ae2b2a5f3cb50e06b
+Description: Gainput is a multiplatform C++ input library, supporting mouse, keyboard and controllers
 Status: purge ok half-installed

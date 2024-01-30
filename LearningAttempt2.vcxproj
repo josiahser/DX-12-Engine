@@ -77,7 +77,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\include;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\debug\lib;C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.UniversalCRT.Debug\10.0.19041.0\Redist\Debug\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.38.33130\debug_nonredist\x64;$(LibraryPath)</LibraryPath>
     <ExcludePath />
   </PropertyGroup>
@@ -153,8 +153,8 @@
       </EntryPointSymbol>
       <ShowProgress>LinkVerbose</ShowProgress>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.22621.0;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\atlmfc\lib\x64;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\debug\lib;$(UniversalCRT_LibraryPath_x64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>dxgi.lib;dxguid.lib;d3d12.lib;d3dcompiler.lib;assimp-vc143-mtd.lib;DirectX-Guids.lib;DirectX-Headers.lib;DirectXTex.lib;libcurl-d.lib;spdlogd.lib;zlibd.lib;gainput-d.lib;dxcompiler.lib;DirectXTK12.lib;draco.lib;fmtd.lib;kubazip.lib;minizip.lib;poly2tri.lib;polyclipping.lib;pugixml.lib;imguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\atlmfc\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\lib\x64;C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\debug\lib;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.22621.0;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\atlmfc\lib\x64;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\debug\lib;$(UniversalCRT_LibraryPath_x64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>dxcompiler.lib;dxgi.lib;dxguid.lib;d3d12.lib;d3dcompiler.lib;assimp-vc143-mtd.lib;DirectX-Guids.lib;DirectX-Headers.lib;DirectXTex.lib;libcurl-d.lib;spdlogd.lib;zlibd.lib;gainput-d.lib;DirectXTK12.lib;draco.lib;fmtd.lib;kubazip.lib;minizip.lib;poly2tri.lib;polyclipping.lib;pugixml.lib;imguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest />
     <FxCompile>
@@ -191,6 +191,7 @@
     <ClInclude Include="Adapter.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="ApplicationHeaders.h" />
+    <ClInclude Include="bitmask_operators.hpp" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="ByteAddressBuffer.h" />
     <ClInclude Include="Camera.h" />
@@ -228,12 +229,15 @@
     <ClInclude Include="optional.hpp" />
     <ClInclude Include="PanoToCubemapPSO.h" />
     <ClInclude Include="PipelineStateObject.h" />
+    <ClInclude Include="ReadDirectoryChanges.h" />
+    <ClInclude Include="ReadDirectoryChangesPrivate.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceStateTracker.h" />
     <ClInclude Include="RootSignature.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneNode.h" />
+    <ClInclude Include="SceneVisitor.h" />
     <ClInclude Include="ShaderResourceView.h" />
     <ClInclude Include="signals.hpp" />
     <ClInclude Include="StructuredBuffer.h" />
@@ -245,6 +249,7 @@
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexTypes.h" />
+    <ClInclude Include="Visitor.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -280,12 +285,15 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PanoToCubemapPSO.cpp" />
     <ClCompile Include="PipelineStateObject.cpp" />
+    <ClCompile Include="ReadDirectoryChanges.cpp" />
+    <ClCompile Include="ReadDirectoryChangesPrivate.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceStateTracker.cpp" />
     <ClCompile Include="RootSignature.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="SceneVisitor.cpp" />
     <ClCompile Include="ShaderResourceView.cpp" />
     <ClCompile Include="StructuredBuffer.cpp" />
     <ClCompile Include="SwapChain.cpp" />

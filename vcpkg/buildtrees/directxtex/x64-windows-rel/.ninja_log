@@ -1,0 +1,26 @@
+# ninja log v5
+5	33547	7278407559369800	Shaders/Compiled/BC6HEncode_EncodeBlockCS.inc	1a9b63de79a93103
+5	33547	7278407559369800	C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/directxtex/x64-windows-rel/Shaders/Compiled/BC6HEncode_EncodeBlockCS.inc	1a9b63de79a93103
+33547	34899	7278407632499736	CMakeFiles/DirectXTex.dir/cmake_pch.cxx.obj	7dc08c30cd9afcad
+34960	36358	7278407646019729	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexDDS.cpp.obj	a2f100d54625bcc6
+34936	36473	7278407641049731	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexCompress.cpp.obj	89208b7a48943a5e
+35032	37030	7278407653179723	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexPMAlpha.cpp.obj	8cef48b72fdba162
+34911	37112	7278407654089741	CMakeFiles/DirectXTex.dir/DirectXTex/BC4BC5.cpp.obj	d2e9c46b33eb1dff
+34984	37196	7278407638829735	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexImage.cpp.obj	b71911a0a54624f3
+35020	37197	7278407640159729	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexNormalMaps.cpp.obj	99df905c359426b2
+34900	37373	7278407648499724	CMakeFiles/DirectXTex.dir/DirectXTex/BC.cpp.obj	611c1d3a2086af21
+34972	37373	7278407656949718	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexHDR.cpp.obj	73ac36682eda6d28
+35008	37531	7278407650899719	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexMisc.cpp.obj	8407009e6ac1d101
+35093	37537	7278407652789742	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexWIC.cpp.obj	2245ffe01ffac3e5
+35081	37602	7278407658829717	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexFlipRotate.cpp.obj	e8ae438592bdba18
+35044	37617	7278407645479723	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexResize.cpp.obj	cd3b2817e83b2e67
+35128	37630	7278407659059715	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexD3D11.cpp.obj	5534998972aa4519
+35116	37638	7278407643759730	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexCompressGPU.cpp.obj	2bf410652007cb3f
+35069	37736	7278407647729745	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexUtil.cpp.obj	63659eec7dcb490b
+35057	37831	7278407655999718	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexTGA.cpp.obj	60e30ece8b4c7907
+34995	37843	7278407655969714	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexMipmaps.cpp.obj	7714cb66f756fd77
+35104	37843	7278407655609713	CMakeFiles/DirectXTex.dir/DirectXTex/BCDirectCompute.cpp.obj	a9e9bcbd5be45200
+34924	38077	7278407664269707	CMakeFiles/DirectXTex.dir/DirectXTex/BC6HBC7.cpp.obj	db40d19a5f061b89
+34948	39009	7278407673549699	CMakeFiles/DirectXTex.dir/DirectXTex/DirectXTexConvert.cpp.obj	20892f3084acf9fe
+39009	39111	7278407674639700	bin/CMake/DirectXTex.lib	484a355fb9ce410
+39112	39268	0	CMakeFiles/install.util	2139bd37d0b9659a

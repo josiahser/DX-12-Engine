@@ -1,0 +1,14 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/share/directxmath/DirectXMath-targets.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXCollision.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXCollision.inl
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXColors.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXMath.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXMathConvert.inl
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXMathMatrix.inl
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXMathMisc.inl
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXMathVector.inl
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXPackedVector.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/include/directxmath/DirectXPackedVector.inl
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/share/directxmath/directxmath-config.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/share/directxmath/directxmath-config-version.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxmath_x64-windows/debug/lib/pkgconfig/DirectXMath.pc

@@ -1,8 +1,9 @@
-Package: zlib
-Version: 1.3
-Depends: vcpkg-cmake:x64-windows
-Architecture: x64-windows-static
+Package: directxtex
+Version: 2023-12-31
+Depends: directxmath, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: 8ae21a40677ad33df05f1572b0491f963284ac9525e8e1afbebdcce45205e14a
-Description: A compression library
-Status: purge ok half-installed
+Abi: 8dfa6800eb125a5a5cf17fb1e8b0866de677a2b288fd405eb50eb8dd041a355a
+Description: DirectXTex texture processing library
+Default-Features: dx11
+Status: purge ok not-installed

@@ -1,0 +1,8 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxtex_x64-windows/lib/DirectXTex.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxtex_x64-windows/share/directxtex/DirectXTex-targets.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxtex_x64-windows/share/directxtex/DirectXTex-targets-release.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxtex_x64-windows/include/DirectXTex.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxtex_x64-windows/include/DirectXTex.inl
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxtex_x64-windows/share/directxtex/directxtex-config.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxtex_x64-windows/share/directxtex/directxtex-config-version.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/directxtex_x64-windows/lib/pkgconfig/DirectXTex.pc

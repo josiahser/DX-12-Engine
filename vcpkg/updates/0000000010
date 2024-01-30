@@ -1,9 +1,6 @@
-Package: directxtex
-Version: 2023-12-31
-Depends: directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: curl
+Feature: ssl
+Architecture: x64-windows
 Multi-Arch: same
-Abi: f42bf6358200017158e6a1ad0dd8e6539573e2466e18c22a0b4bfe94cab59403
-Description: DirectXTex texture processing library
-Default-Features: dx11
+Description: Default SSL backend
 Status: purge ok half-installed

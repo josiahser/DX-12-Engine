@@ -8,9 +8,9 @@
 
 //#include "Application.h"
 #include "ByteAddressBuffer.h"
+#include "CommandQueue.h"
 #include "ConstantBuffer.h"
 #include "ConstantBufferView.h"
-#include "CommandQueue.h"
 #include "Device.h"
 #include "DynamicDescriptorHeap.h"
 #include "GenerateMipsPSO.h"

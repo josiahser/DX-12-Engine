@@ -1,6 +1,9 @@
-Package: directxtk12
-Feature: xaudio2-9
-Architecture: x64-windows-static
+Package: gainput
+Version: 1.0.0
+Port-Version: 6
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Description: Build with XAudio 2.9 support for Windows 10/11
-Status: purge ok half-installed
+Abi: a802514933f216cb2d4d8e1b6f71a757234339acce88d05ae2b2a5f3cb50e06b
+Description: Gainput is a multiplatform C++ input library, supporting mouse, keyboard and controllers
+Status: purge ok not-installed

@@ -1,8 +1,8 @@
-Package: stb
-Version: 2023-04-11
-Port-Version: 1
-Architecture: x64-windows-static
+Package: directx-dxc
+Version: 2023-08-14
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: d755d905ed7b6b9199bad4c03dce3898d847ae9dc6d15fd008b93832e46e9e68
-Description: public domain header-only libraries
+Abi: 7c0877ba5f721a6034244f49dc7b52b4018d0503e9e18203e5f0f229c114e34d
+Description: DirectX Shader Compiler (LLVM/Clang)
 Status: purge ok not-installed

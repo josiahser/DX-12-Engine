@@ -1,0 +1,8 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/spdlog/x64-windows-dbg/CMakeFiles/spdlog.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/spdlog/x64-windows-dbg/CMakeFiles/package.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/spdlog/x64-windows-dbg/CMakeFiles/package_source.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/spdlog/x64-windows-dbg/CMakeFiles/edit_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/spdlog/x64-windows-dbg/CMakeFiles/rebuild_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/spdlog/x64-windows-dbg/CMakeFiles/list_install_components.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/spdlog/x64-windows-dbg/CMakeFiles/install.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/spdlog/x64-windows-dbg/CMakeFiles/install/local.dir

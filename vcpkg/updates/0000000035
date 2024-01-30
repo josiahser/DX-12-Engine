@@ -1,8 +1,9 @@
-Package: kubazip
-Version: 0.2.6
-Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: rapidjson
+Version: 2023-07-17
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: 1d7818ddc54d56e6c454172262b65d1f375959f832e700bbfd607f905be74fcb
-Description: A portable, simple zip library written in C
+Abi: a44e0b5a97382d5dd079c46eb893885ea7899309a6c68b2f72910e8425d16ce6
+Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
 Status: purge ok not-installed

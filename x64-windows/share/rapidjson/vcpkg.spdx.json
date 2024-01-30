@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/rapidjson-x64-windows-2023-07-17#1-1929af36-37bc-4dfb-a6d8-2445af419fb8",
-  "name": "rapidjson:x64-windows@2023-07-17#1 a44e0b5a97382d5dd079c46eb893885ea7899309a6c68b2f72910e8425d16ce6",
+  "documentNamespace": "https://spdx.org/spdxdocs/rapidjson-x64-windows-2023-07-17#1-bb87aa21-5d9a-4d47-abde-7a649fc84927",
+  "name": "rapidjson:x64-windows@2023-07-17#1 acaf6010d8ee15454f2cb8201f40b82728ab36667b0d4ae6943eb1459dc11f2b",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
+      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-25T01:12:36Z"
+    "created": "2024-01-25T21:32:31Z"
   },
   "relationships": [
     {
@@ -59,7 +59,7 @@
     {
       "name": "rapidjson:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "a44e0b5a97382d5dd079c46eb893885ea7899309a6c68b2f72910e8425d16ce6",
+      "versionInfo": "acaf6010d8ee15454f2cb8201f40b82728ab36667b0d4ae6943eb1459dc11f2b",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -83,7 +83,7 @@
   ],
   "files": [
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/a3dfe7dca3a1a27564b1fc5a9aea657cd9dae01c/portfile.cmake",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/a3dfe7dca3a1a27564b1fc5a9aea657cd9dae01c/portfile.cmake",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -95,7 +95,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/a3dfe7dca3a1a27564b1fc5a9aea657cd9dae01c/vcpkg.json",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/a3dfe7dca3a1a27564b1fc5a9aea657cd9dae01c/vcpkg.json",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {

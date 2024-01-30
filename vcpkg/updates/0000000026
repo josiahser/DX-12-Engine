@@ -1,6 +1,7 @@
-Package: curl
-Feature: sspi
-Architecture: x64-windows-static
+Package: vcpkg-cmake-get-vars
+Version: 2023-12-31
+Depends: vcpkg-cmake
+Architecture: x64-windows
 Multi-Arch: same
-Description: SSPI support
-Status: purge ok not-installed
+Abi: fd6759fb9559799b6b85cf278cdbfa81097a9bf2d4de004eb75c00e4e47bec9a
+Status: purge ok half-installed

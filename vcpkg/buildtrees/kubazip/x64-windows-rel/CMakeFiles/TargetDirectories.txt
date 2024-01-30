@@ -1,0 +1,7 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/kubazip/x64-windows-rel/CMakeFiles/kubazip.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/kubazip/x64-windows-rel/CMakeFiles/uninstall.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/kubazip/x64-windows-rel/CMakeFiles/edit_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/kubazip/x64-windows-rel/CMakeFiles/rebuild_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/kubazip/x64-windows-rel/CMakeFiles/list_install_components.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/kubazip/x64-windows-rel/CMakeFiles/install.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/kubazip/x64-windows-rel/CMakeFiles/install/local.dir

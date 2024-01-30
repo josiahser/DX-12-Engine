@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/minizip-x64-windows-1.3#1-2b7b2f95-a649-48c2-8375-9f4d62276220",
-  "name": "minizip:x64-windows@1.3#1 97f076cf8cf32fbc670c61a0a16550a251b9605c9576e47ff5949eff19bf4b47",
+  "documentNamespace": "https://spdx.org/spdxdocs/minizip-x64-windows-1.3#1-3e5ac7ca-88dd-4058-bf8e-8ea4a3dc36ae",
+  "name": "minizip:x64-windows@1.3#1 b32bbe777bd1151d3d951ecf1aaf01a7349d48b7ae5ab36d032b2b9e05390f15",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
+      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-25T01:12:39Z"
+    "created": "2024-01-25T21:33:06Z"
   },
   "relationships": [
     {
@@ -159,7 +159,7 @@
     {
       "name": "minizip:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "97f076cf8cf32fbc670c61a0a16550a251b9605c9576e47ff5949eff19bf4b47",
+      "versionInfo": "b32bbe777bd1151d3d951ecf1aaf01a7349d48b7ae5ab36d032b2b9e05390f15",
       "downloadLocation": "NONE",
       "licenseConcluded": "Zlib",
       "licenseDeclared": "NOASSERTION",
@@ -183,7 +183,7 @@
   ],
   "files": [
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/0001-remove-ifndef-NOUNCRYPT.patch",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/0001-remove-ifndef-NOUNCRYPT.patch",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -195,7 +195,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/0002-add-declaration-for-mkdir.patch",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/0002-add-declaration-for-mkdir.patch",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -207,7 +207,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/android-fileapi.patch",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/android-fileapi.patch",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -219,7 +219,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/CMakeLists.txt",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/CMakeLists.txt",
       "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
@@ -231,7 +231,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/lib-to-def.cmake",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/lib-to-def.cmake",
       "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {
@@ -243,7 +243,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/minizip-win32.def",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/minizip-win32.def",
       "SPDXID": "SPDXRef-file-5",
       "checksums": [
         {
@@ -255,7 +255,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/minizipConfig.cmake.in",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/minizipConfig.cmake.in",
       "SPDXID": "SPDXRef-file-6",
       "checksums": [
         {
@@ -267,7 +267,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/pkgconfig.patch",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/pkgconfig.patch",
       "SPDXID": "SPDXRef-file-7",
       "checksums": [
         {
@@ -279,7 +279,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/portfile.cmake",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/portfile.cmake",
       "SPDXID": "SPDXRef-file-8",
       "checksums": [
         {
@@ -291,7 +291,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/unofficial-minizipConfig.cmake.in",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/unofficial-minizipConfig.cmake.in",
       "SPDXID": "SPDXRef-file-9",
       "checksums": [
         {
@@ -303,7 +303,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/usage",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/usage",
       "SPDXID": "SPDXRef-file-10",
       "checksums": [
         {
@@ -315,7 +315,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/vcpkg.json",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/91fe1aaa8a5d696bda657a3d2b687fecfa92a7c3/vcpkg.json",
       "SPDXID": "SPDXRef-file-11",
       "checksums": [
         {

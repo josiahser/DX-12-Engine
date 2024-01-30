@@ -1,8 +1,9 @@
-Package: pugixml
-Version: 1.14
-Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: directxtk12
+Version: 2023-12-31
+Depends: directx-dxc, directx-headers, directxmath, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: 73bc6087108f347d5d453e290b872aec6134065a13028a75287157caba1461fd
-Description: Light-weight, simple and fast XML parser for C++ with XPath support
+Abi: 366dd69d6ee6ed7df02955b173b0e1111dec95d023f53777e1dc7d9f8bb856d2
+Description: A collection of helper classes for writing DirectX 12 code in C++.
+Default-Features: xaudio2-9
 Status: purge ok half-installed

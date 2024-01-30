@@ -3,5 +3,5 @@ Version: 2023-12-31
 Depends: vcpkg-cmake
 Architecture: x64-windows
 Multi-Arch: same
-Abi: fd6759fb9559799b6b85cf278cdbfa81097a9bf2d4de004eb75c00e4e47bec9a
+Abi: 76ee48305385e9675f98afa0b44be9fbb4631e29af6ba11522f45850e6245cda
 Status: install ok half-installed

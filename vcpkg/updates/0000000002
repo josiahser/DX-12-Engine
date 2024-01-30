@@ -1,8 +1,8 @@
-Package: fmt
-Version: 10.2.1
-Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: spdlog
+Version: 1.13.0
+Depends: fmt, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: b77b608c56b2aa59e5a3d5d4db727d8e1fa77a17164166618a8d9ce88c15910f
-Description: Formatting library for C++. It can be used as a safe alternative to printf or as a fast alternative to IOStreams.
+Abi: 07a00aa1259155edadd91519170dda47bbcb31c0032b8945acbd5e87cf86d16e
+Description: Very fast, header only, C++ logging library
 Status: purge ok half-installed

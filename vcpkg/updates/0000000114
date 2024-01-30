@@ -4,6 +4,6 @@ Port-Version: 3
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-windows
 Multi-Arch: same
-Abi: c2fb44cb6818cd447bf4b22bc75e80d46f97701bb67b92f10844fbc18429b263
+Abi: 6895a16e4c5592e78adb2f865a2b2cb6d10ff6194365eea40702acd9716ee619
 Description: Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 Status: install ok half-installed

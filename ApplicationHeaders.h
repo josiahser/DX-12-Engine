@@ -33,3 +33,11 @@ namespace fs = std::filesystem;
 using scoped_lock = std::lock_guard<std::mutex>;
 
 //Gainput goes here
+#include <gainput/gainput.h>
+
+//spdlog
+#include <spdlog/async.h>
+#include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>

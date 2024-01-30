@@ -1,8 +1,9 @@
-Package: utfcpp
-Version: 4.0.5
-Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: directxtex
+Version: 2023-12-31
+Depends: directxmath, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: e06f56eee67a3386e49256b29465c4830121c528b9ede2dd73325db33b75b417
-Description: UTF-8 with C++ in a Portable Way
+Abi: 8dfa6800eb125a5a5cf17fb1e8b0866de677a2b288fd405eb50eb8dd041a355a
+Description: DirectXTex texture processing library
+Default-Features: dx11
 Status: purge ok half-installed

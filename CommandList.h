@@ -1,6 +1,5 @@
 #pragma once
 
-#include "TextureUsage.h"
 #include "VertexTypes.h"
 #include <DirectXMath.h>
 
@@ -86,7 +85,7 @@ public:
     void CopyResource(Microsoft::WRL::ComPtr<ID3D12Resource> dstRes, Microsoft::WRL::ComPtr<ID3D12Resource> srcRes);
 
     //Resolve a multisampled resource into a non-multisampled resource
-    void ResolveSubResource(const std::shared_ptr<Resource>& dstRes, const std::shared_ptr<Resource>& srcRes, uint32_t dstSubresource = 0, uint32_t srcSubresource = 0);
+    void ResolveSubResource(const std::shared_ptr<Resource>&, const std::shared_ptr<Resource>&, uint32_t dstSubresource = 0, uint32_t srcSubresource = 0);
 
     //Copy the contents to a vertex buffer in GPU memory
     std::shared_ptr<VertexBuffer> CopyVertexBuffer(size_t numVertices, size_t vertexStride, const void* vertexBufferData);
@@ -370,7 +369,7 @@ private:
     //Helper function for flipping winding of geometric primitives for LH vs RH coords
     inline void ReverseWinding(IndexCollection& indices, VertexCollection& vertices);
     //Helper function for inverting normals for "inside" vs "outside" viewing
-    inline void InvertNormals(VertexCollection& vertices);
+    inline void CommandList::InvertNormals(VertexCollection& vertices);
     //Helper function to compute a point on a unit circle aligned to the x,z plane and centered at the origin
     inline DirectX::XMVECTOR GetCircleVector(size_t i, size_t tessellation) noexcept;
     //Helper function to compute a tangent vector at a point on a unit sphere aligned to the x,z plane

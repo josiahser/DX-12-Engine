@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/draco-x64-windows-1.5.6#1-86b380ff-1104-4287-8866-14754fda3985",
-  "name": "draco:x64-windows@1.5.6#1 90acd8fff5f5af0ba2f04bf17b369b764e3b9b430d4f5c4817fcabec8abe8ffa",
+  "documentNamespace": "https://spdx.org/spdxdocs/draco-x64-windows-1.5.6#1-a1e5b00e-8aed-463b-8c3c-617fb429199b",
+  "name": "draco:x64-windows@1.5.6#1 f9a49d58e3a864676eee6fe6f802bdbd1dd9373f3ecb81406baaf518b7822c6c",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
+      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-25T01:13:26Z"
+    "created": "2024-01-25T21:36:57Z"
   },
   "relationships": [
     {
@@ -109,7 +109,7 @@
     {
       "name": "draco:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "90acd8fff5f5af0ba2f04bf17b369b764e3b9b430d4f5c4817fcabec8abe8ffa",
+      "versionInfo": "f9a49d58e3a864676eee6fe6f802bdbd1dd9373f3ecb81406baaf518b7822c6c",
       "downloadLocation": "NONE",
       "licenseConcluded": "Apache-2.0",
       "licenseDeclared": "NOASSERTION",
@@ -133,7 +133,7 @@
   ],
   "files": [
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/disable-symlinks.patch",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/disable-symlinks.patch",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -145,7 +145,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/fix-compile-error-uwp.patch",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/fix-compile-error-uwp.patch",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -157,7 +157,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/fix-pkgconfig.patch",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/fix-pkgconfig.patch",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -169,7 +169,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/fix-uwperror.patch",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/fix-uwperror.patch",
       "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
@@ -181,7 +181,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/install-linkage.diff",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/install-linkage.diff",
       "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {
@@ -193,7 +193,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/portfile.cmake",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/portfile.cmake",
       "SPDXID": "SPDXRef-file-5",
       "checksums": [
         {
@@ -205,7 +205,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/vcpkg.json",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/7766920ec32ef9da00121a0668edf41bf9d1d76b/vcpkg.json",
       "SPDXID": "SPDXRef-file-6",
       "checksums": [
         {

@@ -9,6 +9,8 @@
 
 class Mesh;
 class CommandList;
+class Visitor;
+
 class SceneNode : public std::enable_shared_from_this<SceneNode>
 {
 public:
@@ -49,6 +51,8 @@ public:
 
 	//Get the AABB for this scene node, formed from the combination of all mesh AABB's
 	const DirectX::BoundingBox& GetAABB() const;
+
+	void Accept(Visitor& visitor);
 
 protected:
 	DirectX::XMMATRIX GetParentWorldTransform() const;

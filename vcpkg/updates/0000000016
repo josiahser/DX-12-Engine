@@ -1,8 +1,6 @@
-Package: directx-headers
-Version: 1.611.0
-Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: curl
+Feature: schannel
+Architecture: x64-windows
 Multi-Arch: same
-Abi: f9ac276b215eb7682b46aa9492d4a78326818b3c519bd6ca6b911d429ef340a0
-Description: Official DirectX 12 Headers
-Status: purge ok half-installed
+Description: SSL support (Secure Channel)
+Status: purge ok not-installed

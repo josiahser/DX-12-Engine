@@ -1,0 +1,13 @@
+prefix=C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/debug
+exec_prefix=C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/debug
+libdir=C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/debug/lib
+sharedlibdir=C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/debug/lib
+includedir=C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/debug/include/polyclipping
+
+Name: polyclipping
+Description: polygon clipping library
+Version: 
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lpolyclipping
+Cflags: -I${includedir}

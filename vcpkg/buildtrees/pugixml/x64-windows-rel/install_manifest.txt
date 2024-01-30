@@ -1,0 +1,9 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/lib/pugixml.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/bin/pugixml.dll
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/lib/cmake/pugixml/pugixml-targets.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/lib/cmake/pugixml/pugixml-targets-release.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/lib/cmake/pugixml/pugixml-config-version.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/lib/cmake/pugixml/pugixml-config.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/lib/pkgconfig/pugixml.pc
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/include/pugiconfig.hpp
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/pugixml_x64-windows/include/pugixml.hpp

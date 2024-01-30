@@ -1,9 +1,9 @@
-Package: assimp
-Version: 5.3.1
-Port-Version: 3
-Depends: draco, kubazip, minizip, poly2tri, polyclipping, pugixml, rapidjson, stb, utfcpp, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
-Architecture: x64-windows-static
+Package: polyclipping
+Version: 6.4.2
+Port-Version: 12
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: bbed6dd9617edff9f36cb1d601d15c1d934d4bd9ab478860507e4487f21071ca
-Description: The Open Asset import library
+Abi: 7813dcc97281adb16fb108ef7772bb15b20d253545da6dcd194562abd8e10c2b
+Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
 Status: purge ok half-installed

@@ -1,0 +1,6 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/include/polyclipping/clipper.hpp
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/lib/polyclipping.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/share/pkgconfig/polyclipping.pc
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/lib/polyclipping.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/share/polyclipping/polyclippingConfig.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/polyclipping_x64-windows/share/polyclipping/polyclippingConfig-release.cmake

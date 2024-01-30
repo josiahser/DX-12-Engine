@@ -1,8 +1,6 @@
-Package: directxmath
-Version: 2023-12-31
-Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: curl
+Feature: ssl
+Architecture: x64-windows
 Multi-Arch: same
-Abi: e85c69f35ecd9f3c7ca09815823c5a47d6c478c0cffe86eca04c9fa02d19cca8
-Description: DirectXMath SIMD C++ math library
+Description: Default SSL backend
 Status: purge ok not-installed

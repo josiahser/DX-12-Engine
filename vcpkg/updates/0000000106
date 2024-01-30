@@ -3,7 +3,7 @@ Version: 2023-12-31
 Depends: directxmath, vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 8dfa6800eb125a5a5cf17fb1e8b0866de677a2b288fd405eb50eb8dd041a355a
+Abi: c9cccf90d99eaf27656dbc509f5d043e2ff58d1243d63aa01ca1b9621bf602c1
 Description: DirectXTex texture processing library
 Default-Features: dx11
 Status: install ok installed

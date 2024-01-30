@@ -1,0 +1,13 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/CMakeFiles/uninstall.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/CMakeFiles/UpdateAssimpLibsDebugSymbolsAndDLLs.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/CMakeFiles/edit_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/CMakeFiles/rebuild_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/CMakeFiles/list_install_components.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/CMakeFiles/install.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/CMakeFiles/install/local.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/code/CMakeFiles/assimp.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/code/CMakeFiles/edit_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/code/CMakeFiles/rebuild_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/code/CMakeFiles/list_install_components.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/code/CMakeFiles/install.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/assimp/x64-windows-dbg/code/CMakeFiles/install/local.dir

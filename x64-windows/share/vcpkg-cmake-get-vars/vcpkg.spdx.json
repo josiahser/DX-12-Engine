@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/vcpkg-cmake-get-vars-x64-windows-2023-12-31-a1c7e19d-c7bf-460c-b0fb-034d73b8ecc4",
-  "name": "vcpkg-cmake-get-vars:x64-windows@2023-12-31 fd6759fb9559799b6b85cf278cdbfa81097a9bf2d4de004eb75c00e4e47bec9a",
+  "documentNamespace": "https://spdx.org/spdxdocs/vcpkg-cmake-get-vars-x64-windows-2023-12-31-d252c142-6529-4cdb-a370-b1b29376dc10",
+  "name": "vcpkg-cmake-get-vars:x64-windows@2023-12-31 76ee48305385e9675f98afa0b44be9fbb4631e29af6ba11522f45850e6245cda",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-ac02a9f660977426b8ec6392919fbb1d51b10998"
+      "Tool: vcpkg-710a3116bbd615864eef5f9010af178034cb9b44"
     ],
-    "created": "2024-01-25T01:12:36Z"
+    "created": "2024-01-25T21:33:00Z"
   },
   "relationships": [
     {
@@ -87,7 +87,7 @@
     {
       "name": "vcpkg-cmake-get-vars:x64-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "fd6759fb9559799b6b85cf278cdbfa81097a9bf2d4de004eb75c00e4e47bec9a",
+      "versionInfo": "76ee48305385e9675f98afa0b44be9fbb4631e29af6ba11522f45850e6245cda",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -97,7 +97,7 @@
   ],
   "files": [
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/cmake_get_vars/CMakeLists.txt",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/cmake_get_vars/CMakeLists.txt",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -109,7 +109,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/portfile.cmake",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/portfile.cmake",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -121,7 +121,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg-port-config.cmake",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg-port-config.cmake",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -133,7 +133,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg.json",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg.json",
       "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
@@ -145,7 +145,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./C:/Users/josia/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg_cmake_get_vars.cmake",
+      "fileName": "./C:/Users/jo_serravalle/AppData/Local/vcpkg/registries/git-trees/725c841810ceb8de33da68ea879eb8f0b4d6c94c/vcpkg_cmake_get_vars.cmake",
       "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {

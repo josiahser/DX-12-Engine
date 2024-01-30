@@ -60,82 +60,90 @@ struct MakeWindow : public Window
 };
 
 //Create a console window (consoles are not automatically created for Windows subsystem)
-//static void CreateConsole()
-//{
-//    //Allocate a console
-//    if (AllocConsole())
-//    {
-//        HANDLE lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-//
-//        //Increase screen buffer to allow more lines of text than the default
-//        CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
-//        GetConsoleScreenBufferInfo(lStdHandle, &consoleInfo);
-//        consoleInfo.dwSize.Y = MAX_CONSOLE_LINES;
-//        SetConsoleScreenBufferSize(lStdHandle, consoleInfo.dwSize);
-//        SetConsoleCursorPosition(lStdHandle, { 0, 0 });
-//
-//        //Redirect unbuffered STDOUT to the console
-//        int hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
-//        FILE* fp = _fdopen(hConHandle, "w");
-//        freopen_s(&fp, "CONOUT$", "w", stdout);
-//        setvbuf(stdout, nullptr, _IONBF, 0);
-//
-//        //Redirect unbuffered STDIN to the console
-//        lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
-//        hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
-//        fp = _fdopen(hConHandle, "w");
-//        freopen_s(&fp, "CONOUT", "w", stderr);
-//        setvbuf(stderr, nullptr, _IONBF, 0);
-//
-//        //Clear the error state for each of the C++ standard stream objects
-//        std::wcout.clear();
-//        std::cout.clear();
-//        std::wcerr.clear();
-//        std::cerr.clear();
-//        std::wcin.clear();
-//        std::cin.clear();
-//    }
-//}
+static void CreateConsole()
+{
+    //Allocate a console
+    if (AllocConsole())
+    {
+        HANDLE lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+        //Increase screen buffer to allow more lines of text than the default
+        CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+        GetConsoleScreenBufferInfo(lStdHandle, &consoleInfo);
+        consoleInfo.dwSize.Y = MAX_CONSOLE_LINES;
+        SetConsoleScreenBufferSize(lStdHandle, consoleInfo.dwSize);
+        SetConsoleCursorPosition(lStdHandle, { 0, 0 });
+
+        //Redirect unbuffered STDOUT to the console
+        int hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+        FILE* fp = _fdopen(hConHandle, "w");
+        freopen_s(&fp, "CONOUT$", "w", stdout);
+        setvbuf(stdout, nullptr, _IONBF, 0);
+
+        //Redirect unbuffered STDIN to the console
+        lStdHandle = GetStdHandle(STD_INPUT_HANDLE);
+        hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+        fp = _fdopen(hConHandle, "r");
+        freopen_s(&fp, "CONIN$", "r", stdin);
+        setvbuf(stdin, nullptr, _IONBF, 0);
+
+        //Redirect unbuffered STDERR to the console
+        lStdHandle = GetStdHandle(STD_ERROR_HANDLE);
+        hConHandle = _open_osfhandle((intptr_t)lStdHandle, _O_TEXT);
+        fp = _fdopen(hConHandle, "w");
+        freopen_s(&fp, "CONOUT$", "w", stderr);
+        setvbuf(stderr, nullptr, _IONBF, 0);
+
+        //Clear the error state for each of the C++ standard stream objects
+        std::wcout.clear();
+        std::cout.clear();
+        std::wcerr.clear();
+        std::cerr.clear();
+        std::wcin.clear();
+        std::cin.clear();
+    }
+}
 
 Application::Application(HINSTANCE hInstance)
     : m_hInstance(hInstance)
     , m_bIsRunning(false)
     , m_RequestQuit(false)
+    , m_bTerminateDirectoryChangeThread(false)
 {
     // Per monitor V2 DPI awareness context, added in Windows 10
-    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
-//#if defined(_DEBUG)
-//    //Create a console window for std::cout
-//    CreateConsole();
-//#endif
+#if defined(_DEBUG)
+    //Create a console window for std::cout
+    CreateConsole();
+#endif
 
     //Can uncomment after adding speedlog and Gainput
 
     //// Init spdlog.
-    //spdlog::init_thread_pool(8192, 1);
-    //auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    //auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-    //    "logs/log.txt", 1024 * 1024 * 5, 3,
-    //    true);  // Max size: 5MB, Max files: 3, Rotate on open: true
-    //auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+    spdlog::init_thread_pool(8192, 1);
+    auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+        "logs/log.txt", 1024 * 1024 * 5, 3,
+        true);  // Max size: 5MB, Max files: 3, Rotate on open: true
+    auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
 
-    //std::vector<spdlog::sink_ptr> sinks{ stdout_sink, rotating_sink, msvc_sink };
-    //m_Logger = std::make_shared<spdlog::async_logger>("GameFramework", sinks.begin(), sinks.end(),
-    //    spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-    //spdlog::register_logger(m_Logger);
-    //spdlog::set_default_logger(m_Logger);
+    std::vector<spdlog::sink_ptr> sinks{ stdout_sink, rotating_sink, msvc_sink };
+    m_Logger = std::make_shared<spdlog::async_logger>("GameFramework", sinks.begin(), sinks.end(),
+        spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+    spdlog::register_logger(m_Logger);
+    spdlog::set_default_logger(m_Logger);
 
-    //// Init gainput.
-    //m_KeyboardDevice = m_InputManager.CreateDevice<gainput::InputDeviceKeyboard>();
-    //m_MouseDevice = m_InputManager.CreateDevice<gainput::InputDeviceMouse>();
-    //for (unsigned i = 0; i < gainput::MaxPadCount; ++i)
-    //{
-    //    m_GamepadDevice[i] = m_InputManager.CreateDevice<gainput::InputDevicePad>(i);
-    //}
+    // Init gainput.
+    m_KeyboardDevice = m_InputManager.CreateDevice<gainput::InputDeviceKeyboard>();
+    m_MouseDevice = m_InputManager.CreateDevice<gainput::InputDeviceMouse>();
+    for (unsigned i = 0; i < gainput::MaxPadCount; ++i)
+    {
+        m_GamepadDevice[i] = m_InputManager.CreateDevice<gainput::InputDevicePad>(i);
+    }
 
-    //// This will prevent normalization of mouse coordinates.
-    //m_InputManager.SetDisplaySize(1, 1);
+    // This will prevent normalization of mouse coordinates.
+    m_InputManager.SetDisplaySize(1, 1);
 
     //Initializes the COM library for use by the calling thread, sets the threads concurrency model, and creates a new apartment for the thread if one is required
     //Must be called at least once for each thread that uses the COM library
@@ -143,7 +151,8 @@ Application::Application(HINSTANCE hInstance)
     if (FAILED(hr))
     {
         _com_error err(hr);
-        throw new std::exception("COM library error");
+        spdlog::critical("CoInitialize failed: {}", err.ErrorMessage());
+        throw new std::exception(err.ErrorMessage());
     }
 
     WNDCLASSEXW wndClass = { 0 };
@@ -163,10 +172,21 @@ Application::Application(HINSTANCE hInstance)
     {
         MessageBoxA(NULL, "unable to register the window class", "Error", MB_OK | MB_ICONERROR);
     }
+
+    //Create a thread to listen for file changes
+    m_DirectoryChangeListenerThread = std::thread(&Application::CheckFileChanges, this);
+    SetThreadName(m_DirectoryChangeListenerThread, "Check File Changes");
 }
 
 Application::~Application()
 {
+    //Close the thread listening for file changes
+    m_bTerminateDirectoryChangeThread = true;
+    if (m_DirectoryChangeListenerThread.joinable())
+    {
+        m_DirectoryChangeListenerThread.join();
+    }
+
     gs_WindowMap.clear();
     gs_WindowMapByName.clear();
 }
@@ -176,6 +196,7 @@ Application& Application::Create(HINSTANCE hInstance)
     if (!gs_pSingelton)
     {
         gs_pSingelton = new Application(hInstance);
+        spdlog::info("Application class created");
     }
 
     return *gs_pSingelton;
@@ -193,12 +214,44 @@ void Application::Destroy()
     {
         delete gs_pSingelton;
         gs_pSingelton = nullptr;
+        spdlog::info("Application class destroyed");
     }
 }
 
 //Create logger
+Logger Application::CreateLogger(const std::string& name)
+{
+    Logger logger = spdlog::get(name);
+    if (!logger)
+    {
+        logger = m_Logger->clone(name);
+        spdlog::register_logger(logger);
+    }
+
+    return logger;
+}
 
 //Get  Gainput's
+gainput::DeviceId Application::GetKeyboardId() const
+{
+    return m_KeyboardDevice;
+}
+
+gainput::DeviceId Application::GetMouseId() const
+{
+    return m_MouseDevice;
+}
+
+gainput::DeviceId Application::GetPadId(unsigned index) const
+{
+    assert(index >= 0 && index < gainput::MaxPadCount);
+    return m_GamepadDevice[index];
+}
+
+std::shared_ptr<gainput::InputMap> Application::CreateInputMap(const char* name)
+{
+    return std::make_shared<gainput::InputMap>(m_InputManager, name);
+}
 
 int32_t Application::Run()
 {
@@ -211,6 +264,8 @@ int32_t Application::Run()
     {
         ::TranslateMessage(&msg);
         ::DispatchMessage(&msg);
+
+        m_InputManager.HandleMessage(msg);
 
         if (m_RequestQuit)
         {
@@ -225,8 +280,16 @@ int32_t Application::Run()
 }
 
 //Set display size
-
+void Application::SetDisplaySize(int width, int height)
+{
+    m_InputManager.SetDisplaySize(width, height);
+}
 //process input
+void Application::ProcessInput()
+{
+    m_InputManager.Update();
+}
+
 
 void Application::Stop()
 {
@@ -256,7 +319,7 @@ std::shared_ptr<Window> Application::CreateWindow(const std::wstring& windowName
 
     if (!hWnd)
     {
-        MessageBoxA(NULL, "Could not create the render window.", "Error", MB_OK | MB_ICONERROR);
+        spdlog::error("Failed to create window");
         return nullptr;
     }
 
@@ -275,6 +338,72 @@ std::shared_ptr<Window> Application::GetWindowByName(const std::wstring& windowN
 }
 
 //Register change listener and file change listeners
+void Application::RegisterDirectoryChangeListener(const std::wstring& dir, bool recursive)
+{
+    scoped_lock lock(m_DirectoryChangeMutex);
+    m_DirectoryChanges.AddDirectory(dir, recursive, FILE_NOTIFY_CHANGE_LAST_WRITE);
+}
+
+//This is the directory change listener thread entry point
+void Application::CheckFileChanges()
+{
+    while (!m_bTerminateDirectoryChangeThread)
+    {
+        scoped_lock lock(m_DirectoryChangeMutex);
+        DWORD waitSignal = ::WaitForSingleObject(m_DirectoryChanges.GetWaitHandle(), 0);
+        switch (waitSignal)
+        {
+        case WAIT_OBJECT_0:
+            //A file has been modified
+            if (m_DirectoryChanges.CheckOverflow())
+            {
+                //Can happen if a lot of modifications happen at once
+                spdlog::warn("Directory change overflow occurred");
+            }
+            else
+            {
+                DWORD action;
+                std::wstring fileName;
+                m_DirectoryChanges.Pop(action, fileName);
+
+                FileAction fileAction = FileAction::Unknown;
+                switch (action)
+                {
+                case FILE_ACTION_ADDED:
+                    fileAction = FileAction::Added;
+                    break;
+                case FILE_ACTION_REMOVED:
+                    fileAction = FileAction::Removed;
+                    break;
+                case FILE_ACTION_MODIFIED:
+                    fileAction = FileAction::Modified;
+                    break;
+                case FILE_ACTION_RENAMED_OLD_NAME:
+                    fileAction = FileAction::RenameOld;
+                    break;
+                case FILE_ACTION_RENAMED_NEW_NAME:
+                    fileAction = FileAction::RenameNew;
+                    break;
+                default:
+                    break;
+                }
+
+                FileChangedEventArgs fileChangedEventArgs(fileAction, fileName);
+                OnFileChange(fileChangedEventArgs);
+            }
+            break;
+        default:
+            break;
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+void Application::OnFileChange(FileChangedEventArgs& e)
+{
+    FileChanged(e);
+}
 
 LRESULT Application::OnWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -430,7 +559,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
                 /*if (charMsg.wParam > 0 && charMsg.wParam < 0x10000)
                     ImGui::GetIO().AddInputCharacter((unsigned short)charMsg.wParam);*/
             }
-            bool shift = (GetAsyncKeyState(VK_SHIFT) & 0x800) != 0;
+            bool shift = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
             bool control = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
             bool alt = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
 
@@ -506,6 +635,9 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
             int x = ((int)(short)LOWORD(lParam));
             int y = ((int)(short)HIWORD(lParam));
 
+            //Capture mouse movement until button is released
+            SetCapture(hWnd);
+
             MouseButtonEventArgs mouseButtonEventArgs(DecodeMouseButton(message), ButtonState::Pressed, lButton, mButton, rButton, control, shift, x, y);
             pWindow->OnMouseButtonPressed(mouseButtonEventArgs);
         }
@@ -522,6 +654,9 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 
             int x = ((int)(short)LOWORD(lParam));
             int y = ((int)(short)HIWORD(lParam));
+
+            //Stop capturing mouse
+            ReleaseCapture();
 
             MouseButtonEventArgs mouseButtonEventArgs(DecodeMouseButton(message), ButtonState::Released, lButton, mButton, rButton, control, shift, x, y);
             pWindow->OnMouseButtonReleased(mouseButtonEventArgs);
@@ -545,13 +680,31 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
             int y = ((int)(short)HIWORD(lParam));
 
             // Convert the screen coordinates to client coordinates.
-            POINT clientToScreenPoint{};
-            clientToScreenPoint.x = x;
-            clientToScreenPoint.y = y;
-            ::ScreenToClient(hWnd, &clientToScreenPoint);
+            POINT screenToClientPoint;
+            screenToClientPoint.x = x;
+            screenToClientPoint.y = y;
+            ::ScreenToClient(hWnd, &screenToClientPoint);
 
-            MouseWheelEventArgs mouseWheelEventArgs(zDelta, lButton, mButton, rButton, control, shift, (int)clientToScreenPoint.x, (int)clientToScreenPoint.y);
+            MouseWheelEventArgs mouseWheelEventArgs(zDelta, lButton, mButton, rButton, control, shift, (int)screenToClientPoint.x, (int)screenToClientPoint.y);
             pWindow->OnMouseWheel(mouseWheelEventArgs);
+        }
+        break;
+        case WM_CAPTURECHANGED:
+        {
+            EventArgs mouseBlurEventArgs;
+            pWindow->OnMouseBlur(mouseBlurEventArgs);
+        }
+        break;
+        case WM_MOUSEACTIVATE:
+        {
+            EventArgs mouseFocusEventArgs;
+            pWindow->OnMouseFocus(mouseFocusEventArgs);
+        }
+        break;
+        case WM_MOUSELEAVE:
+        {
+            EventArgs mouseLeaveEventArgs;
+            pWindow->OnMouseLeave(mouseLeaveEventArgs);
         }
         break;
         case WM_SIZE:
@@ -568,7 +721,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM l
         case WM_CLOSE:
         {
             WindowCloseEventArgs windowCloseEventArgs;
-            pWindow->Close(windowCloseEventArgs);
+            pWindow->OnClose(windowCloseEventArgs);
 
             //Check to see if the user canceled the close event
             if (windowCloseEventArgs.ConfirmClose)

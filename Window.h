@@ -152,11 +152,11 @@ public:
 
 
 protected:
-	//The window proc needs to call protected methods of this class
-	friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-
 	//Only the application can create a window
 	friend class Application;
+
+	//The window proc needs to call protected methods of this class
+	friend LRESULT CALLBACK ::WndProc(HWND, UINT, WPARAM, LPARAM);
 
 	Window(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight);
 	virtual ~Window();

@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Events.h"
+#include "ReadDirectoryChanges.h"
+
+#include <gainput/gainput.h>
+#include <spdlog/logger.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -20,6 +24,8 @@
 
 class Window;
 
+using Logger = std::shared_ptr<spdlog::logger>;
+
 using WndProcEvent = Delegater<LRESULT(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)>;
 
 class Application
@@ -35,16 +41,27 @@ public:
 	static Application& Get();
 
 	//Create logger
+	Logger CreateLogger(const std::string& name);
 
 	//Get keyboard device ID
+	gainput::DeviceId GetKeyboardId() const;
 
 	//Get mouse device ID
+	gainput::DeviceId GetMouseId() const;
 
 	//Get gamepad device ID
+	gainput::DeviceId GetPadId(unsigned index = 0) const;
 
 	//Get an input device template
+	template<class T>
+	T* GetDevice(gainput::DeviceId deviceId) const
+	{
+		static_assert(std::is_base_of_v<gainput::InputDevice, T>);
+		return static_cast<T*>(m_InputManager.GetDevice(deviceId));
+	}
 
 	//Create input map
+	std::shared_ptr<gainput::InputMap> CreateInputMap(const char* name = nullptr);
 
 	////Check if v-sync off is supported
 	//bool IsTearingSupported() const;
@@ -75,6 +92,7 @@ public:
 	void Stop();
 
 	//Register directoryChange Listener
+	void RegisterDirectoryChangeListener(const std::wstring& dir, bool recursive = true);
 
 	//Create a render window
 	std::shared_ptr<Window> CreateWindow(const std::wstring& windowName, int clientWidth, int clientHeight);
@@ -86,6 +104,7 @@ public:
 	WndProcEvent WndProcHandler;
 
 	//invoked when a file is modified on disk
+	FileChangeEvent FileChanged;
 
 	//Application is exiting
 	Event Exit;
@@ -97,6 +116,7 @@ protected:
 	virtual ~Application();
 
 	//A file modification was detected
+	virtual void OnFileChange(FileChangedEventArgs& e);
 
 	//Windows message handler
 	virtual LRESULT OnWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -111,13 +131,18 @@ private:
 	Application& operator=(Application&&) = delete;
 
 	//Directory change listener thread entry point function
+	void CheckFileChanges();
 
 	//Handle to app instance
 	HINSTANCE m_hInstance;
 
-	//Logger m_Logger;
+	Logger m_Logger;
 
 	//Gainput input manager and devices
+	gainput::InputManager m_InputManager;
+	gainput::DeviceId m_KeyboardDevice;
+	gainput::DeviceId m_MouseDevice;
+	gainput::DeviceId m_GamepadDevice[gainput::MaxPadCount];
 
 	//Set to true while app is running
 	std::atomic_bool m_bIsRunning;
@@ -125,8 +150,12 @@ private:
 	std::atomic_bool m_RequestQuit;
 
 	//Directory change listener
+	CReadDirectoryChanges m_DirectoryChanges;
 
 	//Thread to run directory change listener
+	std::thread m_DirectoryChangeListenerThread;
+	std::mutex m_DirectoryChangeMutex;
 
 	//Flag to terminate directory change thread
+	std::atomic_bool m_bTerminateDirectoryChangeThread;
 };

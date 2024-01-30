@@ -1,8 +1,8 @@
-Package: directx-dxc
-Version: 2023-08-14
+Package: directx-headers
+Version: 1.611.0
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 783a14a92669c3a8388b6c885aca7a0a485eb876eb71d398355c173cb4fbc55a
-Description: DirectX Shader Compiler (LLVM/Clang)
+Abi: 4f3f3badec4917b4fd4f08da415bd67c2f31a2847777ea4615036aca6e2ee86f
+Description: Official DirectX 12 Headers
 Status: purge ok half-installed

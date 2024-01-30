@@ -1,10 +1,9 @@
-Package: curl
-Version: 8.5.0
+Package: draco
+Version: 1.5.6
 Port-Version: 1
-Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
-Architecture: x64-windows-static
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
 Multi-Arch: same
-Abi: 4bbd0a95ee1d2b27d14d337d59ab52d5009265da0d651f820674a8e9a75e2c2b
-Description: A library for transferring data with URLs
-Default-Features: non-http, ssl
+Abi: 90acd8fff5f5af0ba2f04bf17b369b764e3b9b430d4f5c4817fcabec8abe8ffa
+Description: A library for compressing and decompressing 3D geometric meshes and point clouds. It is intended to improve the storage and transmission of 3D graphics.
 Status: purge ok half-installed

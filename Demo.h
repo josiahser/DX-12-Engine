@@ -129,4 +129,7 @@ private:
 	//Define some lights
 	std::vector<PointLight> m_PointLights;
 	std::vector<SpotLight> m_SpotLights;
+
+	//Logger for logging
+	Logger m_Logger;
 };

@@ -1,9 +1,10 @@
-Package: directxtk12
-Version: 2023-12-31
-Depends: directx-dxc:x64-windows, directx-headers, directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
-Architecture: x64-windows-static
+Package: curl
+Version: 8.5.0
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
+Architecture: x64-windows
 Multi-Arch: same
-Abi: 600076045796a05c661ca1e98fa472c2c55c5ea148f49ba86aea9411a99eac91
-Description: A collection of helper classes for writing DirectX 12 code in C++.
-Default-Features: xaudio2-9
-Status: purge ok not-installed
+Abi: 182f72fcbc3ba87a9136445621eb39bba382cafc44edcd472130d49baa22aaa9
+Description: A library for transferring data with URLs
+Default-Features: non-http, ssl
+Status: purge ok half-installed

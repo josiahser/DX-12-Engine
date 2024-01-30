@@ -1,6 +1,7 @@
 #include "Demo.h"
 
 #include "Light.h"
+#include "SceneVisitor.h"
 #include "Camera.h"
 
 #include "Application.h"
@@ -97,6 +98,7 @@ Demo::Demo(const std::wstring& name, int width, int height, bool vSync)
     , m_Height(height)
     , m_VSync(vSync)
 {
+    m_Logger = Application::Get().CreateLogger("Textures");
     m_Window = Application::Get().CreateWindow(name, width, height);
 
     m_Window->Update += UpdateEvent::slot(&Demo::OnUpdate, this);
@@ -238,6 +240,11 @@ bool Demo::LoadContent()
 
     m_PipelineState = m_Device->CreatePipelineStateObject(pipelineStateStream);
 
+    //For the unlit PSO, only the Pixel shader is different
+    pipelineStateStream.PS = CD3DX12_SHADER_BYTECODE(unlitPixelShaderBlob.Get());
+
+    m_UnlitPipelineState = m_Device->CreatePipelineStateObject(pipelineStateStream);
+
     //Create an off-screen render target with a single color buffer and a depth buffer
     auto colorDesc = CD3DX12_RESOURCE_DESC::Tex2D(backBufferFormat,
         m_Width, m_Height, 1, 1, sampleDesc.Count, sampleDesc.Quality, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
@@ -323,10 +330,11 @@ void Demo::OnUpdate(UpdateEventArgs& e)
     {
         double fps = frameCount / totalTime;
 
-        wchar_t buffer[512];
-        ::swprintf_s(buffer, L"FPS: %f\n", fps);
+        m_Logger->info("FPS: {:.7}", fps);
+
+        wchar_t buffer[256];
+        ::swprintf_s(buffer, L"Textures [FPS: %f]", fps);
         m_Window->SetWindowTitle(buffer);
-        //OutputDebugStringA((buffer));
 
         frameCount = 0;
         totalTime = 0.0;
@@ -425,7 +433,7 @@ void Demo::OnRender()
     auto commandList = commandQueue.GetCommandList();
 
     //Create a scene visitor that is used to perform the actual rendering of the meshes in the scenes
-    //SceneVisitor visitor(*commandList);
+    SceneVisitor visitor(*commandList);
 
     //Clear the render target
     {
@@ -468,7 +476,7 @@ void Demo::OnRender()
     commandList->SetShaderResourceView(RootParameters::Textures, 0, m_EarthTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
     //Render the eath sphere using the SceneVisitor
-    //m_Sphere->Accept(visitor);
+    m_Sphere->Accept(visitor);
 
     //Draw a cube
     translationMatrix = XMMatrixTranslation(4.0f, 4.0f, 4.0f);
@@ -483,7 +491,7 @@ void Demo::OnRender()
     commandList->SetShaderResourceView(RootParameters::Textures, 0, m_MonaLisaTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
     //Render the cube with the scene visitor
-    //m_Cube->Accept(visitor);
+    m_Cube->Accept(visitor);
 
     //Draw a torus
     translationMatrix = XMMatrixTranslation(4.0f, 0.6f, -4.0f);
@@ -497,7 +505,7 @@ void Demo::OnRender()
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::Ruby);
     commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DefaultTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-    //m_Torus->Accept(visitor);
+    m_Torus->Accept(visitor);
 
     //Floor plane
     float scalePlane = 20.0f;
@@ -514,7 +522,7 @@ void Demo::OnRender()
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::White);
     commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DirectXTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-    //m_Plane->Accept(visitor);
+    m_Plane->Accept(visitor);
 
     //Back wall
     translationMatrix = XMMatrixTranslation(0.0f, translateOffset, translateOffset);
@@ -525,7 +533,7 @@ void Demo::OnRender()
 
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
 
-    //m_Plane->Accept(visitor)
+    m_Plane->Accept(visitor);
 
     // Ceiling plane
     translationMatrix = XMMatrixTranslation(0, translateOffset * 2.0f, 0);
@@ -537,7 +545,7 @@ void Demo::OnRender()
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
 
     // Render the plane using the SceneVisitor.
-   // m_Plane->Accept(visitor);
+    m_Plane->Accept(visitor);
 
     // Front wall
     translationMatrix = XMMatrixTranslation(0, translateOffset, -translateOffset);
@@ -549,7 +557,7 @@ void Demo::OnRender()
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
 
     // Render the plane using the SceneVisitor.
-   // m_Plane->Accept(visitor);
+    m_Plane->Accept(visitor);
 
     // Left wall
     translationMatrix = XMMatrixTranslation(-translateOffset, translateOffset, 0);
@@ -564,7 +572,7 @@ void Demo::OnRender()
         D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
     // Render the plane using the SceneVisitor.
-    //m_Plane->Accept(visitor);
+    m_Plane->Accept(visitor);
 
     // Right wall
     translationMatrix = XMMatrixTranslation(translateOffset, translateOffset, 0);
@@ -577,10 +585,10 @@ void Demo::OnRender()
     commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::Blue);
 
     // Render the plane using the SceneVisitor.
-    //m_Plane->Accept(visitor);
+    m_Plane->Accept(visitor);
 
     //Draw shapes to visualize the position of the lights in the scene
-    //commandList->SetPipelineState(m_PipelineState);
+    commandList->SetPipelineState(m_UnlitPipelineState);
 
     MaterialProperties lightMaterial = Material::Zero;
     //No specular
@@ -594,7 +602,7 @@ void Demo::OnRender()
         commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
         commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, lightMaterial);
 
-        //m_Sphere->Accept(visitor);
+        m_Sphere->Accept(visitor);
     }
 
     for (const auto& l : m_SpotLights)
@@ -613,7 +621,7 @@ void Demo::OnRender()
         commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
         commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, lightMaterial);
 
-       //m_Cone->Accept(visitor);
+       m_Cone->Accept(visitor);
     }
 
     //Resolve the MSAA render target to the swapchain's backbuffer
@@ -778,8 +786,6 @@ void Demo::OnMouseWheel(MouseWheelEventArgs& e)
 
         m_Camera.set_FoV(fov);
 
-        char buffer[256];
-        sprintf_s(buffer, "FoV: %f\n", fov);
-        OutputDebugStringA(buffer);
+        m_Logger->info("FoV: {:.7}", fov);
     }
 }
