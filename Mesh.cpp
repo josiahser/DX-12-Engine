@@ -4,7 +4,7 @@
 #include "IndexBuffer.h"
 #include "Mesh.h"
 #include "VertexBuffer.h"
-#include "Application.h"
+#include "Visitor.h"
 
 //const D3D12_INPUT_ELEMENT_DESC VertexPositionNormalTexture::InputElements[] =
 //{
@@ -108,7 +108,10 @@ void Mesh::Draw(CommandList& commandList, uint32_t instanceCount, uint32_t start
 	}
 }
 
-//void Mesh::Accept(Visitor& visitor)
+void Mesh::Accept(Visitor& visitor)
+{
+	visitor.Visit(*this);
+}
 
 void Mesh::SetAABB(const DirectX::BoundingBox& aabb)
 {

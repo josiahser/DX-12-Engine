@@ -1,7 +1,7 @@
 #include "framework.h"
 #include "CommandQueue.h"
 
-#include "Application.h"
+//#include "Application.h"
 #include "CommandList.h"
 #include "Device.h"
 #include "ResourceStateTracker.h"
@@ -93,12 +93,13 @@ void CommandQueue::WaitForFenceValue(uint64_t fenceValue)
 	if (!IsFenceComplete(fenceValue))
 	{
 		auto event = ::CreateEvent(NULL, FALSE, FALSE, NULL);
-		assert(event && "Failed to create event handle");
+		if (event)
+		{
+			m_Fence->SetEventOnCompletion(fenceValue, event);
+			::WaitForSingleObject(event, DWORD_MAX);
 
-		m_Fence->SetEventOnCompletion(fenceValue, event);
-		::WaitForSingleObject(event, DWORD_MAX);
-
-		::CloseHandle(event);
+			::CloseHandle(event);
+		}
 	}
 }
 

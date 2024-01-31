@@ -2,6 +2,8 @@
 
 #include "Mesh.h"
 #include "SceneNode.h"
+#include "Visitor.h"
+
 #include <cstdlib>
 
 using namespace DirectX;
@@ -185,4 +187,17 @@ std::shared_ptr<Mesh> SceneNode::GetMesh(size_t pos)
 const DirectX::BoundingBox& SceneNode::GetAABB() const
 {
 	return m_AABB;
+}
+
+void SceneNode::Accept(Visitor& visitor)
+{
+	visitor.Visit(*this);
+
+	//Visit meshes
+	for (auto& mesh : m_Meshes)
+		mesh->Accept(visitor);
+
+	//Visit children
+	for (auto& child : m_Children)
+		child->Accept(visitor);
 }

@@ -10,7 +10,6 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdint>
-#include <queue>
 
 #include "ThreadSafeQueue.h"
 

@@ -83,6 +83,8 @@ SwapChain::SwapChain(Device& device, HWND hWnd, DXGI_FORMAT renderTargetFormat)
 	//Initialize the current back buffer index
 	m_CurrentBackBufferIndex = m_dxgiSwapChain->GetCurrentBackBufferIndex();
 
+	m_dxgiSwapChain->SetMaximumFrameLatency(BufferCount - 1);
+
 	//Get the SwapChain's waitable object
 	m_hFrameLatencyWaitableObject = m_dxgiSwapChain->GetFrameLatencyWaitableObject();
 

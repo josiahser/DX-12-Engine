@@ -179,6 +179,10 @@ bool Demo::LoadContent()
     ComPtr<ID3DBlob> pixelShaderBlob;
     ThrowIfFailed(D3DReadFileToBlob(L"PixelShader.cso", &pixelShaderBlob));
 
+    //Load unlit pixel
+    ComPtr<ID3DBlob> unlitPixelShaderBlob;
+    ThrowIfFailed(D3DReadFileToBlob(L"UnlitPixelShader.cso", &unlitPixelShaderBlob));
+
     //Create a root signature
     //Allow input layout and deny unnecessary access to certain pipeline stages
     D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =

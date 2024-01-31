@@ -77,7 +77,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\include;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\include\fmt;C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\include;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\debug\lib;C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.UniversalCRT.Debug\10.0.19041.0\Redist\Debug\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.38.33130\debug_nonredist\x64;$(LibraryPath)</LibraryPath>
     <ExcludePath />
   </PropertyGroup>
@@ -140,13 +140,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ConformanceMode>false</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <CompileAs>CompileAsCpp</CompileAs>
       <EnableModules>true</EnableModules>
       <BuildStlModules>true</BuildStlModules>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <EntryPointSymbol>
@@ -381,6 +382,12 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">g_PS</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">g_PS.h</HeaderFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="UnlitPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

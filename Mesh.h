@@ -5,17 +5,15 @@
 
 #include <d3d12.h>
 
-#include <wrl.h>
-
 #include <map>
 #include <memory>
-#include <vector>
 
 class CommandList;
 class IndexBuffer;
 class Material;
 class VertexBuffer;
-//class Visitor;
+class Visitor;
+
 //Vertex struct holding position, normal vector, and texture mapping info
 //struct VertexPositionNormalTexture
 //{
@@ -93,7 +91,7 @@ public:
 	//static std::unique_ptr<Mesh> CreatePlane(CommandList& commandList, float width = 1, float height = 1, bool rhcoords = false);
 
 	//Accept a visitor
-	//void Accept(Visitor& visitor);
+	void Accept(Visitor& visitor);
 private:
 	//void Initialize(CommandList& commandList, VertexCollection& vertices, IndexCollection& indices, bool rhcoords);
 

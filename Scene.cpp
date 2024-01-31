@@ -386,6 +386,13 @@ std::shared_ptr<SceneNode> Scene::ImportSceneNode(CommandList& commandList, std:
 	return node;
 }
 
+void Scene::Accept(Visitor& visitor)
+{
+	visitor.Visit(*this);
+	if (m_RootNode)
+		m_RootNode->Accept(visitor);
+}
+
 DirectX::BoundingBox Scene::GetAABB() const
 {
 	DirectX::BoundingBox aabb{ {0, 0, 0}, {0, 0, 0} };
