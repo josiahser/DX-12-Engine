@@ -2,7 +2,7 @@
 
 #include "RootSignature.h"
 
-#include "Application.h"
+//#include "Application.h"
 #include "Device.h"
 
 RootSignature::RootSignature(Device& device, const D3D12_ROOT_SIGNATURE_DESC1& rootSignatureDesc)

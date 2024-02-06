@@ -142,6 +142,7 @@ Application::Application(HINSTANCE hInst)
     std::vector<spdlog::sink_ptr> sinks{ stdout_sink, rotating_sink, msvc_sink };
     m_Logger = std::make_shared<spdlog::async_logger>("Application", sinks.begin(), sinks.end(),
         spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+
     spdlog::register_logger(m_Logger);
     spdlog::set_default_logger(m_Logger);
 
@@ -164,8 +165,9 @@ Application::Application(HINSTANCE hInst)
     if (FAILED(hr))
     {
         _com_error err(hr);  // I hope this never happens.
-        /*spdlog::critical("CoInitialize failed: {}", err.ErrorMessage());*/
-        throw (err.ErrorMessage());
+        const TCHAR* error = err.ErrorMessage();
+        spdlog::critical("CoInitialize failed: {}", (char*)error);
+        throw new std::exception((char*)error);
     }
 
     WNDCLASSEXW wndClass = { 0 };
@@ -255,7 +257,7 @@ gainput::DeviceId Application::GetMouseId() const
     return m_MouseDevice;
 }
 
-gainput::DeviceId Application::GetPadId(unsigned index /*= 0 */) const
+gainput::DeviceId Application::GetPadId(unsigned int index) const
 {
     assert(index >= 0 && index < gainput::MaxPadCount);
     return m_GamepadDevice[index];

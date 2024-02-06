@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ConformanceMode>false</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -154,7 +154,7 @@
       </EntryPointSymbol>
       <ShowProgress>LinkVerbose</ShowProgress>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\atlmfc\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\lib\x64;C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\debug\lib;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.22621.0;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\atlmfc\lib\x64;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\debug\lib;$(UniversalCRT_LibraryPath_x64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\jo_serravalle\source\repos\LearningAttempt2\x64-windows\debug\bin;C:\Users\jo_serravalle\source\repos\LearningAttempt2\x64-windows\debug\lib;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\atlmfc\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\lib\x64;C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\debug\lib;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.22621.0;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\atlmfc\lib\x64;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\debug\lib;$(UniversalCRT_LibraryPath_x64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>dxcompiler.lib;dxgi.lib;dxguid.lib;d3d12.lib;d3dcompiler.lib;assimp-vc143-mtd.lib;DirectX-Guids.lib;DirectX-Headers.lib;DirectXTex.lib;libcurl-d.lib;spdlogd.lib;zlibd.lib;gainput-d.lib;DirectXTK12.lib;draco.lib;fmtd.lib;kubazip.lib;minizip.lib;poly2tri.lib;polyclipping.lib;pugixml.lib;imguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest />
@@ -215,13 +215,13 @@
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="HighResolutionTimer.h" />
-    <ClInclude Include="ImGUI\imconfig.h" />
-    <ClInclude Include="ImGUI\imgui.h" />
-    <ClInclude Include="ImGUI\imgui_impl_win32.h" />
-    <ClInclude Include="ImGUI\imgui_internal.h" />
-    <ClInclude Include="ImGUI\imstb_rectpack.h" />
-    <ClInclude Include="ImGUI\imstb_textedit.h" />
-    <ClInclude Include="ImGUI\imstb_truetype.h" />
+    <ClInclude Include="imconfig.h" />
+    <ClInclude Include="imgui.h" />
+    <ClInclude Include="imgui_impl_win32.h" />
+    <ClInclude Include="imgui_internal.h" />
+    <ClInclude Include="imstb_rectpack.h" />
+    <ClInclude Include="imstb_textedit.h" />
+    <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="KeyCodes.h" />
     <ClInclude Include="Light.h" />
@@ -244,7 +244,6 @@
     <ClInclude Include="StructuredBuffer.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureUsage.h" />
     <ClInclude Include="ThreadSafeQueue.h" />
     <ClInclude Include="UnorderedAccessView.h" />
     <ClInclude Include="UploadBuffer.h" />
@@ -274,11 +273,11 @@
     <ClCompile Include="GenerateMipsPSO.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="HighResolutionTimer.cpp" />
-    <ClCompile Include="ImGUI\imgui.cpp" />
-    <ClCompile Include="ImGUI\imgui_demo.cpp" />
-    <ClCompile Include="ImGUI\imgui_draw.cpp" />
-    <ClCompile Include="ImGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />

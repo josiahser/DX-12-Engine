@@ -6,6 +6,8 @@
 #include "Device.h"
 #include "Helpers.h"
 
+std::mutex g_UploadMutex;
+
 UploadBuffer::UploadBuffer(Device& device, size_t pageSize)
 	: m_PageSize(pageSize)
 	, m_Device(device)
@@ -111,6 +113,7 @@ UploadBuffer::Allocation UploadBuffer::Page::Allocate(size_t sizeInBytes, size_t
 	}
 
 	//Not Thread Safe! If thread safety is required, add std::lock_guard here
+	const std::lock_guard<std::mutex>lock(g_UploadMutex);
 	size_t alignedSize = Math::AlignUp(sizeInBytes, alignment);
 	m_Offset = Math::AlignUp(m_Offset, alignment);
 

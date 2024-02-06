@@ -13,7 +13,7 @@
 //Include compiled shaders for ImGui
 #include "ImGUI_PS.h"
 #include "ImGUI_VS.h"
-#include "ImGUI/imgui_impl_win32.h"
+#include "imgui_impl_win32.h"
 
 //Root parameters for the ImGui root signature
 enum RootParameters

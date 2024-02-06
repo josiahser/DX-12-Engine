@@ -19,8 +19,8 @@ public:
 
 CommandQueue::CommandQueue(Device& device, D3D12_COMMAND_LIST_TYPE type)
 	: m_Device(device)
-	, m_FenceValue(0)
 	, m_CommandListType(type)
+	, m_FenceValue(0)
 	, m_bProcessInFlightCommandLists(true)
 {
 	auto d3d12Device = m_Device.GetD3D12Device();
@@ -228,6 +228,7 @@ uint64_t CommandQueue::ExecuteCommandLists(const std::vector<std::shared_ptr<Com
 		auto generateMipsCommandList = commandList->GetGenerateMipsCommandList();
 		if (generateMipsCommandList)
 		{
+			generateMipsCommandList->Close();
 			generateMipsCommandLists.push_back(generateMipsCommandList);
 		}
 	}

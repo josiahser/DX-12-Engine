@@ -211,8 +211,8 @@ void ResourceStateTracker::Lock()
 
 void ResourceStateTracker::Unlock()
 {
-	ms_IsLocked = false;
 	ms_GlobalMutex.unlock();
+	ms_IsLocked = false;
 }
 
 void ResourceStateTracker::AddGlobalResourceState(ID3D12Resource* resource, D3D12_RESOURCE_STATES state)

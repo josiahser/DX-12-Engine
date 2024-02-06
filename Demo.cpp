@@ -2,7 +2,7 @@
 
 #include "Light.h"
 #include "SceneVisitor.h"
-#include "Camera.h"
+//#include "Camera.h"
 
 #include "Application.h"
 #include "Window.h"
@@ -20,7 +20,7 @@
 #include "SwapChain.h"
 #include "Texture.h"
 
-#include "ImGUI/imgui.h"
+#include "imgui.h"
 
 #include <wrl.h>
 using namespace Microsoft::WRL;
@@ -633,7 +633,7 @@ void Demo::OnRender()
     auto swapChainBackBuffer = swapChainRT.GetTexture(AttachmentPoint::Color0);
     auto msaaRenderTarget = m_RenderTarget.GetTexture(AttachmentPoint::Color0);
 
-    commandList->ResolveSubResource(swapChainBackBuffer, msaaRenderTarget);
+    //commandList->ResolveSubResource(swapChainBackBuffer, msaaRenderTarget);
 
     //Render the GUI directly to the swap chain's render target
     OnGUI(commandList, swapChainRT);

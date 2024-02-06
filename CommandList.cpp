@@ -54,7 +54,7 @@ CommandList::CommandList(Device& device, D3D12_COMMAND_LIST_TYPE type)
 	, m_PipelineState(nullptr)
 {
 	auto d3d12Device = m_Device.GetD3D12Device();
-
+	
 	ThrowIfFailed(d3d12Device->CreateCommandAllocator(m_d3d12CommandListType, IID_PPV_ARGS(&m_d3d12CommandAllocator)));
 
 	ThrowIfFailed(d3d12Device->CreateCommandList(0, m_d3d12CommandListType, m_d3d12CommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_d3d12CommandList)));

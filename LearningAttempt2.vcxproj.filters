@@ -22,12 +22,6 @@
     <Filter Include="Header Files\Helpers">
       <UniqueIdentifier>{cda4e549-27f9-46eb-a50d-be3fc9e414cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ImGUI">
-      <UniqueIdentifier>{c02cc8e5-792d-4734-87db-8951a59aedae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ImGUI Source">
-      <UniqueIdentifier>{c7bf7846-6446-4916-a059-5a9878752fb5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\GameFiles">
       <UniqueIdentifier>{605e2b8e-df3c-44e0-b0e5-9530478508b5}</UniqueIdentifier>
     </Filter>
@@ -36,6 +30,12 @@
     </Filter>
     <Filter Include="Header Files\GameHeaders">
       <UniqueIdentifier>{ccb515f8-2829-48f2-9d28-deea872e742d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ImGui">
+      <UniqueIdentifier>{fe891886-6131-48f5-9303-90aa3461e270}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImGui">
+      <UniqueIdentifier>{2e13642f-d708-4143-92b9-b35b4df2b476}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -108,9 +108,6 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
-    <ClInclude Include="TextureUsage.h">
-      <Filter>Header Files\Class Headers</Filter>
-    </ClInclude>
     <ClInclude Include="StructuredBuffer.h">
       <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
@@ -137,27 +134,6 @@
     </ClInclude>
     <ClInclude Include="ShaderResourceView.h">
       <Filter>Header Files\Class Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imstb_truetype.h">
-      <Filter>Header Files\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imstb_textedit.h">
-      <Filter>Header Files\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imstb_rectpack.h">
-      <Filter>Header Files\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imgui_internal.h">
-      <Filter>Header Files\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imgui_impl_win32.h">
-      <Filter>Header Files\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imgui.h">
-      <Filter>Header Files\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGUI\imconfig.h">
-      <Filter>Header Files\ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="UnorderedAccessView.h">
       <Filter>Header Files\Class Headers</Filter>
@@ -213,20 +189,41 @@
     <ClInclude Include="d3dx12.h">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="bitmask_operators.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReadDirectoryChanges.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReadDirectoryChangesPrivate.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Visitor.h">
+      <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
     <ClInclude Include="SceneVisitor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Class Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Visitor.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ReadDirectoryChangesPrivate.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadDirectoryChanges.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmask_operators.hpp">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="imconfig.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_win32.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_rectpack.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_textedit.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imstb_truetype.h">
+      <Filter>Header Files\ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -302,21 +299,6 @@
     <ClCompile Include="Device.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
-    <ClCompile Include="ImGUI\imgui.cpp">
-      <Filter>Source Files\ImGUI Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGUI\imgui_demo.cpp">
-      <Filter>Source Files\ImGUI Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGUI\imgui_draw.cpp">
-      <Filter>Source Files\ImGUI Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGUI\imgui_impl_win32.cpp">
-      <Filter>Source Files\ImGUI Source</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGUI\imgui_widgets.cpp">
-      <Filter>Source Files\ImGUI Source</Filter>
-    </ClCompile>
     <ClCompile Include="ConstantBufferView.cpp">
       <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
@@ -371,14 +353,29 @@
     <ClCompile Include="HighResolutionTimer.cpp">
       <Filter>Source Files\GameFiles</Filter>
     </ClCompile>
-    <ClCompile Include="ReadDirectoryChanges.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="SceneVisitor.cpp">
+      <Filter>Source Files\Class Sources</Filter>
     </ClCompile>
     <ClCompile Include="ReadDirectoryChangesPrivate.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameFiles</Filter>
     </ClCompile>
-    <ClCompile Include="SceneVisitor.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ReadDirectoryChanges.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_win32.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_widgets.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp">
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

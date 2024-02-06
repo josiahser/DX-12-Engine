@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImGUI/imgui.h"
+#include "imgui.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>

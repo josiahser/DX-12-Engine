@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <codecvt>
-#include <functional>
+//#include <functional>
 #include <thread>
 
 #define WIN32_LEAN_AND_MEAN
@@ -17,8 +17,9 @@ inline void ThrowIfFailed(HRESULT hr)
     {
         _com_error err(hr);
         OutputDebugString(err.ErrorMessage());
+        const TCHAR* error = err.ErrorMessage();
 
-        throw std::exception();
+        throw std::exception((char*)error);
     }
 }
 
@@ -52,7 +53,7 @@ inline std::wstring to_wstring(char c)
 }
 
 //Set the name of an std::thread for debugging
-const DWORD MS_VS_EXCEPTION = 0x406D1388;
+const DWORD MS_VC_EXCEPTION = 0x406D1388;
 
 //Set the name of a running thread also for debugging
 #pragma pack(push, 8)
@@ -75,7 +76,7 @@ inline void SetThreadName(std::thread& thread, const char* threadName)
 
     __try
     {
-        ::RaiseException(MS_VS_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+        ::RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
