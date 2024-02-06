@@ -1,0 +1,4 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg_installed/vcpkg/pkgs/zlib_x86-windows/lib/zlib.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg_installed/vcpkg/pkgs/zlib_x86-windows/bin/zlib1.dll
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg_installed/vcpkg/pkgs/zlib_x86-windows/include/zconf.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg_installed/vcpkg/pkgs/zlib_x86-windows/include/zlib.h
