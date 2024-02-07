@@ -36,8 +36,8 @@ private:
 	void SetRootSignatureDesc(const D3D12_ROOT_SIGNATURE_DESC1& rootSignatureDesc);
 
 	Device& m_Device;
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
 	D3D12_ROOT_SIGNATURE_DESC1 m_RootSignatureDesc;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
 
 	//Need to know the # of descriptors per table, a max of 32 tables are supoorted
 	//(since a 32-bit mask is used to represent the descriptor tables in the root signature)

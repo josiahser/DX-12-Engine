@@ -202,10 +202,10 @@ void GUI::Render(const std::shared_ptr<CommandList>& commandList, const RenderTa
 	float T = drawData->DisplayPos.y;
 	float B = drawData->DisplayPos.y + drawData->DisplaySize.y;
 	float mvp[4][4] = {
-		{2.0f / (R - L), 0.0f, 0.0f, 0.0f},
-		{0.0f, 2.0 / (T - B), 0.0f, 0.0f },
-		{0.0f, 0.0f, 0.5f, 0.0f},
-		{(R + L) / (L - R), (T + B) / (B - T), 0.5f, 1.0f},
+		{ 2.0f / (R - L), 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 2.0f / (T - B), 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.5f, 0.0f },
+		{ (R + L) / (L - R), (T + B) / (B - T), 0.5f, 1.0f },
 	};
 
 	commandList->SetGraphics32BitConstants(RootParameters::MatrixCB, mvp);
@@ -218,7 +218,7 @@ void GUI::Render(const std::shared_ptr<CommandList>& commandList, const RenderTa
 	viewport.MaxDepth = 1.0f;
 
 	commandList->SetViewport(viewport);
-	commandList->SetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList->SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const DXGI_FORMAT indexFormat = sizeof(ImDrawIdx) == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 

@@ -12,14 +12,16 @@ struct alignas(16) MaterialProperties
 {
     //The material properties must be aligned to a 16-byte boundary
     //To gurantee alignment, the material properties structure will be allocated in aligned memory
-    MaterialProperties(DirectX::XMFLOAT4 diffuse = { 1.0f, 1.0f, 1.0f, 1.0f },
-        DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f },
-        float specularPower = 128.0f,
-        DirectX::XMFLOAT4 ambient = { 0.1f, 0.1f, 0.1f, 1.0f },
-        DirectX::XMFLOAT4 emissive = { 0.0f, 0.0f, 0.0f, 1.0f },
-        DirectX::XMFLOAT4 reflectance = { 0.0f, 0.0f, 0.0f, 0.0f }, float opacity = 1.0f,
-        float indexOfRefraction = 0.0f, float bumpIntensity = 1.0f,
-        float alphaThreshold = 0.1f)
+    MaterialProperties(
+        const DirectX::XMFLOAT4 diffuse = { 1, 1, 1, 1 },
+        const DirectX::XMFLOAT4 specular = { 1, 1, 1, 1 },
+        const float specularPower = 128.0f,
+        const DirectX::XMFLOAT4 ambient = { 0, 0, 0, 1 },
+        const DirectX::XMFLOAT4 emissive = { 0, 0, 0, 1 },
+        const DirectX::XMFLOAT4 reflectance = { 0, 0, 0, 0 }, const float opacity = 1.0f,
+        const float indexOfRefraction = 0.0f, const float bumpIntensity = 1.0f,
+        const float alphaThreshold = 0.1f
+        )
         : Diffuse(diffuse)
         , Specular(specular)
         , Emissive(emissive)

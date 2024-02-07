@@ -34,14 +34,14 @@ using namespace DirectX;
 //#include <malloc.h>
 //#include <memory.h>
 //#include <tchar.h>
-
-#if defined(min)
-#undef min
-#endif
-
-#if defined(max)
-#undef max
-#endif
+//
+//#if defined(min)
+//#undef min
+//#endif
+//
+//#if defined(max)
+//#undef max
+//#endif
 
 //STL Headers
 #include <algorithm>
@@ -61,7 +61,11 @@ using namespace DirectX;
 #include <unordered_map>
 #include <vector>
 
+#if defined( __cpp_lib_filesystem )
 namespace fs = std::filesystem;
+#else
+namespace fs = std::experimental::filesystem;
+#endif
 
 //Assimp header files
 

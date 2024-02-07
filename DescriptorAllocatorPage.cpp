@@ -3,7 +3,7 @@
 #include "CommandQueue.h"
 #include "DescriptorAllocatorPage.h"
 #include "Device.h"
-#include "Application.h"
+//#include "Application.h"
 
 DescriptorAllocatorPage::DescriptorAllocatorPage(Device& device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors)
 	: m_Device(device)

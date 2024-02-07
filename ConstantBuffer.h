@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Buffer.h"
-#include "DescriptorAllocation.h"
+
+#include <d3d12.h>
+#include <wrl/client.h>
 
 class ConstantBuffer : public Buffer
 {

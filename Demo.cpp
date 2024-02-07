@@ -163,9 +163,9 @@ bool Demo::LoadContent()
     m_Plane = commandList->CreatePlane();
 
     //Load some textures
-    m_DefaultTexture = commandList->LoadTextureFromFile(L"Mona_Lisa.jpg", true);
-    m_DirectXTexture = commandList->LoadTextureFromFile(L"Mona_Lisa.jpg", true);
-    m_EarthTexture = commandList->LoadTextureFromFile(L"Mona_Lisa.jpg", true);
+    m_DefaultTexture = commandList->LoadTextureFromFile(L"DefaultWhite.bmp", true);
+    m_DirectXTexture = commandList->LoadTextureFromFile(L"Directx9.png", true);
+    m_EarthTexture = commandList->LoadTextureFromFile(L"earth.dds", true);
     m_MonaLisaTexture = commandList->LoadTextureFromFile(L"Mona_Lisa.jpg", true);
 
     //Start loading resources
@@ -631,7 +631,7 @@ void Demo::OnRender()
     //Resolve the MSAA render target to the swapchain's backbuffer
     auto& swapChainRT = m_SwapChain->GetRenderTarget();
     auto swapChainBackBuffer = swapChainRT.GetTexture(AttachmentPoint::Color0);
-    auto msaaRenderTarget = m_RenderTarget.GetTexture(AttachmentPoint::Color0);
+    //auto msaaRenderTarget = m_RenderTarget.GetTexture(AttachmentPoint::Color0);
 
     //commandList->ResolveSubResource(swapChainBackBuffer, msaaRenderTarget);
 

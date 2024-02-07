@@ -3,7 +3,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 
-#include <memory>
+//#include <memory>
 #include <string>
 
 class Device;

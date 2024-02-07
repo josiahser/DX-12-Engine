@@ -11,8 +11,8 @@
 #include <d3d12.h>
 #include <wrl.h>
 
-#include <memory>
 #include <deque>
+#include <memory>
 
 class Device;
 

@@ -357,7 +357,7 @@ std::shared_ptr<Texture> CommandList::LoadTextureFromFile(const std::wstring& fi
 		ResourceStateTracker::AddGlobalResourceState(textureResource.Get(), D3D12_RESOURCE_STATE_COMMON);
 
 		std::vector<D3D12_SUBRESOURCE_DATA> subresources(scratchImage.GetImageCount());
-		const DirectX::Image* pImages = scratchImage.GetImages();
+		const Image* pImages = scratchImage.GetImages();
 		for (int i = 0; i < scratchImage.GetImageCount(); ++i)
 		{
 			auto& subresource = subresources[i];
@@ -530,7 +530,7 @@ void CommandList::GenerateMips_UAV(const std::shared_ptr<Texture>& texture, bool
 		//0b01(1): Width is odd, height is even
 		//0b10(2): Width is even, height is odd
 		//0b11(3): both width and height are odd
-		generateMipsCB.SrcDimension = (srcHeight & 1) << 1 | (srcWidth & 1);
+		generateMipsCB.SrcDimension = (static_cast<unsigned long long>(srcHeight & 1)) << 1 | (srcWidth & 1);
 
 		//How many mipmap levels to compute this pass (max 4 per pass)
 		DWORD mipCount;
