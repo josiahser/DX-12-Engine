@@ -35,16 +35,17 @@
 #include "signals.hpp"
 
 #include <string>
+
   /**
    * A Delegate holds function callbacks.
    */
 
    // Primary delegate template.
 template<typename Func>
-class Delegater;
+class Delegate;
 
 template<typename R, typename... Args>
-class Delegater<R(Args...)>
+class Delegate<R(Args...)>
 {
 public:
     using slot = sig::slot<R(Args...)>;
@@ -99,7 +100,7 @@ public:
 };
 
 // Define the default event.
-using Event = Delegater<void(EventArgs&)>;
+using Event = Delegate<void(EventArgs&)>;
 
 /**
  * Update event args.
@@ -118,7 +119,7 @@ public:
     double TotalTime;
 };
 
-using UpdateEvent = Delegater<void(UpdateEventArgs&)>;
+using UpdateEvent = Delegate<void(UpdateEventArgs&)>;
 
 class DPIScaleEventArgs : public EventArgs
 {
@@ -131,7 +132,7 @@ public:
     float DPIScale;
 };
 
-using DPIScaleEvent = Delegater<void(DPIScaleEventArgs&)>;
+using DPIScaleEvent = Delegate<void(DPIScaleEventArgs&)>;
 
 /**
  * EventArgs for a WindowClosing event.
@@ -155,7 +156,7 @@ public:
     bool ConfirmClose;
 };
 
-using WindowCloseEvent = Delegater<void(WindowCloseEventArgs&)>;
+using WindowCloseEvent = Delegate<void(WindowCloseEventArgs&)>;
 
 enum class KeyState
 {
@@ -189,7 +190,7 @@ public:
     bool     Alt;       // Is the Alt modifier pressed
 };
 
-using KeyboardEvent = Delegater<void(KeyEventArgs&)>;
+using KeyboardEvent = Delegate<void(KeyEventArgs&)>;
 
 /**
  * MouseMotionEventArgs are used to indicate the mouse moved or was dragged over
@@ -225,7 +226,7 @@ public:
     int RelY;           // How far the mouse moved since the last event (in pixels).
 };
 
-using MouseMotionEvent = Delegater<void(MouseMotionEventArgs&)>;
+using MouseMotionEvent = Delegate<void(MouseMotionEventArgs&)>;
 
 enum class MouseButton
 {
@@ -274,7 +275,7 @@ public:
     // the client area.
 };
 
-using MouseButtonEvent = Delegater<void(MouseButtonEventArgs&)>;
+using MouseButtonEvent = Delegate<void(MouseButtonEventArgs&)>;
 
 /**
  * MouseWheelEventArgs indicates if the mouse wheel was moved and how much.
@@ -311,7 +312,7 @@ public:
     int Y;              // The Y-position of the cursor relative to the upper-left corner of
     // the client area.
 };
-using MouseWheelEvent = Delegater<void(MouseWheelEventArgs&)>;
+using MouseWheelEvent = Delegate<void(MouseWheelEventArgs&)>;
 
 enum class WindowState
 {
@@ -342,7 +343,7 @@ public:
     // If the window was minimized or maximized.
     WindowState State;
 };
-using ResizeEvent = Delegater<void(ResizeEventArgs&)>;
+using ResizeEvent = Delegate<void(ResizeEventArgs&)>;
 
 /**
  * Generic user event args.
@@ -362,7 +363,7 @@ public:
     void* Data1;
     void* Data2;
 };
-using UserEvent = Delegater<void(UserEventArgs&)>;
+using UserEvent = Delegate<void(UserEventArgs&)>;
 
 /**
  * Used to notify a runtime error occurred.
@@ -381,7 +382,7 @@ public:
     std::string ErrorString;
     std::string CompilerError;
 };
-using RuntimeErrorEvent = Delegater<void(RuntimeErrorEventArgs&)>;
+using RuntimeErrorEvent = Delegate<void(RuntimeErrorEventArgs&)>;
 
 enum class FileAction
 {
@@ -409,4 +410,4 @@ public:
     FileAction   Action;  // The action that triggered this event.
     std::wstring Path;    // The file or directory path that was modified.
 };
-using FileChangeEvent = Delegater<void(FileChangedEventArgs&)>;
+using FileChangeEvent = Delegate<void(FileChangedEventArgs&)>;

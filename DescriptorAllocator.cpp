@@ -63,7 +63,7 @@ DescriptorAllocation DescriptorAllocator::Allocate(uint32_t numDescriptors)
 	//If no available heap could satisfy the requested number of descriptors, create a new one
 	if (allocation.IsNull())
 	{
-		m_NumDescriptorsPerHeap = std::max(m_NumDescriptorsPerHeap, numDescriptors);
+		m_NumDescriptorsPerHeap = max(m_NumDescriptorsPerHeap, numDescriptors);
 		auto newPage = CreateAllocatorPage();
 
 		allocation = newPage->Allocate(numDescriptors);

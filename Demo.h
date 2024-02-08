@@ -29,7 +29,7 @@ class Demo
 {
 public:
 
-	Demo(const std::wstring& name, int width, int height, bool vSync = false);
+	Demo(const std::wstring& name, uint32_t width, uint32_t height, bool vSync = false);
 	virtual ~Demo();
 
 	//Start the game loop and return the error code

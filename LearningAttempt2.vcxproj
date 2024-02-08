@@ -154,7 +154,7 @@
       </EntryPointSymbol>
       <ShowProgress>LinkVerbose</ShowProgress>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>C:\Users\jo_serravalle\source\repos\LearningAttempt2\x64-windows\debug\bin;C:\Users\jo_serravalle\source\repos\LearningAttempt2\x64-windows\debug\lib;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\atlmfc\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\lib\x64;C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\debug\lib;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.22621.0;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\atlmfc\lib\x64;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\debug\lib;$(UniversalCRT_LibraryPath_x64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg\pkgs;C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg\packages\assimp_x64-windows\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\atlmfc\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\lib\x64;C:\Users\jo_serravalle\source\repos\LearningAttempt2\vcpkg_installed\x64-windows\debug\lib;C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.22621.0;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\lib\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\atlmfc\lib\x64;C:\Users\josia\source\repos\DX-12-Engine\vcpkg_installed\x64-windows\debug\lib;$(UniversalCRT_LibraryPath_x64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>dxcompiler.lib;dxgi.lib;dxguid.lib;d3d12.lib;d3dcompiler.lib;assimp-vc143-mtd.lib;DirectX-Guids.lib;DirectX-Headers.lib;DirectXTex.lib;libcurl-d.lib;spdlogd.lib;zlibd.lib;gainput-d.lib;DirectXTK12.lib;draco.lib;fmtd.lib;kubazip.lib;minizip.lib;poly2tri.lib;polyclipping.lib;pugixml.lib;imguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest />
@@ -234,6 +234,7 @@
     <ClInclude Include="ReadDirectoryChangesPrivate.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="ResourceStateTracker.h" />
     <ClInclude Include="RootSignature.h" />
     <ClInclude Include="Scene.h" />
@@ -305,12 +306,8 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="LearningAttempt2.rc">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <Image Include="icon1.ico" />
+    <Image Include="icon2.ico" />
     <Image Include="LearningAttempt2.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
@@ -397,6 +394,9 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="LearningAttempt2.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

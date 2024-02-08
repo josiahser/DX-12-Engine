@@ -26,7 +26,7 @@ class Window;
 
 using Logger = std::shared_ptr<spdlog::logger>;
 
-using WndProcEvent = Delegater<LRESULT(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)>;
+using WndProcEvent = Delegate<LRESULT(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)>;
 
 class Application
 {

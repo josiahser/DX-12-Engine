@@ -140,9 +140,8 @@ Application::Application(HINSTANCE hInst)
     auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
 
     std::vector<spdlog::sink_ptr> sinks{ stdout_sink, rotating_sink, msvc_sink };
-    m_Logger = std::make_shared<spdlog::async_logger>("Application", sinks.begin(), sinks.end(),
+    m_Logger = std::make_shared<spdlog::async_logger>("GameFramework", sinks.begin(), sinks.end(),
         spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-
     spdlog::register_logger(m_Logger);
     spdlog::set_default_logger(m_Logger);
 
@@ -177,11 +176,11 @@ Application::Application(HINSTANCE hInst)
     wndClass.lpfnWndProc = &WndProc;
     wndClass.hInstance = m_hInstance;
     wndClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wndClass.hIcon = LoadIcon(m_hInstance, nullptr);
+    wndClass.hIcon = LoadIcon(m_hInstance, MAKEINTRESOURCE(APP_ICON1));
     wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wndClass.lpszMenuName = nullptr;
     wndClass.lpszClassName = WINDOW_CLASS_NAME;
-    wndClass.hIconSm = LoadIcon(m_hInstance, nullptr);
+    wndClass.hIconSm = LoadIcon(m_hInstance, MAKEINTRESOURCE(APP_ICON1));
 
     if (!RegisterClassExW(&wndClass))
     {

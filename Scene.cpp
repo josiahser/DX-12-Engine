@@ -20,7 +20,7 @@ public:
 		, m_ProgressCallback(progressCallback)
 	{}
 
-	virtual bool Update(float percentage)
+	virtual bool Update(float percentage) override
 	{
 		//Invoke the progress callback
 		if (m_ProgressCallback)
@@ -35,7 +35,7 @@ private:
 };
 
 //Helper function to create a DirectX::BoundingBoc from an aiAABB
-DirectX::BoundingBox CreateBoundingBox(const aiAABB& aabb)
+inline DirectX::BoundingBox CreateBoundingBox(const aiAABB& aabb)
 {
 	XMVECTOR min = XMVectorSet(aabb.mMin.x, aabb.mMin.y, aabb.mMin.z, 1.0f);
 	XMVECTOR max = XMVectorSet(aabb.mMax.x, aabb.mMax.y, aabb.mMax.z, 1.0f);
@@ -201,69 +201,71 @@ void Scene::ImportMaterial(CommandList& commandList, const aiMaterial& material,
 		pMaterial->SetBumpIntensity(bumpIntensity);
 	}
 
-	//Load ambient textures
-		if (material.GetTextureCount(aiTextureType_AMBIENT) > 0 && material.GetTexture(aiTextureType_AMBIENT, 0, &aiTexturePath, nullptr, nullptr, &blendFactor,
-		&aiBlendOperation) == aiReturn_SUCCESS)
-		{
-			fs::path texturePath(aiTexturePath.C_Str());
-			auto texture = commandList.LoadTextureFromFile(parentPath / texturePath, true);
-			pMaterial->SetTexture(Material::TextureType::Emissive, texture);
-		}
+	// Load ambient textures.
+	if (material.GetTextureCount(aiTextureType_AMBIENT) > 0 &&
+		material.GetTexture(aiTextureType_AMBIENT, 0, &aiTexturePath, nullptr, nullptr, &blendFactor,
+			&aiBlendOperation) == aiReturn_SUCCESS)
+	{
+		fs::path texturePath(aiTexturePath.C_Str());
+		auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, true);
+		pMaterial->SetTexture(Material::TextureType::Ambient, texture);
+	}
+
+	// Load emissive textures.
+	if (material.GetTextureCount(aiTextureType_EMISSIVE) > 0 &&
+		material.GetTexture(aiTextureType_EMISSIVE, 0, &aiTexturePath, nullptr, nullptr, &blendFactor,
+			&aiBlendOperation) == aiReturn_SUCCESS)
+	{
+		fs::path texturePath(aiTexturePath.C_Str());
+		auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, true);
+		pMaterial->SetTexture(Material::TextureType::Emissive, texture);
+	}
 
 	// Load diffuse textures.
 	if (material.GetTextureCount(aiTextureType_DIFFUSE) > 0 &&
 		material.GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath, nullptr, nullptr, &blendFactor,
-		&aiBlendOperation) == aiReturn_SUCCESS)
-		{
-			fs::path texturePath(aiTexturePath.C_Str());
-			auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, true);
-			pMaterial->SetTexture(Material::TextureType::Diffuse, texture);
-		}
-
-	// Load specular texture.
-	if (material.GetTextureCount(aiTextureType_SPECULAR) > 0 &&
-		material.GetTexture(aiTextureType_SPECULAR, 0, &aiTexturePath, nullptr, nullptr, &blendFactor,
-		&aiBlendOperation) == aiReturn_SUCCESS)
-		{
-			fs::path texturePath(aiTexturePath.C_Str());
-			auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, true);
-			pMaterial->SetTexture(Material::TextureType::Specular, texture);
-		}
+			&aiBlendOperation) == aiReturn_SUCCESS)
+	{
+		fs::path texturePath(aiTexturePath.C_Str());
+		auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, true);
+		pMaterial->SetTexture(Material::TextureType::Diffuse, texture);
+	}
 
 	// Load specular power texture.
 	if (material.GetTextureCount(aiTextureType_SHININESS) > 0 &&
 		material.GetTexture(aiTextureType_SHININESS, 0, &aiTexturePath, nullptr, nullptr, &blendFactor,
-		&aiBlendOperation) == aiReturn_SUCCESS)
-		{
-			fs::path texturePath(aiTexturePath.C_Str());
-			auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, false);
-			pMaterial->SetTexture(Material::TextureType::SpecularPower, texture);
-		}
+			&aiBlendOperation) == aiReturn_SUCCESS)
+	{
+		fs::path texturePath(aiTexturePath.C_Str());
+		auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, false);
+		pMaterial->SetTexture(Material::TextureType::SpecularPower, texture);
+	}
 
 	if (material.GetTextureCount(aiTextureType_OPACITY) > 0 &&
 		material.GetTexture(aiTextureType_OPACITY, 0, &aiTexturePath, nullptr, nullptr, &blendFactor,
-		&aiBlendOperation) == aiReturn_SUCCESS)
-		{
-			fs::path texturePath(aiTexturePath.C_Str());
-			auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, false);
-			pMaterial->SetTexture(Material::TextureType::Opacity, texture);
-		}
+			&aiBlendOperation) == aiReturn_SUCCESS)
+	{
+		fs::path texturePath(aiTexturePath.C_Str());
+		auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, false);
+		pMaterial->SetTexture(Material::TextureType::Opacity, texture);
+	}
 
 	// Load normal map texture.
 	if (material.GetTextureCount(aiTextureType_NORMALS) > 0 &&
 		material.GetTexture(aiTextureType_NORMALS, 0, &aiTexturePath) == aiReturn_SUCCESS)
-		{
-			fs::path texturePath(aiTexturePath.C_Str());
-			auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, false);
-			pMaterial->SetTexture(Material::TextureType::Normal, texture);
-		}
+	{
+		fs::path texturePath(aiTexturePath.C_Str());
+		auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, false);
+		pMaterial->SetTexture(Material::TextureType::Normal, texture);
+	}
 	// Load bump map (only if there is no normal map).
 	else if (material.GetTextureCount(aiTextureType_HEIGHT) > 0 &&
-			material.GetTexture(aiTextureType_HEIGHT, 0, &aiTexturePath, nullptr, nullptr, &blendFactor) ==
-			aiReturn_SUCCESS)
-		{
-			fs::path texturePath(aiTexturePath.C_Str());
-			auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, false);
+		material.GetTexture(aiTextureType_HEIGHT, 0, &aiTexturePath, nullptr, nullptr, &blendFactor) ==
+		aiReturn_SUCCESS)
+	{
+		fs::path texturePath(aiTexturePath.C_Str());
+		auto     texture = commandList.LoadTextureFromFile(parentPath / texturePath, false);
+
 
 			// Some materials actually store normal maps in the bump map slot. Assimp can't tell the difference between
 			// these two texture types, so we try to make an assumption about whether the texture is a normal map or a bump

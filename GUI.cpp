@@ -218,7 +218,7 @@ void GUI::Render(const std::shared_ptr<CommandList>& commandList, const RenderTa
 	viewport.MaxDepth = 1.0f;
 
 	commandList->SetViewport(viewport);
-	commandList->SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	commandList->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const DXGI_FORMAT indexFormat = sizeof(ImDrawIdx) == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 

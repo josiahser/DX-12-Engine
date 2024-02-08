@@ -1,7 +1,7 @@
 #include "framework.h"
 
-#include "Texture.h"
 #include "Material.h"
+#include "Texture.h"
 
 //Material properties must be 16-byte aligned
 //In order to ensure alignment, the material properties are allocated in aligned memory

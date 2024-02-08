@@ -71,8 +71,8 @@ D3D12_VIEWPORT RenderTarget::GetViewport(DirectX::XMFLOAT2 scale, DirectX::XMFLO
 		if (texture)
 		{
 			auto desc = texture->GetD3D12ResourceDesc();
-			width = std::max(width, desc.Width);
-			height = std::max(height, desc.Height);
+			width = max(width, desc.Width);
+			height = max(height, desc.Height);
 		}
 	}
 

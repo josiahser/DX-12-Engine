@@ -11,8 +11,8 @@ public:
 	SceneVisitor(CommandList& commandList);
 
 	//Placeholder methods
-	virtual void Visit(Scene& scene) override {};
-	virtual void Visit(SceneNode& sceneNode) override {};
+	virtual void Visit(Scene& scene) override {}
+	virtual void Visit(SceneNode& sceneNode) override {}
 	//Mesh must be rendered
 	virtual void Visit(Mesh& mesh) override;
 

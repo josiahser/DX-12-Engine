@@ -116,8 +116,8 @@ void SwapChain::Resize(uint32_t width, uint32_t height)
 {
 	if (m_Width != width || m_Height != height)
 	{
-		m_Width = std::max(1u, width);
-		m_Height = std::max(1u, height);
+		m_Width = max(1u, width);
+		m_Height = max(1u, height);
 
 		m_Device.Flush();
 

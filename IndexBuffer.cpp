@@ -18,7 +18,7 @@ IndexBuffer::IndexBuffer(Device& device, Microsoft::WRL::ComPtr<ID3D12Resource> 
 	: Buffer(device, resource)
 	, m_NumIndicies(numIndices)
 	, m_IndexFormat(indexFormat)
-	, m_IndexBufferView({})
+	, m_IndexBufferView{}
 {
 	assert(indexFormat == DXGI_FORMAT_R16_UINT || indexFormat == DXGI_FORMAT_R32_UINT);
 	CreateIndexBufferView();

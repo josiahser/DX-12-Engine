@@ -6,7 +6,7 @@ VertexBuffer::VertexBuffer(Device& device, size_t numVertices, size_t vertexStri
 	: Buffer(device, CD3DX12_RESOURCE_DESC::Buffer(numVertices * vertexStride))
 	, m_NumVertices(numVertices)
 	, m_VertexStride(vertexStride)
-	, m_VertexBufferView({})
+	, m_VertexBufferView{}
 {
 	CreateVertexBufferView();
 }
@@ -15,7 +15,7 @@ VertexBuffer::VertexBuffer(Device& device, Microsoft::WRL::ComPtr<ID3D12Resource
 	: Buffer(device, resource)
 	, m_NumVertices(numVertices)
 	, m_VertexStride(vertexStride)
-	, m_VertexBufferView({})
+	, m_VertexBufferView{}
 {
 	CreateVertexBufferView();
 }
