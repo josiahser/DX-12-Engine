@@ -1,7 +1,10 @@
+//clang-format off
 struct PixelShaderInput
 {
     float4 PositionVS : POSITION;
     float3 NormalVS : NORMAL;
+    float3 TangentVS : TANGENT;
+    float3 BitangentVS : BITANGENT;
     float2 TexCoord : TEXCOORD;
 };
 
@@ -23,22 +26,21 @@ struct Material
     float BumpIntensity; // When using bump textures (height maps) we need
                               // to scale the height values so the normals are visible.
     //------------------------------------ ( 16 bytes )
-    float AlphaThreshold; // Pixels with alpha < m_AlphaThreshold will be discarded.
+    //float AlphaThreshold; // Pixels with alpha < m_AlphaThreshold will be discarded.
     bool HasAmbientTexture;
     bool HasEmissiveTexture;
     bool HasDiffuseTexture;
-    //------------------------------------ ( 16 bytes )
     bool HasSpecularTexture;
+    //------------------------------------ ( 16 bytes )
     bool HasSpecularPowerTexture;
     bool HasNormalTexture;
     bool HasBumpTexture;
-    //------------------------------------ ( 16 bytes )
     bool HasOpacityTexture;
-    float3 Padding; // Pad to 16 byte boundary.
     //------------------------------------ ( 16 bytes )
-    // Total:                              ( 16 * 9 = 144 bytes )
+    // Total:                              ( 16 * 8 = 128 bytes )
 };
 
+#if ENABLE_LIGHTING
 struct PointLight
 {
     float4 PositionWS; //Light position in World Space
@@ -47,10 +49,10 @@ struct PointLight
     //-------------------16 byte boundary
     float4 Color;
     //-------------------16 byte boundary
+    float Ambient;
     float ConstantAttenuation;
     float LinearAttenuation;
     float QuadraticAttenuation;
-    float Padding;
     //------------------16 byte boundary
     //Total: 64 Bytes
 };
@@ -67,34 +69,65 @@ struct SpotLight
     //---------------------
     float4 Color;
     //---------------------
+    float Ambient
     float SpotAngle;
     float ConstantAttenuation;
     float LinearAttenuation;
-    float QuadraticAttenuation;
     //-------------------------
-    //Total: 96 Bytes
+    float QuadraticAttenuation;
+    float3 Padding;
+    //--------------------------
+    //Total: 112 Bytes
+};
+
+struct DirectionalLight
+{
+    float4 DirectionWS; //Light direction int world space
+    //------------------------
+    float4 DirectionVS; //Light direction in View Space
+    //------------------------
+    float4 Color;
+    //------------------------
+    float Ambient;
+    float3 Padding;
+    //------------------------
+    // Total: 16 * 4 = 64 Bytes
 };
 
 struct LightProperties
 {
     uint NumPointLights;
     uint NumSpotLights;
+    uint NumDirectionalLights;
 };
 
 struct LightResult
 {
     float4 Diffuse;
     float4 Specular;
+    float4 Ambient;
 };
 
-ConstantBuffer<Material> MaterialCB : register(b0, space1);
 ConstantBuffer<LightProperties> LightPropertiesCB : register(b1);
 
 StructuredBuffer<PointLight> PointLights : register(t0);
 StructuredBuffer<SpotLight> SpotLights : register(t1);
-Texture2D DiffuseTexture : register(t2);
+StructuredBuffer<DirectionalLight> DirectionalLights : register(t2);
+#endif // ENABLE_LIGHTING
 
-SamplerState LinearRepeatSampler : register(s0);
+ConstantBuffer<Material> MaterialCB : register(b0, space1);
+
+//Textures
+Texture2D AmbientTexture : register(t3);
+Texture2D EmissiveTexture : register(t4);
+Texture2D DiffuseTexture : register(t5);
+Texture2D SpecularTexture : register(t6);
+Texture2D SpecularPowerTexture : register(t7);
+Texture2D NormalTexture : register(t8);
+Texture2D BumpTexture : register(t9);
+Texture2D OpacityTexture : register(t10);
+
+SamplerState TextureSampler : register(s0);
 
 float3 LinearToSRGB(float3 x)
 {
@@ -104,23 +137,23 @@ float3 LinearToSRGB(float3 x)
     //This is cheaper, but nearly equivalent
     return x < 0.0031308 ? 12.92 * x : 1.13005 * sqrt(abs(x - 0.00228)) - 0.13448 * x + 0.005719;
 }
-
+#if ENABLE_LIGHTING
 float DoDiffuse(float3 N, float3 L)
 {
     return max(0, dot(N, L));
 }
 
-float DoSpecular(float3 V, float3 N, float3 L)
+float DoSpecular(float3 V, float3 N, float3 L, float specularPower)
 {
     float3 R = normalize(reflect(-L, N));
     float RdotV = max(0, dot(R, V));
     
-    return pow(RdotV, MaterialCB.SpecularPower);
+    return pow(RdotV, specularPower);
 }
 
 float DoAttenuation(float c, float l, float q, float d)
 {
-    return 1.0f / (c + l * d + q * d * d);
+    return 1.0f / ( c + l * d + q * d * d);
 }
 
 float DoSpotCone(float3 spotDir, float3 L, float spotAngle)
@@ -131,7 +164,7 @@ float DoSpotCone(float3 spotDir, float3 L, float spotAngle)
     return smoothstep(minCos, maxCos, cosAngle);
 }
 
-LightResult DoPointLight(PointLight light, float3 V, float3 P, float3 N)
+LightResult DoPointLight(PointLight light, float3 V, float3 P, float3 N, float specularPower)
 {
     LightResult result;
     float3 L = (light.PositionVS.xyz - P);
@@ -141,12 +174,13 @@ LightResult DoPointLight(PointLight light, float3 V, float3 P, float3 N)
     float attenuation = DoAttenuation(light.ConstantAttenuation, light.LinearAttenuation, light.QuadraticAttenuation, d);
     
     result.Diffuse = DoDiffuse(N, L) * attenuation * light.Color;
-    result.Specular = DoSpecular(V, N, L) * attenuation * light.Color;
+    result.Specular = DoSpecular(V, N, L, specularPower) * attenuation * light.Color;
+    result.Ambient = light.Color * light.Ambient;
     
     return result;
 }
 
-LightResult DoSpotLight(SpotLight light, float3 V, float3 P, float3 N)
+LightResult DoSpotLight(SpotLight light, float3 V, float3 P, float3 N, float specularPower)
 {
     LightResult result;
     float3 L = (light.PositionVS.xyz - P);
@@ -158,50 +192,213 @@ LightResult DoSpotLight(SpotLight light, float3 V, float3 P, float3 N)
     float spotIntensity = DoSpotCone(light.DirectionVS.xyz, L, light.SpotAngle);
     
     result.Diffuse = DoDiffuse(N, L) * attenuation * spotIntensity * light.Color;
-    result.Specular = DoSpecular(V, N, L) * attenuation * spotIntensity * light.Color;
+    result.Specular = DoSpecular(V, N, L, specularPower) * attenuation * spotIntensity * light.Color;
+    result.Ambient = light.Color * light.Ambient;
     
     return result;
 }
 
-LightResult DoLighting(float3 P, float3 N)
+LightResult DoDirectionalLight(DirectionalLight light, float3 V, float3 P, float3 N, float specularPower)
+{
+    LightResult result;
+    float3 L = normalize(-light.DirectionVS.xyz);
+
+    result.Diffuse = light.Color * DoDiffuse(N, L);
+    result.Specular = light.Color * DoSpecular(V, N, L, specularPower);
+    result.Ambient = light.Color * light.Ambient;
+
+    return result;
+}
+
+LightResult DoLighting(float3 P, float3 N, float specularPower)
 {
     uint i;
+
     //Lighting is performed in view space
     float3 V = normalize(-P);
     
     LightResult totalResult = (LightResult) 0;
     
+    //Iterate point lights
     for (i = 0; i < LightPropertiesCB.NumPointLights; ++i)
     {
-        LightResult result = DoPointLight(PointLights[i], V, P, N);
+        LightResult result = DoPointLight(PointLights[i], V, P, N, specularPower);
         
         totalResult.Diffuse += result.Diffuse;
         totalResult.Specular += result.Specular;
+        totalResult.Ambient += result.Ambient;
     }
     
     for (i = 0; i < LightPropertiesCB.NumSpotLights; ++i)
     {
-        LightResult result = DoSpotLight(SpotLights[i], V, P, N);
+        LightResult result = DoSpotLight(SpotLights[i], V, P, N, specularPower);
         
         totalResult.Diffuse += result.Diffuse;
         totalResult.Specular += result.Specular;
+        totalResult.Ambient += result.Ambient;
+    }
+
+    for(i = 0; i < LightPropertiesCB.NumDirectionalLights; ++i)
+    {
+        LightResult result = DoDirectionalLight(DirectionalLights[i], V, P, N, specularPower);
+
+        totalResult.Diffuse += result.Diffuse;
+        totalResult.Specular += result.Specular;
+        totalResult.Ambient += result.Ambient;
     }
     
     totalResult.Diffuse = saturate(totalResult.Diffuse);
     totalResult.Specular = saturate(totalResult.Specular);
+    totalResult.Ambient = saturate(totalResult.Ambient);
 
     return totalResult;
+}
+#endif //ENABLE_LIGHTING
+
+float3 ExpandNormal(float3 n)
+{
+    return n * 2.0f - 1.0f;
+}
+
+float3 DoNormalMapping(float3x3 TBN, Texture2D tex, float2 uv)
+{
+    float3 N = tex.Sample(TextureSampler, uv).xyz;
+    N = ExpandNormal(N);
+    
+    //Transform normal from tangent space to view spacec
+    N = mul(N, TBN);
+    return normalize(N);
+}
+
+float3 DoBumpMapping(float3x3 TBN, Texture2D tex, float2 uv, float bumpScale)
+{
+    //Sample the heightmap at the current texture coordinate
+    float height_00 = tex.Sample(TextureSampler, uv).r * bumpScale;
+    
+    //Sample the heightmap in the U texture coordinate direction
+    float height_10 = tex.Sample(TextureSampler, uv, int2(1, 0)).r * bumpScale;
+    
+    //Sample the heightmap in the V texture coordinate direction
+    float height_01 = tex.Sample(TextureSampler, uv, int2(0, 1)).r * bumpScale;
+    
+    float3 p_00 = { 0, 0, height_00 };
+    float3 p_10 = { 1, 0, height_10 };
+    float3 p_01 = { 0, 1, height_01 };
+
+    //normal = tangent x bitangent
+    float3 tangent = normalize(p_10 - p_00);
+    float3 bitangent = normalize(p_01 - p_00);
+    
+    float3 normal = cross(tangent, bitangent);
+    
+    //Transform normal from tangent space to view space
+    normal = mul(normal, TBN);
+    
+    return normal;
+}
+
+//If c is not black, then blend the color with the texture, otherwise, replace the color with texture
+float4 SampleTexture(Texture2D t, float2 uv, float4 c)
+{
+    if(any(c.rgb))
+    {
+        c *= t.Sample(TextureSampler, uv);
+    }
+    else
+    {
+        c = t.Sample(TextureSampler, uv);
+    }
+    
+    return c;
 }
 
 float4 main(PixelShaderInput IN) : SV_Target
 {
-    LightResult lit = DoLighting(IN.PositionVS.xyz, normalize(IN.NormalVS));
+    Material material = MaterialCB;
     
-    float4 emissive = MaterialCB.Emissive;
-    float4 ambient = MaterialCB.Ambient;
-    float4 diffuse = MaterialCB.Diffuse * lit.Diffuse;
-    float4 specular = MaterialCB.Specular * lit.Specular;
-    float4 texColor = DiffuseTexture.Sample(LinearRepeatSampler, IN.TexCoord);
+    //By default, use the alpha component of the diffuse color
+    float alpha = material.Diffuse.a;
+    if(material.HasOpacityTexture)
+    {
+        alpha = OpacityTexture.Sample(TextureSampler, IN.TexCoord.xy).r;
+    }
     
-    return (emissive + ambient + diffuse + specular) * texColor;
+    #if ENABLE_DECAL
+        if(alpha < 0.1f)
+        {
+            discard; //Discard the pixel if it is below a threshold
+        }
+    #endif //ENABLE_DECAL
+    
+    float4 ambient = material.Ambient;
+    float4 emissive = material.Emissive;
+    float4 diffuse = material.Diffuse;
+    float specularPower = material.SpecularPower;
+    float2 uv = IN.TexCoord.xy;
+    
+    if(material.HasAmbientTexture)
+    {
+        ambient = SampleTexture(AmbientTexture, uv, ambient);
+    }
+    if (material.HasEmissiveTexture)
+    {
+        emissive = SampleTexture(EmissiveTexture, uv, emissive);
+    }
+    if (material.HasDiffuseTexture)
+    {
+        diffuse = SampleTexture(DiffuseTexture, uv, diffuse);
+    }
+    if (material.HasSpecularPowerTexture)
+    {
+        specularPower *= SpecularPowerTexture.Sample(TextureSampler, uv).r;
+    }
+    
+    float3 N;
+    //Normal mapping
+    if(material.HasNormalTexture)
+    {
+        float3 tangent = normalize(IN.TangentVS);
+        float3 bitangent = normalize(IN.BitangentVS);
+        float3 normal = normalize(IN.NormalVS);
+        
+        float3x3 TBN = float3x3(tangent, bitangent, normal);
+        
+        N = DoNormalMapping(TBN, NormalTexture, uv);
+    }
+    else if(material.HasBumpTexture)
+    {
+        float3 tangent = normalize(IN.TangentVS);
+        float3 bitangent = normalize(IN.BitangentVS);
+        float3 normal = normalize(IN.NormalVS);
+        
+        float3x3 TBN = float3x3(tangent, -bitangent, normal);
+        
+        N = DoBumpMapping(TBN, BumpTexture, uv, material.BumpIntensity);
+    }
+    else
+    {
+        N = normalize(IN.NormalVS);
+    }
+    float shadow = 1;
+    float4 specular = 0;
+    #if ENABLE_LIGHTING
+    LightResult lit = DoLighting(IN.PositionVS.xyz, N, specularPower);
+    diffuse *= lit.Diffuse;
+    ambient *= lit.Ambient;
+    //Specular power less than 1 doesn't really make sense.
+    //Ignore specular on materials with specular power less than 1
+    if(material.SpecularPower > 1.0f)
+    {
+        specular = material.Specular;
+        if(material.HasSpecularTexture)
+        {
+            specular = SampleTexture(SpecularTexture, uv, specular);
+        }
+        specular *= lit.Specular;
+    }
+    #else
+        shadow = -N.z;
+    #endif // ENABLE_LIGHTING
+    
+    return float4((emissive + ambient + diffuse + specular).rgb * shadow, alpha * material.Opacity);
 }

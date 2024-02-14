@@ -31,7 +31,7 @@ public:
 		m_RootNode = node;
 	}
 
-	std::shared_ptr<SceneNode> GetRoodNode() const
+	std::shared_ptr<SceneNode> GetRootNode() const
 	{
 		return m_RootNode;
 	}

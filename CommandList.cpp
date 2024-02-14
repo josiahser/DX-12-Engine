@@ -301,19 +301,19 @@ std::shared_ptr<Texture> CommandList::LoadTextureFromFile(const std::wstring& fi
 		
 		if (filePath.extension() == ".dds")
 		{
-			ThrowIfFailed(DirectX::LoadFromDDSFile(fileName.c_str(), DirectX::DDS_FLAGS_FORCE_RGB, &metadata, scratchImage));
+			ThrowIfFailed(LoadFromDDSFile(fileName.c_str(), DirectX::DDS_FLAGS_FORCE_RGB, &metadata, scratchImage));
 		}
 		else if (filePath.extension() == ".hdr")
 		{
-			ThrowIfFailed(DirectX::LoadFromHDRFile(fileName.c_str(), &metadata, scratchImage));
+			ThrowIfFailed(LoadFromHDRFile(fileName.c_str(), &metadata, scratchImage));
 		}
 		else if (filePath.extension() == ".tga")
 		{
-			ThrowIfFailed(DirectX::LoadFromTGAFile(fileName.c_str(), &metadata, scratchImage));
+			ThrowIfFailed(LoadFromTGAFile(fileName.c_str(), &metadata, scratchImage));
 		}
 		else
 		{
-			ThrowIfFailed(DirectX::LoadFromWICFile(fileName.c_str(), DirectX::WIC_FLAGS_FORCE_RGB, &metadata, scratchImage));
+			ThrowIfFailed(LoadFromWICFile(fileName.c_str(), DirectX::WIC_FLAGS_FORCE_RGB, &metadata, scratchImage));
 		}
 
 		//Force the texture format to be sRGB to convert to linear when sampling the texture in a shader
@@ -329,7 +329,8 @@ std::shared_ptr<Texture> CommandList::LoadTextureFromFile(const std::wstring& fi
 			textureDesc = CD3DX12_RESOURCE_DESC::Tex1D(metadata.format, static_cast<UINT64>(metadata.width), static_cast<UINT16>(metadata.arraySize));
 			break;
 		case DirectX::TEX_DIMENSION_TEXTURE2D:
-			textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(metadata.format, static_cast<UINT64>(metadata.width), static_cast<UINT>(metadata.height), static_cast<UINT16>(metadata.arraySize));
+			textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(metadata.format, static_cast<UINT64>(metadata.width), static_cast<UINT>(metadata.height), 
+				static_cast<UINT16>(metadata.arraySize), static_cast<UINT16>(metadata.mipLevels));
 			break;
 		case DirectX::TEX_DIMENSION_TEXTURE3D:
 			textureDesc = CD3DX12_RESOURCE_DESC::Tex3D(metadata.format, static_cast<UINT64>(metadata.width), static_cast<UINT>(metadata.height), static_cast<UINT16>(metadata.depth));

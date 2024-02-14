@@ -456,13 +456,18 @@ DXGI_SAMPLE_DESC Device::GetMultisampleQualityLevels(DXGI_FORMAT format, UINT nu
 {
     DXGI_SAMPLE_DESC sampleDesc = { 1, 0 };
 
+    if (numSamples <= sampleDesc.Count)
+    {
+        return sampleDesc;
+    }
+
     D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS qualityLevels;
     qualityLevels.Format = format;
     qualityLevels.SampleCount = 1;
     qualityLevels.Flags = flags;
     qualityLevels.NumQualityLevels = 0;
 
-    while (qualityLevels.SampleCount <= numSamples && SUCCEEDED(m_d3d12Device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &qualityLevels, sizeof(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS))) && qualityLevels.NumQualityLevels > 0)
+    while (qualityLevels.SampleCount <= numSamples && SUCCEEDED(m_d3d12Device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &qualityLevels, sizeof(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS))) && qualityLevels.NumQualityLevels >= 0)
     {
         sampleDesc.Count = qualityLevels.SampleCount;
         sampleDesc.Quality = qualityLevels.NumQualityLevels - 1;

@@ -1,42 +1,42 @@
 #pragma once
 
 #include "Camera.h"
+#include "CameraController.h"
 #include "Light.h"
 
-#include "Events.h"
 #include "Application.h"
 
 #include "RenderTarget.h"
 
-#include <cstdint>
+#include <d3d12.h>
+
+#include <future>
 #include <memory>
 #include <string>
-#include <vector>
 
 class CommandList;
 class Device;
 class GUI;
-class Mesh;
-class RootSignature;
 class PipelineStateObject;
+class RenderTarget;
+class RootSignature;
 class Scene;
 class SwapChain;
-class Texture;
 
-class Window;
+class EffectPSO;
 
 class Demo
 {
 public:
 
-	Demo(const std::wstring& name, uint32_t width, uint32_t height, bool vSync = false);
+	Demo(const std::wstring& name, int width, int height, bool vSync = false);
 	virtual ~Demo();
 
 	//Start the game loop and return the error code
 	uint32_t Run();
 
 	//Load content for the demo
-	bool LoadContent();
+	void LoadContent();
 
 	//Unload demo content that was loaded in LoadContent()
 	void UnloadContent();
@@ -45,10 +45,10 @@ protected:
 	//Update the game logic
 	void OnUpdate(UpdateEventArgs& e);
 
+	void OnResize(ResizeEventArgs& e);
+
 	//Render the stuff
 	void OnRender();
-
-	void OnGUI(const std::shared_ptr<CommandList>& commandList, const RenderTarget& renderTarget);
 
 	//Invoked by the window when a key is pressed while it has focus
 	void OnKeyPressed(KeyEventArgs& e);
@@ -57,21 +57,41 @@ protected:
 	void OnKeyReleased(KeyEventArgs& e);
 
 	//Invoked when mouse is moved over the window
-	void OnMouseMoved(MouseMotionEventArgs& e);
+	virtual void OnMouseMoved(MouseMotionEventArgs& e);
 
-	//Invoked when mouse wheel is scrolled
-	void OnMouseWheel(MouseWheelEventArgs& e);
+	//Handle DPI change events
+	void OnDPIScaleChanged(DPIScaleEventArgs& e);
 
-	void OnResize(ResizeEventArgs& e);
+	//Render GUI
+	void OnGUI(const std::shared_ptr<CommandList>& commandList, const RenderTarget& renderTarget);
 
 private:
+	//Load assets
+	//Executed as an async task, so we can render a loading screen in main thread
+	bool LoadScene(const std::wstring& sceneFile);
+
+	//Opens a file dialog and loads a new scene file
+	void OpenFile();
+
+	/**
+	* This function is called to report the loading progress of the scene. This is useful for updating the loading
+	* progress bar.
+	*
+	* @param progress The loading progress (as a normalized float in the range [0...1].
+	*
+	* @returns true to continue loading or false to cancel loading.
+	*/
+	bool LoadingProgress(float loadingProgress);
+
 	//Member variables here below
-	std::shared_ptr<Window> m_Window; //Render window (from Application)
-	
+	//
+	//
 	// DX12 device
 	std::shared_ptr<Device> m_Device;
 	std::shared_ptr<SwapChain> m_SwapChain;
 	std::shared_ptr<GUI> m_GUI;
+
+	std::shared_ptr<Scene> m_Scene;
 
 	//Some geometry to render
 	std::shared_ptr<Scene> m_Cube;
@@ -79,48 +99,36 @@ private:
 	std::shared_ptr<Scene> m_Cone;
 	std::shared_ptr<Scene> m_Torus;
 	std::shared_ptr<Scene> m_Plane;
+	std::shared_ptr<Scene> m_Axis;
 
-	std::shared_ptr<Texture> m_DefaultTexture;
+	/*std::shared_ptr<Texture> m_DefaultTexture;
 	std::shared_ptr<Texture> m_DirectXTexture;
 	std::shared_ptr<Texture> m_EarthTexture;
-	std::shared_ptr<Texture> m_MonaLisaTexture;
+	std::shared_ptr<Texture> m_MonaLisaTexture;*/
+
+	//Pipeline state object for rendering the scene
+	std::shared_ptr<EffectPSO> m_LightingPSO;
+	std::shared_ptr<EffectPSO> m_DecalPSO;
+	std::shared_ptr<EffectPSO> m_UnlitPSO;
 
 	//Render target
 	RenderTarget m_RenderTarget;
 
-	//Root signature
-	std::shared_ptr<RootSignature> m_RootSignature;
-
-	//Pipeline state object
-	std::shared_ptr<PipelineStateObject> m_PipelineState;
-	std::shared_ptr<PipelineStateObject> m_UnlitPipelineState;
+	std::shared_ptr<Window> m_Window; //Render window (from Application)
 
 	D3D12_VIEWPORT m_Viewport;
 	D3D12_RECT m_ScissorRect;
 
+	//Root signature
+	//std::shared_ptr<RootSignature> m_RootSignature;
+
+	//Pipeline state object
+	//std::shared_ptr<PipelineStateObject> m_PipelineState;
+	//std::shared_ptr<PipelineStateObject> m_UnlitPipelineState;
+
 	Camera m_Camera;
-	struct alignas(16) CameraData
-	{
-		DirectX::XMVECTOR m_InitialCamPos;
-		DirectX::XMVECTOR m_InitialCamRot;
-	};
-	CameraData* m_pAlignedCameraData;
-
-	//Camera controller
-	float m_Forward;
-	float m_Backward;
-	float m_Left;
-	float m_Right;
-	float m_Up;
-	float m_Down;
-
-	float m_Pitch;
-	float m_Yaw;
-
-	//Rotate the lights in a circle
-	bool m_AnimateLights;
-	//Set to true if the shift key is pressed
-	bool m_Shift;
+	CameraController m_CameraController;
+	Logger m_Logger;
 
 	int m_Height;
 	int m_Width;
@@ -129,7 +137,20 @@ private:
 	//Define some lights
 	std::vector<PointLight> m_PointLights;
 	std::vector<SpotLight> m_SpotLights;
+	std::vector<DirectionalLight> m_DirectionalLights;
 
-	//Logger for logging
-	Logger m_Logger;
+	//Rotate the lights in a circle
+	bool m_AnimateLights;
+
+	bool              m_Fullscreen;
+	bool              m_AllowFullscreenToggle;
+	bool              m_ShowFileOpenDialog;
+	bool              m_CancelLoading;
+	bool              m_ShowControls;
+	std::atomic_bool  m_IsLoading;
+	std::future<bool> m_LoadingTask;
+	float             m_LoadingProgress;
+	std::string       m_LoadingText;
+
+	float m_FPS;
 };

@@ -50,7 +50,7 @@ public:
 	gainput::DeviceId GetMouseId() const;
 
 	//Get gamepad device ID
-	gainput::DeviceId GetPadId(unsigned int index) const;
+	gainput::DeviceId GetPadId(unsigned int index = 0) const;
 
 	//Get an input device template
 	template<class T>

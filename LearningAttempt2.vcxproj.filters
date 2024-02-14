@@ -228,6 +228,12 @@
     <ClInclude Include="resource1.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="CameraController.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectPSO.h">
+      <Filter>Header Files\GameHeaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommandQueue.cpp">
@@ -380,6 +386,12 @@
     <ClCompile Include="imgui.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="CameraController.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectPSO.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico">
@@ -417,10 +429,24 @@
     <FxCompile Include="UnlitPixelShader.hlsl">
       <Filter>Source Files\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Decal_PS.hlsl">
+      <Filter>Source Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Lighting_PS.hlsl">
+      <Filter>Source Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Unlit_PS.hlsl">
+      <Filter>Source Files\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LearningAttempt2.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Base_PS.hlsli">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
