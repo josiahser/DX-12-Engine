@@ -1,0 +1,2 @@
+#pragma code_page(65001)
+1 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/draco/x64-windows-dbg/CMakeFiles/draco_encoder.dir/embed.manifest"

@@ -1,0 +1,6 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/poly2tri/x64-windows-rel/CMakeFiles/poly2tri.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/poly2tri/x64-windows-rel/CMakeFiles/edit_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/poly2tri/x64-windows-rel/CMakeFiles/rebuild_cache.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/poly2tri/x64-windows-rel/CMakeFiles/list_install_components.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/poly2tri/x64-windows-rel/CMakeFiles/install.dir
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/buildtrees/poly2tri/x64-windows-rel/CMakeFiles/install/local.dir

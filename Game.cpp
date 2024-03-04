@@ -1,3 +1,5 @@
+#include "framework.h"
+
 #include "Game.h"
 #include "Application.h"
 #include "CommandQueue.h"
@@ -61,7 +63,7 @@ void Game::OnKeyPressed(KeyEventArgs& e)
 	// By default, do nothing.
 }
 
-void Game::OnKeyRelease(KeyEventArgs& e)
+void Game::OnKeyReleased(KeyEventArgs& e)
 {
 	// By default, do nothing.
 }

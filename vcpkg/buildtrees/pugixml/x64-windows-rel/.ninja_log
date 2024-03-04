@@ -1,0 +1,6 @@
+# ninja log v5
+4	169	7278399927112812	CMakeFiles/pugixml-shared.dir/scripts/pugixml_dll.rc.res	96ced1c4504dafd0
+28	1934	7278399944642839	CMakeFiles/pugixml-shared.dir/src/pugixml.cpp.obj	a4caa62e23d5881c
+1934	2218	7278399947222797	pugixml.dll	4d4b74bdd5becbac
+1934	2218	7278399947222797	pugixml.lib	4d4b74bdd5becbac
+2218	2402	0	CMakeFiles/install.util	b6f4079a712069f9

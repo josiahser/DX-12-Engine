@@ -1,14 +1,16 @@
 #pragma once
 
 #include "Events.h"
-#include "framework.h"
+
+#include <memory>
+#include <string>
 
 class Window;
 
 class Game : public std::enable_shared_from_this<Game>
 {
 public:
-	Game(const std::wstring& name, int width, int height, bool vSync);
+	Game(const std::wstring& name, int width, int height, bool vSync = false);
 	virtual ~Game();
 
 	int GetClientWidth() const
@@ -46,7 +48,7 @@ protected:
 	virtual void OnKeyPressed(KeyEventArgs& e);
 
 	//When key is released
-	virtual void OnKeyRelease(KeyEventArgs& e);
+	virtual void OnKeyReleased(KeyEventArgs& e);
 
 	//When mouse is moved over the window
 	virtual void OnMouseMoved(MouseMotionEventArgs& e);
@@ -70,7 +72,7 @@ protected:
 
 private:
 	std::wstring m_Name{};
-	int m_Width{};
-	int m_Height{};
-	bool m_vSync{};
+	int m_Width;
+	int m_Height;
+	bool m_vSync;
 };

@@ -1,0 +1,10 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/include/poly2tri/common/shapes.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/include/poly2tri/common/utils.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/include/poly2tri/sweep/advancing_front.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/include/poly2tri/sweep/cdt.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/include/poly2tri/sweep/sweep.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/include/poly2tri/sweep/sweep_context.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/lib/poly2tri.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/include/poly2tri/poly2tri.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/share/poly2tri/poly2triConfig.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/poly2tri_x64-windows/debug/share/poly2tri/poly2triConfig-debug.cmake

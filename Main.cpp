@@ -1,31 +1,45 @@
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <Shlwapi.h>
-
-#include "Application.h"
 #include "Demo.h"
 
-#include <dxgidebug.h>
+#include "Device.h"
 
-void ReportLiveObjects()
+#include <shellapi.h>
+
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd)
 {
-	IDXGIDebug1* dxgiDebug{};
-	DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug));
+#if defined (_DEBUG)
+	//Enable debug layer before doing anything DX12 related
+	Device::EnableDebugLayer();
+#endif
 
-	dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_IGNORE_INTERNAL);
-	dxgiDebug->Release();
-}
+	WCHAR path[MAX_PATH];
 
-int CALLBACK wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nShowCmd)
-{
+	int argc = 0;
+	LPWSTR* argv = ::CommandLineToArgvW(lpCmdLine, &argc);
+	if (argv)
+	{
+		for (int i = 0; i < argc; ++i)
+		{
+			//-wd specify the workind directory
+			if (::wcscmp(argv[i], L"-wd") == 0)
+			{
+				::wcscpy_s(path, argv[++i]);
+				::SetCurrentDirectoryW(path);
+			}
+		}
+		::LocalFree(argv);
+	}
+
 	int retCode = 0;
 
 	Application::Create(hInstance);
 	{
-		std::shared_ptr<Demo> demo = std::make_shared<Demo>(L"Learning DirectX12", 1280, 720);
-		retCode = Application::Get().Run(demo);
+		auto demo = std::make_unique<Demo>(L"Learning DirectX12", 1280, 720);
+		retCode = demo->Run();
 	}
+
 	Application::Destroy();
+
+	::atexit(&Device::ReportLiveObjects);
 
 	return retCode;
 }

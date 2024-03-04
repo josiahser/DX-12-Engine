@@ -1,92 +1,158 @@
 #pragma once
 
-#include "Game.h"
-#include "Window.h"
-#include "framework.h"
+#include "Camera.h"
+#include "CameraController.h"
+#include "Light.h"
 
-class Demo : public Game
+#include "Application.h"
+
+#include "RenderTarget.h"
+
+#include <d3d12.h>
+
+#include <future>
+#include <memory>
+#include <string>
+
+class CommandList;
+class Device;
+class GUI;
+class PipelineStateObject;
+class RenderTarget;
+class RootSignature;
+class Scene;
+class SwapChain;
+
+class EffectPSO;
+
+class Demo
 {
 public:
-	using super = Game;
 
 	Demo(const std::wstring& name, int width, int height, bool vSync = false);
+	virtual ~Demo();
+
+	//Start the game loop and return the error code
+	uint32_t Run();
 
 	//Load content for the demo
-	virtual bool LoadContent() override;
+	void LoadContent();
 
 	//Unload demo content that was loaded in LoadContent()
-	virtual void UnloadContent() override;
+	void UnloadContent();
 
 protected:
 	//Update the game logic
-	virtual void OnUpdate(UpdateEventArgs& e) override;
+	void OnUpdate(UpdateEventArgs& e);
+
+	void OnResize(ResizeEventArgs& e);
 
 	//Render the stuff
-	virtual void OnRender(RenderEventArgs& e) override;
+	void OnRender(RenderEventArgs& e);
 
 	//Invoked by the window when a key is pressed while it has focus
-	virtual void OnKeyPressed(KeyEventArgs& e) override;
+	void OnKeyPressed(KeyEventArgs& e);
 
-	//Invoked when mouse wheel is scrolled
-	virtual void OnMouseWheel(MouseWheelEventArgs& e) override;
+	//Invoked when said key is released
+	void OnKeyReleased(KeyEventArgs& e);
 
-	virtual void OnResize(ResizeEventArgs& e) override;
+	//Invoked when mouse is moved over the window
+	virtual void OnMouseMoved(MouseMotionEventArgs& e);
+
+	//Handle DPI change events
+	void OnDPIScaleChanged(DPIScaleEventArgs& e);
+
+	//Render GUI
+	void OnGUI(const std::shared_ptr<CommandList>& commandList, const RenderTarget& renderTarget);
+
+	void OnWindowClosed(WindowCloseEventArgs& e);
 
 private:
-	//Helper functions
-	//Transition a resource
-	void TransitionResource(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
-		Microsoft::WRL::ComPtr<ID3D12Resource> resource,
-		D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState);
+	//Load assets
+	//Executed as an async task, so we can render a loading screen in main thread
+	bool LoadScene(const std::wstring& sceneFile);
 
-	//Clear a render target view
-	void ClearRTV(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
-		D3D12_CPU_DESCRIPTOR_HANDLE rtv, FLOAT* clearColor);
+	//Opens a file dialog and loads a new scene file
+	void OpenFile();
 
-	//Clear the depth of a depth-stencil view
-	void ClearDepth(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
-		D3D12_CPU_DESCRIPTOR_HANDLE dsv, FLOAT depth = 1.0f);
-
-	//Create a GPU buffer
-	void UpdateBufferResource(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList2> commandList,
-		ID3D12Resource** pDestinationResource, ID3D12Resource** pIntermediateResource,
-		size_t numElements, size_t elementSize, const void* bufferData,
-		D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAG_NONE);
-
-	//Resize the depth buffer to match the size of the client area
-	void ResizeDepthBuffer(int width, int height);
+	/**
+	* This function is called to report the loading progress of the scene. This is useful for updating the loading
+	* progress bar.
+	*
+	* @param progress The loading progress (as a normalized float in the range [0...1].
+	*
+	* @returns true to continue loading or false to cancel loading.
+	*/
+	bool LoadingProgress(float loadingProgress);
 
 	//Member variables here below
+	//
+	//
+	// DX12 device
+	std::shared_ptr<Device> m_Device;
+	std::shared_ptr<SwapChain> m_SwapChain;
+	std::shared_ptr<GUI> m_GUI;
 
-	uint64_t m_FenceValues[Window::bufferCount] = {};
+	std::shared_ptr<Scene> m_Scene;
 
-	//Vertex buffer for the cube
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_VertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
+	//Some geometry to render
+	std::shared_ptr<Scene> m_Cube;
+	std::shared_ptr<Scene> m_Sphere;
+	std::shared_ptr<Scene> m_Cone;
+	std::shared_ptr<Scene> m_Torus;
+	std::shared_ptr<Scene> m_Plane;
+	std::shared_ptr<Scene> m_Axis;
 
-	//Index buffer for the cube
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_IndexBuffer;
-	D3D12_INDEX_BUFFER_VIEW m_IndexBufferView{};
+	/*std::shared_ptr<Texture> m_DefaultTexture;
+	std::shared_ptr<Texture> m_DirectXTexture;
+	std::shared_ptr<Texture> m_EarthTexture;
+	std::shared_ptr<Texture> m_MonaLisaTexture;*/
 
-	//Depth Buffer
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthBuffer;
-	//Descriptor Heap for depth buffer
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
+	//Pipeline state object for rendering the scene
+	std::shared_ptr<EffectPSO> m_LightingPSO;
+	std::shared_ptr<EffectPSO> m_DecalPSO;
+	std::shared_ptr<EffectPSO> m_UnlitPSO;
+
+	//Render target
+	RenderTarget m_RenderTarget;
+
+	std::shared_ptr<Window> m_Window; //Render window (from Application)
+
+	D3D12_VIEWPORT m_Viewport;
+	D3D12_RECT m_ScissorRect;
 
 	//Root signature
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
-	
+	//std::shared_ptr<RootSignature> m_RootSignature;
+
 	//Pipeline state object
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
+	//std::shared_ptr<PipelineStateObject> m_PipelineState;
+	//std::shared_ptr<PipelineStateObject> m_UnlitPipelineState;
 
-	D3D12_VIEWPORT m_Viewport{};
-	D3D12_RECT m_ScissorRect{};
+	Camera m_Camera;
+	CameraController m_CameraController;
+	Logger m_Logger;
 
-	float m_FoV{};
+	int m_Height;
+	int m_Width;
+	bool m_VSync;
 
-	DirectX::XMMATRIX m_ModelMatrix{};
-	DirectX::XMMATRIX m_ViewMatrix{};
-	DirectX::XMMATRIX m_ProjectionMatrix{};
+	//Define some lights
+	std::vector<PointLight> m_PointLights;
+	std::vector<SpotLight> m_SpotLights;
+	std::vector<DirectionalLight> m_DirectionalLights;
 
-	bool m_ContentLoaded{};
+	//Rotate the lights in a circle
+	bool m_AnimateLights;
+
+	bool              m_Fullscreen;
+	bool              m_AllowFullscreenToggle;
+	bool              m_ShowFileOpenDialog;
+	bool              m_CancelLoading;
+	bool              m_ShowControls;
+	std::atomic_bool  m_IsLoading;
+	std::future<bool> m_LoadingTask;
+	float             m_LoadingProgress;
+	std::string       m_LoadingText;
+
+	float m_FPS;
 };

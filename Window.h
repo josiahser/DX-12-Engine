@@ -1,32 +1,46 @@
 #pragma once
 
-#include "framework.h"
 #include "Events.h"
-#include "HighResolutionClock.h"
 
-class Game;
+//#include "HighResolutionTimer.h"
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+#include <memory>
+#include <string>
+
+//Forward declarations
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 class Window
 {
 public:
-	//Number of swapchain back buffers
-	static const UINT bufferCount = 3;
-
 	//Get a handle to this windows instance, or nullptr if it's not a valid window
 	HWND GetWindowHandle() const;
 
-	//Destroy this window
-	void Destroy();
+	//Get the current (normalized) DPI scaling for this window
+	float GetDPIScaling() const;
 
+	//Get the name that was used to create the window
 	const std::wstring& GetWindowName() const;
 
-	int GetClientHeight() const;
-	int GetClientWidth() const;
+	//Set the window title
+	void SetWindowTitle(const std::wstring& windowTitle);
 
-	//Should this window be rendered with V-sync?
-	bool IsVSync() const;
-	void SetVSync(bool vSync);
-	void ToggleVSync();
+	//Get the current title of the window
+	const std::wstring& GetWindowTitle() const;
+
+	//Get the height of the window's client area
+	int GetClientHeight() const
+	{
+		return m_ClientHeight;
+	}
+
+	//Get the width of the window's client area
+	int GetClientWidth() const
+	{
+		return m_ClientWidth;
+	}
 
 	//Is this a windowed window or full-screen?
 	bool IsFullscreen() const;
@@ -41,94 +55,194 @@ public:
 	//Hide the window
 	void Hide();
 
-	//Return the current back buffer index
-	UINT GetCurrentBackBufferIndex() const;
+	//Repaint the window contents
+	void Redraw();
 
-	//Present the swapchain's back buffer to the screen, returns the current index after presenting
-	UINT Present();
+	/**
+	* Invoked when the window should be redrawn
+	*/
+	RenderEvent Render;
 
-	//Get the RTV for the current back buffer
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRenderTargetView() const;
+	/**
+	 * The DPI scaling of the window has changed.
+	 */
+	DPIScaleEvent DPIScaleChanged;
 
-	//Get the back buffer resource for the current back buffer
-	Microsoft::WRL::ComPtr<ID3D12Resource> GetCurrentBackBuffer() const;
+	/**
+	 * Window close event is fired when the window is about to be closed.
+	 */
+	WindowCloseEvent Close;
+
+	/**
+	 * Invoked when the window is resized.
+	 */
+	ResizeEvent Resize;
+
+	/**
+	 * Invoked when the window is minimized.
+	 */
+	ResizeEvent Minimized;
+
+	/**
+	 * Invoked when the window is maximized.
+	 */
+	ResizeEvent Maximized;
+
+	/**
+	 * Invoked when the window is restored.
+	 */
+	ResizeEvent Restored;
+
+	/**
+	 * Invoked when a keyboard key is pressed while the window has focus.
+	 */
+	KeyboardEvent KeyPressed;
+
+	/**
+	 * Invoked when a keyboard key is released while the window has focus.
+	 */
+	KeyboardEvent KeyReleased;
+
+	/**
+	 * Invoked when the window gains keyboard focus.
+	 */
+	Event KeyboardFocus;
+
+	/**
+	 * Invoked when the window loses keyboard focus.
+	 */
+	Event KeyboardBlur;
+
+	/**
+	 * Invoked when the mouse is moved over the window.
+	 */
+	MouseMotionEvent MouseMoved;
+
+	/**
+	 * Invoked when the mouse enters the client area.
+	 */
+	MouseMotionEvent MouseEnter;
+
+	/**
+	 * Invoked when the mouse button is pressed over the window.
+	 */
+	MouseButtonEvent MouseButtonPressed;
+
+	/**
+	 * Invoked when the mouse button is released over the window.
+	 */
+	MouseButtonEvent MouseButtonReleased;
+
+	/**
+	 * Invoked when the mouse wheel is scrolled over the window.
+	 */
+	MouseWheelEvent MouseWheel;
+
+	/**
+	 * Invoked when the mouse cursor leaves the client area.
+	 */
+	Event MouseLeave;
+
+	/**
+	 * Invoked when the window gains mouse focus.
+	 */
+	Event MouseFocus;
+
+	/**
+	 * Invoked when the window looses mouse focus.
+	 */
+	Event MouseBlur;
+
 
 protected:
-	//The window proc needs to call protected methods of this class
-	friend LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-
 	//Only the application can create a window
 	friend class Application;
 
-	//The game class needs to register itself with a window
-	friend class Game;
+	//The window proc needs to call protected methods of this class
+	friend LRESULT CALLBACK ::WndProc(HWND, UINT, WPARAM, LPARAM);
 
-	Window() = delete;
-	Window(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight, bool vSync);
+	Window(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight);
 	virtual ~Window();
 
-	//Register a game with this window. this allows the window to callback functions in the game class
-	void RegisterCallbacks(std::shared_ptr<Game> pGame);
-
-	//Update and Draw can only be called by the application
-	virtual void OnUpdate(UpdateEventArgs& e);
+	// Render game window
 	virtual void OnRender(RenderEventArgs& e);
 
-	//A keyboard key was pressed
-	virtual void OnKeyPressed(KeyEventArgs& e);
-	//Keyboard key was released
-	virtual void OnKeyReleased(KeyEventArgs& e);
+	// The DPI scaling of the window has changed.
+	virtual void OnDPIScaleChanged(DPIScaleEventArgs& e);
 
-	//Mouse was moved
-	virtual void OnMouseMoved(MouseMotionEventArgs& e);
-	//Mouse button was pressed
-	virtual void OnMouseButtonPressed(MouseButtonEventArgs& e);
-	//Mouse button was released
-	virtual void OnMouseButtonReleased(MouseButtonEventArgs& e);
-	//Mouse wheel was moved
-	virtual void OnMouseWheel(MouseWheelEventArgs& e);
+	// Window was closed.
+	virtual void OnClose(WindowCloseEventArgs& e);
 
-	//The window was resized
+	// Window was resized.
 	virtual void OnResize(ResizeEventArgs& e);
 
-	//Create the swapchain
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> CreateSwapChain();
+	// Window was minimized.
+	virtual void OnMinimized(ResizeEventArgs& e);
 
-	//Update the render target views for the swapchain back buffers
-	void UpdateRenderTargetViews();
+	// Window was maximized.
+	virtual void OnMaximized(ResizeEventArgs& e);
+
+	// Window was restored.
+	virtual void OnRestored(ResizeEventArgs& e);
+
+	// A keyboard key was pressed.
+	virtual void OnKeyPressed(KeyEventArgs& e);
+	// A keyboard key was released
+	virtual void OnKeyReleased(KeyEventArgs& e);
+	// Window gained keyboard focus
+	virtual void OnKeyboardFocus(EventArgs& e);
+	// Window lost keyboard focus
+	virtual void OnKeyboardBlur(EventArgs& e);
+
+	// The mouse was moved
+	virtual void OnMouseMoved(MouseMotionEventArgs& e);
+	// A button on the mouse was pressed
+	virtual void OnMouseButtonPressed(MouseButtonEventArgs& e);
+	// A button on the mouse was released
+	virtual void OnMouseButtonReleased(MouseButtonEventArgs& e);
+	// The mouse wheel was moved.
+	virtual void OnMouseWheel(MouseWheelEventArgs& e);
+
+	// The mouse entered the client area.
+	virtual void OnMouseEnter(MouseMotionEventArgs& e);
+	// The mouse left the client are of the window.
+	virtual void OnMouseLeave(EventArgs& e);
+	// The application window has received mouse focus
+	virtual void OnMouseFocus(EventArgs& e);
+	// The application window has lost mouse focus
+	virtual void OnMouseBlur(EventArgs& e);
+
 
 private:
-	//Windows should not be copied
-	Window(const Window& copy) = delete;
-	Window& operator=(const Window& other) = delete;
+	HWND m_hWnd;
 
-	HWND m_hWnd{};
+	std::wstring m_Name;
+	std::wstring m_Title;
 
-	std::wstring m_windowName{};
-	bool m_VSync{};
-	bool m_Fullscreen{};
-	int m_ClientWidth{};
-	int m_ClientHeight{};
+	uint32_t m_ClientWidth;
+	uint32_t m_ClientHeight;
 
-	//
-	//High resolution clock goes here, render and update clock
-	//
+	int32_t m_PreviousMouseX;
+	int32_t m_PreviousMouseY;
 	
-	HighResolutionClock m_UpdateClock{};
-	HighResolutionClock m_RenderClock{};
-	uint64_t m_FrameCounter{};
+	//Get the current dpi scaling of the window
+	float m_DPIScaling;
 
-	//Associated game
-	std::weak_ptr<Game> m_pGame{};
+	//Get the current fullscreen state of the window
+	bool m_IsFullscreen;
 
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_SwapChain{};
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_RTVDescriptorHeap{}; //The back buffer textures of the swap chain. Describes location of texture resource in GPU mem, dimensions of texture, and format. Clears back buffers of the render target and render geometry to the screen)
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_BackBuffers[bufferCount] = {};
+	//True if window is minimized
+	bool m_IsMinimized;
 
-	UINT m_RTVDescriptorSize{};
-	UINT m_CurrentBackBufferIndex{};
+	//True if window is maxed
+	bool m_IsMaximized;
 
-	RECT m_WindowRect{};
+	//This is true when the mouse is inside the window's client rect
+	bool m_bInClientRect;
+	RECT m_WindowRect;
 
-	bool m_IsTearingSupported{};
+	//This is set to true when the window receives keyboard focus
+	bool m_bHasKeyboardFocus;
+
+	//HighResolutionTimer m_Timer;
 };

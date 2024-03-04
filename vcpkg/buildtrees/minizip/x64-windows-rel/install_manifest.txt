@@ -1,0 +1,13 @@
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/lib/minizip.lib
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/bin/minizip.dll
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/share/unofficial-minizip/unofficial-minizipConfig.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/share/unofficial-minizip/unofficial-minizipConfigVersion.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/share/unofficial-minizip/unofficial-minizipTargets.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/share/unofficial-minizip/unofficial-minizipTargets-release.cmake
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/include/minizip/crypt.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/include/minizip/ioapi.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/include/minizip/unzip.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/include/minizip/zip.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/include/minizip/mztools.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/include/minizip/iowin32.h
+C:/Users/jo_serravalle/source/repos/LearningAttempt2/vcpkg/packages/minizip_x64-windows/lib/pkgconfig/minizip.pc

@@ -1,16 +1,39 @@
 #pragma once
 
-#include "framework.h"
+#include "Events.h"
+#include "HighResolutionTimer.h"
+#include "ReadDirectoryChanges.h"
+
+#include <gainput/gainput.h>
+#include <spdlog/logger.h>
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+//Undefine windows macro
+#ifdef CreateWindow
+	#undef CreateWindow
+#endif
+
+#include <cstdint>
+#include <limits>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <type_traits>
 
 class Window;
-class Game;
-class CommandQueue;
+
+using Logger = std::shared_ptr<spdlog::logger>;
+
+using WndProcEvent = Delegate<LRESULT(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)>;
 
 class Application
 {
 public:
 	//Create a single application with the application instance handle
-	static void Create(HINSTANCE hInstance);
+	static Application& Create(HINSTANCE hInstance);
 
 	//Destroy the application instance and all windows created by it
 	static void Destroy();
@@ -18,63 +41,130 @@ public:
 	//Get the single Application
 	static Application& Get();
 
-	//Check if v-sync off is supported
-	bool IsTearingSupported() const;
+	//Create logger
+	Logger CreateLogger(const std::string& name);
 
-	//Create a new render window instance, width and height in pixels. If window with that name exists, that window will be returned
-	std::shared_ptr<Window> CreateRenderWindow(const std::wstring& windowClassName, int width, int height, bool vSync = true);
+	//Get keyboard device ID
+	gainput::DeviceId GetKeyboardId() const;
 
-	//Destroy window given the window name
-	void DestroyWindow(const std::wstring& windowName);
+	//Get mouse device ID
+	gainput::DeviceId GetMouseId() const;
 
-	//Destroy the window given the window reference
-	void DestroyWindow(std::shared_ptr<Window> window);
+	//Get gamepad device ID
+	gainput::DeviceId GetPadId(unsigned int index = 0) const;
 
-	//Find window by window name
-	std::shared_ptr<Window> GetWindowByName(const std::wstring& windowName);
+	//Get an input device template
+	template<class T>
+	T* GetDevice(gainput::DeviceId deviceId) const
+	{
+		static_assert(std::is_base_of_v<gainput::InputDevice, T>);
+		return static_cast<T*>(m_InputManager.GetDevice(deviceId));
+	}
+
+	//Create input map
+	std::shared_ptr<gainput::InputMap> CreateInputMap(const char* name = nullptr);
+
+	////Check if v-sync off is supported
+	//bool IsTearingSupported() const;
+	////Check if the requested multisample quality is supported for the given format
+	//DXGI_SAMPLE_DESC GetMultisampleQualityLevels(DXGI_FORMAT format, UINT numSamples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE) const;
+	////Create a new render window instance, width and height in pixels. If window with that name exists, that window will be returned
+	//std::shared_ptr<Window> CreateRenderWindow(const std::wstring& windowClassName, int width, int height, bool vSync = true);
+	////Destroy window given the window name
+	//void DestroyWindow(const std::wstring& windowName);
+	////Destroy the window given the window reference
+	//void DestroyWindow(std::shared_ptr<Window> window);
+	////Find window by window name
+	//std::shared_ptr<Window> GetWindowByName(const std::wstring& windowName);
 
 	//Run the application loop and message pump
 	//return error code if error occurs
-	int Run(std::shared_ptr<Game> pGame);
+	int32_t Run();
+
+	//Inform the input manager of changes to the size of the display
+	//Needed for gainput to normalize mouse inputs
+	//Only use it on a single window's Resize event
+	void SetDisplaySize(int width, int height);
+
+	//Process input events, should be called once per frame before updating game logic
+	void ProcessInput();
 
 	//Request to quit the application and close all windows
-	//@param exitCode is the error code to return to the invoking process
-	void Quit(int exitCode = 0);
+	void Stop();
 
-	//Get the Direct3D Device
-	Microsoft::WRL::ComPtr<ID3D12Device2> GetDevice() const;
+	//Register directoryChange Listener
+	void RegisterDirectoryChangeListener(const std::wstring& dir, bool recursive = true);
 
-	//Get a specific type of command queue
-	std::shared_ptr<CommandQueue> GetCommandQueue(D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT) const;
+	//Create a render window
+	std::shared_ptr<Window> CreateWindow(const std::wstring& windowName, int clientWidth, int clientHeight);
 
-	//Flush all commandqueues
-	void Flush();
+	//Get window by name
+	std::shared_ptr<Window> GetWindowByName(const std::wstring& windowName) const;
 
-	//Create the descriptor heap and its increment size
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type);
-	UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type) const;
+	//Invoked when the game state should be updated
+	UpdateEvent Update;
+
+	//Invoked when a message is sent to a window
+	WndProcEvent WndProcHandler;
+
+	//invoked when a file is modified on disk
+	FileChangeEvent FileChanged;
+
+	//Application is exiting
+	Event Exit;
 
 protected:
+	friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	
 	Application(HINSTANCE hInstance);
-
 	virtual ~Application();
 
-	Microsoft::WRL::ComPtr<ID3D12Device2> CreateDevice(Microsoft::WRL::ComPtr<IDXGIAdapter4> adapter);
-	Microsoft::WRL::ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp);
+	//Update game state
+	virtual void OnUpdate(UpdateEventArgs& e);
 
-	bool CheckTearingSupport();
+	//A file modification was detected
+	virtual void OnFileChange(FileChangedEventArgs& e);
+
+	//Windows message handler
+	virtual LRESULT OnWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+	//Application is going to close
+	virtual void OnExit(EventArgs& e);
 
 private:
-	Application(const Application& copy) = delete;
-	Application& operator=(const Application& other) = delete;
+	Application(const Application&) = delete;
+	Application(Application&&) = delete;
+	Application& operator=(Application&) = delete;
+	Application& operator=(Application&&) = delete;
 
+	//Directory change listener thread entry point function
+	void CheckFileChanges();
+
+	//Handle to app instance
 	HINSTANCE m_hInstance;
-	Microsoft::WRL::ComPtr<IDXGIAdapter4> m_Adapter;
-	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device;
-	std::shared_ptr<CommandQueue> m_DirectCommandQueue;
-	std::shared_ptr<CommandQueue> m_CopyCommandQueue;
-	std::shared_ptr<CommandQueue> m_ComputeCommandQueue;
 
-	bool m_TearingSupported;
+	Logger m_Logger;
 
+	//Gainput input manager and devices
+	gainput::InputManager m_InputManager;
+	gainput::DeviceId m_KeyboardDevice;
+	gainput::DeviceId m_MouseDevice;
+	gainput::DeviceId m_GamepadDevice[gainput::MaxPadCount];
+
+	//Set to true while app is running
+	std::atomic_bool m_bIsRunning;
+	//Should the app quit?
+	std::atomic_bool m_RequestQuit;
+
+	//Directory change listener
+	CReadDirectoryChanges m_DirectoryChanges;
+
+	//Thread to run directory change listener
+	std::thread m_DirectoryChangeListenerThread;
+	std::mutex m_DirectoryChangeMutex;
+
+	//Flag to terminate directory change thread
+	std::atomic_bool m_bTerminateDirectoryChangeThread;
+
+	HighResolutionTimer m_Timer;
 };
