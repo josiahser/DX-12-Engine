@@ -97,6 +97,8 @@ private:
 		//uint64_t FrameNumber;
 	};
 
+	Device& m_Device;
+
 	//Stale descriptors are queued for release until the frame they were freed in has completed
 	using StaleDescriptorQueue = std::queue<StaleDescriptorInfo>;
 
@@ -105,7 +107,7 @@ private:
 	FreeListBySize m_FreeListBySize;
 	StaleDescriptorQueue m_StaleDescriptors;
 
-	Device& m_Device;
+	
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_d3d12DescriptorHeap;
 	D3D12_DESCRIPTOR_HEAP_TYPE m_HeapType;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE m_BaseDescriptor;

@@ -330,7 +330,7 @@ std::shared_ptr<Texture> CommandList::LoadTextureFromFile(const std::wstring& fi
 			break;
 		case DirectX::TEX_DIMENSION_TEXTURE2D:
 			textureDesc = CD3DX12_RESOURCE_DESC::Tex2D(metadata.format, static_cast<UINT64>(metadata.width), static_cast<UINT>(metadata.height), 
-				static_cast<UINT16>(metadata.arraySize), static_cast<UINT16>(metadata.mipLevels));
+				static_cast<UINT16>(metadata.arraySize), 1U);
 			break;
 		case DirectX::TEX_DIMENSION_TEXTURE3D:
 			textureDesc = CD3DX12_RESOURCE_DESC::Tex3D(metadata.format, static_cast<UINT64>(metadata.width), static_cast<UINT>(metadata.height), static_cast<UINT16>(metadata.depth));
@@ -369,10 +369,12 @@ std::shared_ptr<Texture> CommandList::LoadTextureFromFile(const std::wstring& fi
 
 		CopyTextureSubresource(texture, 0, static_cast<uint32_t>(subresources.size()), subresources.data());
 
-		if (subresources.size() < textureResource->GetDesc().MipLevels)
+		/*if (subresources.size() < textureResource->GetDesc().MipLevels)
 		{
 			GenerateMips(texture);
-		}
+		}*/
+
+		GenerateMips(texture);
 
 		//Add the texture resource to the texture cache
 		ms_TextureCache[fileName] = textureResource.Get();

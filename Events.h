@@ -121,6 +121,17 @@ public:
 
 using UpdateEvent = Delegate<void(UpdateEventArgs&)>;
 
+/**
+ * Render event args.
+ */
+class RenderEventArgs : public EventArgs
+{
+public:
+    RenderEventArgs() {}
+};
+
+using RenderEvent = Delegate<void(RenderEventArgs&)>;
+
 class DPIScaleEventArgs : public EventArgs
 {
 public:

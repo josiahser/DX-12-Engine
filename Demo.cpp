@@ -30,6 +30,7 @@
 
 #include <regex>
 
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
@@ -151,7 +152,8 @@ Demo::Demo(const std::wstring& name, int width, int height, bool vSync)
     m_Window = Application::Get().CreateWindow(name, width, height);
 
     // Hookup Window callbacks.
-    m_Window->Update += UpdateEvent::slot(&Demo::OnUpdate, this);
+    Application::Get().Update += UpdateEvent::slot(&Demo::OnUpdate, this);
+    m_Window->Render += RenderEvent::slot(&Demo::OnRender, this);
     m_Window->Resize += ResizeEvent::slot(&Demo::OnResize, this);
     m_Window->DPIScaleChanged += DPIScaleEvent::slot(&Demo::OnDPIScaleChanged, this);
     m_Window->KeyPressed += KeyboardEvent::slot(&Demo::OnKeyPressed, this);
@@ -253,9 +255,10 @@ void Demo::LoadContent()
 {
     //Create the DX12 Device
     m_Device = Device::Create();
-    std::wstring logbit = m_Device->GetDescription();
-    std::string_view strView(reinterpret_cast<const char*>(logbit.c_str()), logbit.size() * sizeof(wchar_t));
-    m_Logger->info(strView);
+    m_Logger->info(L"Device created: {}", m_Device->GetDescription());
+    //std::wstring logbit = m_Device->GetDescription();
+    //std::string_view strView(reinterpret_cast<const char*>(logbit.c_str()), logbit.size() * sizeof(wchar_t));
+   // m_Logger->info(strView);
 
     //Create a swapchain
     m_SwapChain = m_Device->CreateSwapChain(m_Window->GetWindowHandle(), DXGI_FORMAT_R8G8B8A8_UNORM);
@@ -570,7 +573,7 @@ void Demo::OnUpdate(UpdateEventArgs& e)
     //    l.QuadraticAttenuation = 0.0f;
     //}
 
-    OnRender();
+    m_Window->Redraw();
 }
 
 void Demo::OnResize(ResizeEventArgs& e)
@@ -589,12 +592,13 @@ void Demo::OnResize(ResizeEventArgs& e)
     m_SwapChain->Resize(m_Width, m_Height);
 }
 
-void Demo::OnRender()
+void Demo::OnRender(RenderEventArgs& e)
 {
+    // This is done here to prevent the window switching to fullscreen while rendering the GUI.
     m_Window->SetFullscreen(m_Fullscreen);
 
     auto& commandQueue = m_Device->GetCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
-    auto commandList = commandQueue.GetCommandList();
+    auto  commandList = commandQueue.GetCommandList();
 
     const auto& renderTarget = m_IsLoading ? m_SwapChain->GetRenderTarget() : m_RenderTarget;
 
@@ -603,7 +607,7 @@ void Demo::OnRender()
         FLOAT clearColor[] = { 0.4f, 0.6f, 0.9f, 1.0f };
         commandList->ClearTexture(renderTarget.GetTexture(AttachmentPoint::Color0), clearColor);
 
-        //Add a loading screen?
+        // TODO: Render a loading screen.
     }
     else
     {
@@ -611,23 +615,25 @@ void Demo::OnRender()
         SceneVisitor transparentPass(*commandList, m_Camera, *m_DecalPSO, true);
         SceneVisitor unlitPass(*commandList, m_Camera, *m_UnlitPSO, false);
 
-        //Clear the render targets
+        // Clear the render targets.
         {
             FLOAT clearColor[] = { 0.4f, 0.6f, 0.9f, 1.0f };
-            
+
             commandList->ClearTexture(renderTarget.GetTexture(AttachmentPoint::Color0), clearColor);
-            commandList->ClearDepthStencilTexture(renderTarget.GetTexture(AttachmentPoint::DepthStencil), D3D12_CLEAR_FLAG_DEPTH);
+            commandList->ClearDepthStencilTexture(renderTarget.GetTexture(AttachmentPoint::DepthStencil),
+                D3D12_CLEAR_FLAG_DEPTH);
         }
 
         commandList->SetViewport(m_Viewport);
         commandList->SetScissorRect(m_ScissorRect);
         commandList->SetRenderTarget(m_RenderTarget);
 
-        //Render the scene, first with an opaque pass
+        // Render the scene.
+        // Opaque pass.
         m_Scene->Accept(opaquePass);
         m_Axis->Accept(unlitPass);
 
-        //Transparent pass
+        // Transparent pass.
         m_Scene->Accept(transparentPass);
 
         MaterialProperties lightMaterial = Material::Black;
@@ -649,7 +655,7 @@ void Demo::OnRender()
             XMVECTOR lightDir = XMLoadFloat4(&l.DirectionWS);
             XMVECTOR up = XMVectorSet(0, 1, 0, 0);
 
-            //Rotate the cone so it is facing the Z-axis
+            // Rotate the cone so it is facing the Z axis.
             auto rotationMatrix = XMMatrixRotationX(XMConvertToRadians(-90.0f));
             auto worldMatrix = rotationMatrix * LookAtMatrix(lightPos, lightDir, up);
 
@@ -658,265 +664,23 @@ void Demo::OnRender()
             m_Cone->Accept(unlitPass);
         }
 
-        //Resolve the MSAA render target to the swapchain's backbuffer
+        m_Scene->Accept(transparentPass);
+
+        // Resolve the MSAA render target to the swapchain's backbuffer.
         auto swapChainBackBuffer = m_SwapChain->GetRenderTarget().GetTexture(AttachmentPoint::Color0);
         auto msaaRenderTarget = m_RenderTarget.GetTexture(AttachmentPoint::Color0);
+        //commandList->ResolveSubResource(swapChainBackBuffer, msaaRenderTarget);
 
-        if (msaaRenderTarget.get()->GetD3D12ResourceDesc().SampleDesc.Count > 1)
-        {
-            commandList->ResolveSubResource(swapChainBackBuffer, msaaRenderTarget);
-        }
+        OnGUI(commandList, m_SwapChain->GetRenderTarget());
+
+        commandList->SetRenderTarget(m_SwapChain->GetRenderTarget());
+        //commandQueue.ExecuteCommandList(commandList);
+        //commandQueue.WaitForFenceValue(queueFence);
+
+        m_SwapChain->Present();
     }
-
-    /*auto vertexBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(vertices));
-    ComPtr<ID3D12Resource> vertexBufferResource;
-
-    m_Device->GetD3D12Device()->CreateCommittedResource(
-        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-        D3D12_HEAP_FLAG_NONE, &vertexBufferDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-        IID_PPV_ARGS(&vertexBufferResource)
-    );
-
-    auto indexBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(indices));
-    ComPtr<ID3D12Resource> indexBufferResource;
-
-    m_Device->GetD3D12Device()->CreateCommittedResource(
-        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-        D3D12_HEAP_FLAG_NONE, &indexBufferDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-        IID_PPV_ARGS(&indexBufferResource)
-    );
-
-    auto vertexBuffer = m_Device->CreateVertexBuffer(vertexBufferResource, sizeof(vertices), sizeof(VertexPositionNormalTangentBitangentTexture));
-    auto indexBuffer = m_Device->CreateIndexBuffer(indexBufferResource, sizeof(indices), DXGI_FORMAT_R32_UINT);
-
-    commandList->SetIndexBuffer(indexBuffer);
-    commandList->SetVertexBuffer(0, vertexBuffer);
-
-    D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
-    vertexBufferView.BufferLocation = vertexBufferResource->GetGPUVirtualAddress();
-    vertexBufferView.StrideInBytes = sizeof(VertexPositionNormalTangentBitangentTexture);
-    vertexBufferView.SizeInBytes = sizeof(vertices);
-
-    D3D12_INDEX_BUFFER_VIEW indexBufferView;
-    indexBufferView.BufferLocation = indexBufferResource->GetGPUVirtualAddress();
-    indexBufferView.SizeInBytes = sizeof(indices);
-    indexBufferView.Format = DXGI_FORMAT_R32_UINT;*/
-    //Rendering
-
-    //////Create a scene visitor that is used to perform the actual rendering of the meshes in the scenes
-    //SceneVisitor visitor(*commandList);
-
-    ////Clear the render target
-    //{
-    //    FLOAT clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-    //    commandList->ClearTexture(m_RenderTarget.GetTexture(AttachmentPoint::Color0), clearColor);
-    //    commandList->ClearDepthStencilTexture(m_RenderTarget.GetTexture(AttachmentPoint::DepthStencil), D3D12_CLEAR_FLAG_DEPTH);
-    //}
-
-    //commandList->SetPipelineState(m_PipelineState);
-    //commandList->SetGraphicsRootSignature(m_RootSignature);
-
-    ////Upload lights
-    //LightProperties lightProps;
-    //lightProps.NumPointLights = static_cast<uint32_t>(m_PointLights.size());
-    //lightProps.NumSpotLights = static_cast<uint32_t>(m_SpotLights.size());
-
-    //commandList->SetGraphics32BitConstants(RootParameters::LightPropertiesCB, lightProps);
-    //commandList->SetGraphicsDynamicStructuredBuffer(RootParameters::PointLights, m_PointLights);
-    //commandList->SetGraphicsDynamicStructuredBuffer(RootParameters::SpotLights, m_SpotLights);
-
-    //commandList->SetViewport(m_Viewport);
-    //commandList->SetScissorRect(m_ScissorRect);
-
-    //commandList->SetRenderTarget(m_RenderTarget);
-
-    //////Draw the earth sphere
-    //XMMATRIX translationMatrix = XMMatrixTranslation(-4.0f, 2.0f, -4.0f);
-    //XMMATRIX rotationMatrix = XMMatrixIdentity();
-    //XMMATRIX scaleMatrix = XMMatrixScaling(4.0f, 4.0f, 4.0f);
-    //XMMATRIX worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-    //XMMATRIX viewMatrix = m_Camera.get_ViewMatrix();
-    //XMMATRIX viewProjectionMatrix = viewMatrix * m_Camera.get_ProjectionMatrix();
-
-    //Mat matrices;
-    //ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    //commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-    //commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::White);
-    //commandList->SetShaderResourceView(RootParameters::Textures, 0, m_EarthTexture, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-    //////Render the eath sphere using the SceneVisitor
-    //m_Sphere->Accept(visitor);
-
-    //// Draw a cube
-    //translationMatrix = XMMatrixTranslation(4.0f, 4.0f, 4.0f);
-    //rotationMatrix = XMMatrixRotationY(XMConvertToRadians(45.0f));
-    //scaleMatrix = XMMatrixScaling(4.0f, 8.0f, 4.0f);
-    //worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
-    //ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    //commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-    //commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::White);
-    //commandList->SetShaderResourceView(RootParameters::Textures, 0, m_MonaLisaTexture,
-    //    D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-    //// Render the Mona Lisa cube with the SceneVisitor.
-    //m_Cube->Accept(visitor);
-
-    ////// Draw a torus
-    ////translationMatrix = XMMatrixTranslation(4.0f, 0.6f, -4.0f);
-    ////rotationMatrix = XMMatrixRotationY(XMConvertToRadians(45.0f));
-    ////scaleMatrix = XMMatrixScaling(4.0f, 4.0f, 4.0f);
-    ////worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
-    ////ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::Ruby);
-    ////commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DefaultTexture,
-    ////    D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-    ////m_Torus->Accept(visitor);
-
-    ////// Floor plane.
-    ////float scalePlane = 20.0f;
-    ////float translateOffset = scalePlane / 2.0f;
-
-    ////translationMatrix = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-    ////rotationMatrix = XMMatrixIdentity();
-    ////scaleMatrix = XMMatrixScaling(scalePlane, 1.0f, scalePlane);
-    ////worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
-    ////ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::White);
-    ////commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DirectXTexture,
-    ////    D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-    ////// Render the plane using the SceneVisitor.
-    ////m_Plane->Accept(visitor);
-
-    ////// Back wall
-    ////translationMatrix = XMMatrixTranslation(0, translateOffset, translateOffset);
-    ////rotationMatrix = XMMatrixRotationX(XMConvertToRadians(-90));
-    ////worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
-    ////ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-
-    ////// Render the plane using the SceneVisitor.
-    ////m_Plane->Accept(visitor);
-
-    ////// Ceiling plane
-    ////translationMatrix = XMMatrixTranslation(0, translateOffset * 2.0f, 0);
-    ////rotationMatrix = XMMatrixRotationX(XMConvertToRadians(180));
-    ////worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
-    ////ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-
-    ////// Render the plane using the SceneVisitor.
-    ////m_Plane->Accept(visitor);
-
-    ////// Front wall
-    ////translationMatrix = XMMatrixTranslation(0, translateOffset, -translateOffset);
-    ////rotationMatrix = XMMatrixRotationX(XMConvertToRadians(90));
-    ////worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
-    ////ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-
-    ////// Render the plane using the SceneVisitor.
-    ////m_Plane->Accept(visitor);
-
-    ////// Left wall
-    ////translationMatrix = XMMatrixTranslation(-translateOffset, translateOffset, 0);
-    ////rotationMatrix = XMMatrixRotationX(XMConvertToRadians(-90)) * XMMatrixRotationY(XMConvertToRadians(-90));
-    ////worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
-    ////ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::Red);
-    ////commandList->SetShaderResourceView(RootParameters::Textures, 0, m_DefaultTexture,
-    ////    D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-    ////// Render the plane using the SceneVisitor.
-    ////m_Plane->Accept(visitor);
-
-    ////// Right wall
-    ////translationMatrix = XMMatrixTranslation(translateOffset, translateOffset, 0);
-    ////rotationMatrix = XMMatrixRotationX(XMConvertToRadians(-90)) * XMMatrixRotationY(XMConvertToRadians(90));
-    ////worldMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
-    ////ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-    ////commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, Material::Blue);
-
-    ////// Render the plane using the SceneVisitor.
-    ////m_Plane->Accept(visitor);
-
-    ////Draw shapes to visualize the position of the lights in the scene
-    //commandList->SetPipelineState(m_UnlitPipelineState);
-
-    //MaterialProperties lightMaterial = Material::Zero;
-    ////No specular
-    //for (const auto& l : m_PointLights)
-    //{
-    //    lightMaterial.Emissive = l.Color;
-    //    XMVECTOR lightPos = XMLoadFloat4(&l.PositionWS);
-    //    worldMatrix = XMMatrixTranslationFromVector(lightPos);
-    //    ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    //    commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-    //    commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, lightMaterial);
-
-    //    m_Sphere->Accept(visitor);
-    //}
-
-    //for (const auto& l : m_SpotLights)
-    //{
-    //    lightMaterial.Emissive = l.Color;
-    //    XMVECTOR lightPos = XMLoadFloat4(&l.PositionWS);
-    //    XMVECTOR lightDir = XMLoadFloat4(&l.DirectionWS);
-    //    XMVECTOR up = XMVectorSet(0, 1, 0, 0);
-
-    //    //Rotate the cone so it is facing the Z axis
-    //    rotationMatrix = XMMatrixRotationX(XMConvertToRadians(-90.0f));
-    //    worldMatrix = rotationMatrix * LookAtMatrix(lightPos, lightDir, up);
-
-    //    ComputeMatrices(worldMatrix, viewMatrix, viewProjectionMatrix, matrices);
-
-    //    commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MatricesCB, matrices);
-    //    commandList->SetGraphicsDynamicConstantBuffer(RootParameters::MaterialCB, lightMaterial);
-
-    //    m_Cone->Accept(visitor);
-    //}
-
-    ////Resolve the MSAA render target to the swapchain's backbuffer
-    //auto swapChainBackBuffer = m_SwapChain->GetRenderTarget().GetTexture(AttachmentPoint::Color0);
-    //auto msaaRenderTarget = m_RenderTarget.GetTexture(AttachmentPoint::Color0);
-
-    //D3D12_RESOURCE_DESC srcDesc = swapChainBackBuffer->GetD3D12Resource()->GetDesc();
-
-    //commandList->ResolveSubResource(swapChainBackBuffer, msaaRenderTarget);
-
-    //Render the GUI directly to the swap chain's render target
-    OnGUI(commandList, m_SwapChain->GetRenderTarget());
-
-    commandQueue.ExecuteCommandList(commandList);
-
-    m_SwapChain->Present();
 }
+
 //
 //void XM_CALLCONV ComputeMatrices(FXMMATRIX model, CXMMATRIX view, CXMMATRIX viewProjection, Mat& mat)
 //{
@@ -1221,6 +985,11 @@ void Demo::OpenFile()
             }
         }
     }
+}
+
+void Demo::OnWindowClosed(WindowCloseEventArgs& e)
+{
+    Application::Get().Stop();
 }
 
 //void Demo::OnMouseWheel(MouseWheelEventArgs& e)

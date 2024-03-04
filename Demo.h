@@ -48,7 +48,7 @@ protected:
 	void OnResize(ResizeEventArgs& e);
 
 	//Render the stuff
-	void OnRender();
+	void OnRender(RenderEventArgs& e);
 
 	//Invoked by the window when a key is pressed while it has focus
 	void OnKeyPressed(KeyEventArgs& e);
@@ -64,6 +64,8 @@ protected:
 
 	//Render GUI
 	void OnGUI(const std::shared_ptr<CommandList>& commandList, const RenderTarget& renderTarget);
+
+	void OnWindowClosed(WindowCloseEventArgs& e);
 
 private:
 	//Load assets

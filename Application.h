@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Events.h"
+#include "HighResolutionTimer.h"
 #include "ReadDirectoryChanges.h"
 
 #include <gainput/gainput.h>
@@ -100,6 +101,9 @@ public:
 	//Get window by name
 	std::shared_ptr<Window> GetWindowByName(const std::wstring& windowName) const;
 
+	//Invoked when the game state should be updated
+	UpdateEvent Update;
+
 	//Invoked when a message is sent to a window
 	WndProcEvent WndProcHandler;
 
@@ -114,6 +118,9 @@ protected:
 	
 	Application(HINSTANCE hInstance);
 	virtual ~Application();
+
+	//Update game state
+	virtual void OnUpdate(UpdateEventArgs& e);
 
 	//A file modification was detected
 	virtual void OnFileChange(FileChangedEventArgs& e);
@@ -158,4 +165,6 @@ private:
 
 	//Flag to terminate directory change thread
 	std::atomic_bool m_bTerminateDirectoryChangeThread;
+
+	HighResolutionTimer m_Timer;
 };

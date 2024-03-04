@@ -2,7 +2,7 @@
 
 #include "Events.h"
 
-#include "HighResolutionTimer.h"
+//#include "HighResolutionTimer.h"
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
@@ -55,10 +55,13 @@ public:
 	//Hide the window
 	void Hide();
 
+	//Repaint the window contents
+	void Redraw();
+
 	/**
-	* Invoked when the game should be updated.
+	* Invoked when the window should be redrawn
 	*/
-	UpdateEvent Update;
+	RenderEvent Render;
 
 	/**
 	 * The DPI scaling of the window has changed.
@@ -161,8 +164,8 @@ protected:
 	Window(HWND hWnd, const std::wstring& windowName, int clientWidth, int clientHeight);
 	virtual ~Window();
 
-	// Update game
-	virtual void OnUpdate(UpdateEventArgs& e);
+	// Render game window
+	virtual void OnRender(RenderEventArgs& e);
 
 	// The DPI scaling of the window has changed.
 	virtual void OnDPIScaleChanged(DPIScaleEventArgs& e);
@@ -241,5 +244,5 @@ private:
 	//This is set to true when the window receives keyboard focus
 	bool m_bHasKeyboardFocus;
 
-	HighResolutionTimer m_Timer;
+	//HighResolutionTimer m_Timer;
 };

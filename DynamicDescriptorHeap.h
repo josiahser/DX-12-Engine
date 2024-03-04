@@ -85,9 +85,9 @@ private:
 	void CommitInlineDescriptors(CommandList& commandList, const D3D12_GPU_VIRTUAL_ADDRESS* bufferLocations, uint32_t& bitMask,
 		std::function<void(ID3D12GraphicsCommandList*, UINT, D3D12_GPU_VIRTUAL_ADDRESS)> setFunc);
 
-	/// The max # of descriptor tables per root signature
-	/// A 32-bit mask is used to keep track of the root parameter indices
-	/// that are descriptor tables
+	// The max # of descriptor tables per root signature
+	// A 32-bit mask is used to keep track of the root parameter indices
+	// that are descriptor tables
 	static const uint32_t MaxDescriptorTables = 32;
 
 	//A structure that represents a descriptor table entry in the root signature
@@ -113,10 +113,10 @@ private:
 
 	Device& m_Device;
 
-	/// Describes the type of descriptors that will be staged
-	/// Using this dynamic descriptor heap
-	/// (either CBV_SRV_UAV or SAMPLER)
-	/// Also determines the type of GPU visible descriptor heap to create
+	// Describes the type of descriptors that will be staged
+	// Using this dynamic descriptor heap
+	// (either CBV_SRV_UAV or SAMPLER)
+	// Also determines the type of GPU visible descriptor heap to create
 	D3D12_DESCRIPTOR_HEAP_TYPE m_DescriptorHeapType;
 
 	//The number of descriptors to allocate in new GPU visible descriptors heaps

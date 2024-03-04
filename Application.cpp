@@ -165,6 +165,7 @@ Application::Application(HINSTANCE hInst)
     {
         _com_error err(hr);  // I hope this never happens.
         const TCHAR* error = err.ErrorMessage();
+        //spdlog::critical("CoInitialize failed: {}", err.ErrorMessage());
         spdlog::critical("CoInitialize failed: {}", (char*)error);
         throw new std::exception((char*)error);
     }
@@ -274,12 +275,29 @@ int32_t Application::Run()
     m_bIsRunning = true;
 
     MSG msg = {};
-    while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) && msg.message != WM_QUIT)
+    while (true)
     {
-        ::TranslateMessage(&msg);
-        ::DispatchMessage(&msg);
+        if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+                break;
 
-        m_InputManager.HandleMessage(msg);
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+
+            m_InputManager.HandleMessage(msg);
+        }
+        else
+        {
+            m_Timer.Tick();
+
+            double elapsedTime = m_Timer.ElapsedSeconds();
+            double totalTime = m_Timer.TotalSeconds();
+
+            UpdateEventArgs e(elapsedTime, totalTime);
+
+            OnUpdate(e);
+        }
 
         // Check to see of the application wants to quit.
         if (m_RequestQuit)
@@ -416,6 +434,11 @@ void Application::CheckFileChanges()
     }
 }
 
+void Application::OnUpdate(UpdateEventArgs& e)
+{
+    Update(e);
+}
+
 void Application::OnFileChange(FileChangedEventArgs& e)
 {
     FileChanged(e);
@@ -543,8 +566,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
         case WM_PAINT:
         {
             // Delta and total time will be filled in by the Window.
-            UpdateEventArgs updateEventArgs(0.0, 0.0);
-            pWindow->OnUpdate(updateEventArgs);
+            RenderEventArgs renderEventArgs;
+            pWindow->OnRender(renderEventArgs);
+            ValidateRect(hwnd, nullptr);
         }
         break;
         case WM_SYSKEYDOWN:

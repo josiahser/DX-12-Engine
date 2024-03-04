@@ -15,11 +15,11 @@ public:
 	//Creates a NULL descriptor
 	DescriptorAllocation();
 
-	//Destructor will automatically free the allocation
-	~DescriptorAllocation();
-
 	//Used by the Page::Allocate method to construct a valid descriptor allocation
 	DescriptorAllocation(D3D12_CPU_DESCRIPTOR_HANDLE descriptor, uint32_t numHandles, uint32_t descriptorSize, std::shared_ptr<DescriptorAllocatorPage> page);
+
+	//Destructor will automatically free the allocation
+	~DescriptorAllocation();
 
 	//Copies are not allowed
 	DescriptorAllocation(const DescriptorAllocation&) = delete;

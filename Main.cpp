@@ -14,16 +14,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLin
 	WCHAR path[MAX_PATH];
 
 	int argc = 0;
-	LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
+	LPWSTR* argv = ::CommandLineToArgvW(lpCmdLine, &argc);
 	if (argv)
 	{
 		for (int i = 0; i < argc; ++i)
 		{
 			//-wd specify the workind directory
-			if (wcscmp(argv[i], L"-wd") == 0)
+			if (::wcscmp(argv[i], L"-wd") == 0)
 			{
-				wcscpy_s(path, argv[++i]);
-				SetCurrentDirectoryW(path);
+				::wcscpy_s(path, argv[++i]);
+				::SetCurrentDirectoryW(path);
 			}
 		}
 		::LocalFree(argv);
