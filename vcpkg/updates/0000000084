@@ -1,9 +1,0 @@
-Package: draco
-Version: 1.5.6
-Port-Version: 1
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-windows
-Multi-Arch: same
-Abi: f9a49d58e3a864676eee6fe6f802bdbd1dd9373f3ecb81406baaf518b7822c6c
-Description: A library for compressing and decompressing 3D geometric meshes and point clouds. It is intended to improve the storage and transmission of 3D graphics.
-Status: install ok half-installed
