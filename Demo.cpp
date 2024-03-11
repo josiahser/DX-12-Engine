@@ -159,6 +159,7 @@ Demo::Demo(const std::wstring& name, int width, int height, bool vSync)
     m_Window->KeyPressed += KeyboardEvent::slot(&Demo::OnKeyPressed, this);
     m_Window->KeyReleased += KeyboardEvent::slot(&Demo::OnKeyReleased, this);
     m_Window->MouseMoved += MouseMotionEvent::slot(&Demo::OnMouseMoved, this);
+    m_Window->Close += WindowCloseEvent::slot(&Demo::OnWindowClosed, this);
     /*XMVECTOR cameraPos = XMVectorSet(0, 5, -20, 1);
     XMVECTOR cameraTarget = XMVectorSet(0, 5, 0, 1);
     XMVECTOR cameraUp = XMVectorSet(0, 1, 0, 0);
@@ -664,21 +665,20 @@ void Demo::OnRender(RenderEventArgs& e)
             m_Cone->Accept(unlitPass);
         }
 
-        m_Scene->Accept(transparentPass);
-
         // Resolve the MSAA render target to the swapchain's backbuffer.
         auto swapChainBackBuffer = m_SwapChain->GetRenderTarget().GetTexture(AttachmentPoint::Color0);
         auto msaaRenderTarget = m_RenderTarget.GetTexture(AttachmentPoint::Color0);
         //commandList->ResolveSubResource(swapChainBackBuffer, msaaRenderTarget);
-
-        OnGUI(commandList, m_SwapChain->GetRenderTarget());
-
-        commandList->SetRenderTarget(m_SwapChain->GetRenderTarget());
-        //commandQueue.ExecuteCommandList(commandList);
-        //commandQueue.WaitForFenceValue(queueFence);
-
-        m_SwapChain->Present();
+        commandList->CopyResource(swapChainBackBuffer, msaaRenderTarget);
     }
+
+    OnGUI(commandList, m_SwapChain->GetRenderTarget());
+
+    //commandList->SetRenderTarget(m_SwapChain->GetRenderTarget());
+    commandQueue.ExecuteCommandList(commandList);
+    //commandQueue.WaitForFenceValue(queueFence);
+
+    m_SwapChain->Present();
 }
 
 //

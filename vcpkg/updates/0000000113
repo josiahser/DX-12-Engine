@@ -1,9 +1,0 @@
-Package: gainput
-Version: 1.0.0
-Port-Version: 6
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-windows
-Multi-Arch: same
-Abi: 0f04cc93469a780d01b6e9cc83fcf796f94504a859430055300988da9197261b
-Description: Gainput is a multiplatform C++ input library, supporting mouse, keyboard and controllers
-Status: install ok installed

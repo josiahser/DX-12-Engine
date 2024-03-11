@@ -1,6 +1,0 @@
-Package: directxtex
-Feature: dx11
-Architecture: x64-windows
-Multi-Arch: same
-Description: Build with DirectX11 support
-Status: install ok installed
